@@ -1,0 +1,23 @@
+# Ignore CSV files
+*.csv
+
+# Ignore Jupyter Notebook files
+*.ipynb
+*.pyc
+*.txt
+
+# ignore images as output
+*.png
+*.jpeg
+
+# Ignore .venv
+.venv/
+
+# Ignore egg info
+*.egg-info/
+
+# Ignore __pycache__/
+__pycache__/
+
+# ignore databases
+*.duckdb
