@@ -1,0 +1,11 @@
+ROOT: "/home/ameet.jagesar@mydre.org/research/chinook/"
+
+data:
+  icudata_full: "/home/olof.sigling@mydre.org/output/icudata/full_omop.duckdb"
+  icudata_external: "/home/olof.sigling@mydre.org/output/icudata/external_omop.duckdb"
+  icudata_internal: "/home/olof.sigling@mydre.org/output/icudata/internal_omop.duckdb"
+  aumc: "/home/olof.sigling@mydre.org/output/aumc/epic/omop_db.duckdb"
+  mcl: "/home/olof.sigling@mydre.org/output/mcl/epic/duckdb/omop_db.duckdb"
+  olvg: "/home/olof.sigling@mydre.org/output/olvg/metavision/duckdb/omop_db.duckdb"
+  rumc: "/home/olof.sigling@mydre.org/output/radboud/epic/duckdb/omop_db.duckdb"
+  umcu: "/home/olof.sigling@mydre.org/output/umcu/metavision/duckdb/omop_db.duckdb"
