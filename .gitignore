@@ -21,3 +21,7 @@ __pycache__/
 
 # ignore databases
 *.duckdb
+
+# ignore archive and data folders
+archive/
+data/
