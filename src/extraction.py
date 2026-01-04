@@ -5,11 +5,16 @@ import pandas as pd
 def main():
 
     conn = database_connect(path_to_duck_db=config['icudata_external'])
+
     features = config['features']
     extraction_window = config['window_in_hours']
 
     mortality = get_mortality(conn, features)
-    
+    admissions = get_admissions(conn, features)
+    measurements = get_measurements(conn, features, extraction_window)
+    weight = get_weight(conn, features)
+    height = get_height(conn, features)
+    ventilated = get_ventilated(conn, features, extraction_window)
 
     close_connection(conn=conn)
 
@@ -66,6 +71,250 @@ def get_mortality(conn, features):
         return "extraction of mortality (outcome) is set as False, stopped extraction"
 
 
+def get_admissions(conn, features):
+    
+    sql_admission = f"""
+    SELECT 
+        person.person_id,
+        person.gender_concept_id,
+        person.birth_datetime,
+        visit_occurrence.visit_start_datetime,
+        visit_occurrence.visit_end_datetime,
+        visit_occurrence.admitted_from_source_value
+    FROM person
+    LEFT JOIN visit_occurrence
+        ON person.person_id = visit_occurrence.person_id
+    """
+
+    # check if age is being set as true for extraction
+    if features['static']['age']['extract'] is True:
+        # get age
+        admissions = pd.read_sql(sql=sql_admission, con=conn)
+        admissions['age'] = (admissions['visit_start_datetime'] - admissions['birth_datetime']).dt.days / 365.25
+        admissions['age'] = pd.to_numeric(admissions['age'], errors='coerce')
+        admissions['age'] = admissions['age'].round().astype('Int64')
+    else:
+        return "Age is not defined as feature, stop extraction"
+
+    # check if gender is set as true
+    if features['static']['gender']['extract'] is True:
+        # preprocess gender
+        admissions['gender_concept_id'] = admissions['gender_concept_id'].replace({
+            'Man': 'male',
+            'Vrouw': 'female',
+            'M': 'male',
+            'V': 'female'
+        })
+    else:
+        # remove gender column from dataframe if configured in yaml file
+        admissions = admissions.drop(columns=['gender_concept_id'])
+
+    admissions.to_csv(ROOT + '/data/raw/admissions.csv')
+    print("")
+    print("admissions csv has been saved")
+    print("")
+    return admissions
+
+
+def get_weight(conn, features):
+    
+    # extract if extraction of weight is set as true
+    if features['static']['weight']['extract'] is True:
+
+        weight = [3026600, #  Body weight Estimated
+                3025315, #  Body weight
+                3013762 #  Body weight Measured
+                ]
+        
+        # weight = config['features']['weight']['ids'] # TODO check if these works instead of hardcoded weight ids
+        
+        static_variable_lists = {
+                                'weight': weight 
+                                }
+        
+        # Flatten the list of concept IDs
+        weight_concept_ids = ', '.join(map(str, sum(static_variable_lists.values(), [])))
+
+        weight_query = f"""
+            SELECT
+                m.person_id,
+                m.measurement_datetime,
+                v.visit_start_datetime,
+                (m.measurement_datetime - v.visit_start_datetime) AS timediff,
+                m.value_as_number
+            FROM measurement AS m
+            FULL OUTER JOIN
+                visit_occurrence AS v
+                ON m.person_id = v.person_id
+            WHERE 
+                (measurement_concept_id IN ({weight_concept_ids})) AND
+                ((m.measurement_datetime - v.visit_start_datetime) <= INTERVAL '3 days')
+        """
+
+        weight = pd.read_sql(sql=weight_query, con=conn)
+        weight.to_csv(ROOT + '/data/raw/weight.csv')
+        print("")
+        print("weight csv has been saved")
+        print("")
+
+        return weight
+    
+    else:
+        return
+
+
+def get_height(conn, features):
+    
+    # extract if extraction of height is set as true
+    if features['static']['height']['extract'] is True:
+
+        height = [3035463, #  Body height Estimated
+                    3023540, # Body height Measured
+                    3036277  #  Body height
+                    ]
+        
+        # height = config['features']['weight']['ids'] # TODO check if these works instead of hardcoded height ids
+        
+        static_variable_lists = {
+                                'height': height 
+                                }
+        
+        # Flatten the list of concept IDs
+        height_concept_ids = ', '.join(map(str, sum(static_variable_lists.values(), [])))
+
+        height_query = f"""
+            SELECT
+                m.person_id,
+                m.measurement_datetime,
+                v.visit_start_datetime,
+                (m.measurement_datetime - v.visit_start_datetime) AS timediff,
+                m.value_as_number
+            FROM measurement AS m
+            FULL OUTER JOIN
+                visit_occurrence AS v
+                ON m.person_id = v.person_id
+            WHERE 
+                (measurement_concept_id IN ({height_concept_ids})) AND
+                ((m.measurement_datetime - v.visit_start_datetime) <= INTERVAL '3 days')
+        """
+
+        height = pd.read_sql(sql=height_query, con=conn)
+        height.to_csv(ROOT + '/data/raw/height.csv')
+        print("")
+        print("height csv has been saved")
+        print("")
+        return height
+    
+    else:
+        return
+
+
+def get_ventilated(conn, features, extraction_window):
+    
+    # extract if ventilation extraction is set as true
+    if features['dynamic']['ventilated']['extract'] is True:
+        
+        # extraction window in hours
+        extraction_window = extraction_window
+
+        # declare ventilation ids
+        vent_ids = features['dynamic']['ventilated']['ids']
+
+        # Convert the list of concept IDs as one single string
+        vent_ids = ', '.join(map(str, vent_ids))
+
+        vent_query = f"""
+        SELECT
+            m.person_id,
+            m.measurement_datetime,
+            TRUE as ventilated,
+            m.measurement_concept_id,
+            m.value_as_number,
+            m.value_as_concept_id,
+            v.visit_start_datetime,
+            (m.measurement_datetime - v.visit_start_datetime) AS timediff
+        FROM measurement AS m
+            FULL OUTER JOIN
+                visit_occurrence AS v
+                ON m.person_id = v.person_id
+        WHERE
+            (measurement_concept_id IN ({vent_ids})) AND
+            ((m.measurement_datetime - v.visit_start_datetime) <= INTERVAL '{extraction_window} hours') AND
+            ((m.measurement_datetime - v.visit_start_datetime) >= INTERVAL '0 hours')
+        """
+
+        ventilated = pd.read_sql(sql=vent_query, con=conn)
+        ventilated.to_csv(ROOT + '/data/raw/ventilated.csv')
+        print("")
+        print("ventilated csv has been saved")
+        print("")
+        return ventilated
+    
+    else:
+        return
+
+
+def get_measurements(conn, features, extraction_window):
+    
+    # extraction window in hours
+    extraction_window = extraction_window
+
+    # extract features and ids that have their settings set as True for extraction
+    list_of_features = []
+    list_of_ids = []
+
+    for feature, settings in features['dynamic'].items():
+        if settings['extract'] is True:
+            list_of_features.append(feature)
+            list_of_ids.append(settings['ids'])
+
+    # create new dictionary based on extracted variables
+    features_dict = dict(zip(list_of_features, list_of_ids))
+
+    # drop features that have no id to make code below work
+    features_dict = {k: v for k, v in features_dict.items() if v is not None}
+    
+    # Create a single CASE statement for all variables
+    case_clauses = []
+    for variable_name, concept_ids in features_dict.items():
+        case_clauses.append(
+            f"WHEN m.measurement_concept_id IN ({', '.join(map(str, concept_ids))}) THEN '{variable_name}'"
+        )
+
+    # Combine all CASE clauses into a single CASE statement for use in query
+    case_statement = f"CASE {' '.join(case_clauses)} END AS variable_name"
+
+    # Flatten the list of concept IDs as one single string
+    all_ids = ', '.join(map(str, sum(features_dict.values(), [])))
+
+    # SQL query, measured within extraction window of admission
+    measurements_query = f"""
+    SELECT
+        m.person_id,
+        m.measurement_datetime,
+        m.measurement_concept_id,
+        m.value_as_number,
+        m.value_as_concept_id,
+        {case_statement},
+        v.visit_start_datetime,
+        (m.measurement_datetime - v.visit_start_datetime) AS timediff
+    FROM measurement AS m
+        FULL OUTER JOIN
+            visit_occurrence AS v
+            ON m.person_id = v.person_id
+    WHERE 
+        (measurement_concept_id IN ({all_ids})) AND
+        ((m.measurement_datetime - v.visit_start_datetime) <= INTERVAL '{extraction_window} hours') AND
+        ((m.measurement_datetime - v.visit_start_datetime) >= INTERVAL '0 hours')
+    """
+
+    print("extracting measurements")
+    measurements = pd.read_sql(sql=measurements_query, con=conn)
+    measurements.to_csv(ROOT + '/data/raw/measurements.csv')
+    print("")
+    print("measurements csv has been saved")
+    print("")
+    return measurements
 
 ### --- database connection and close functions below --- ###
 

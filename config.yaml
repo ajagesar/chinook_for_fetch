@@ -9,6 +9,7 @@ data:
   olvg: "/home/olof.sigling@mydre.org/output/olvg/metavision/duckdb/omop_db.duckdb"
   rumc: "/home/olof.sigling@mydre.org/output/radboud/epic/duckdb/omop_db.duckdb"
   umcu: "/home/olof.sigling@mydre.org/output/umcu/metavision/duckdb/omop_db.duckdb"
+  # pm to add aumcdb_v2 with gbq access
 
 drop_ctc: true
 stratified_split: false # todo: implement
