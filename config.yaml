@@ -22,3 +22,809 @@ assume_normal_values_for_nan: true
 imputation_method: # set one of two as true, cannot be neither or both. Will be applied after previous step of setting normal values for nan
   median: true
   mice: false
+
+pipeline:
+  extraction: true
+  preprocessing_presplit: true
+  splitting: true
+  preprocessing_postsplit: true
+  modeling: true
+  evaluation: true
+
+model_algorithms:
+  xgb:
+    label: 'xgb'
+    filename: 'xgb_model.pkl'
+    hyperparameter_range:
+      max_depth:
+        label: 'max_depth'
+        min: 2
+        max: 32
+      min_child_weight:
+        label: 'min_child_weight'
+        min: 1
+        max: 250
+      subsample:
+        label: 'subsample'
+        min: 0.5
+        max: 1
+      colsample_bytree:
+        label: colsample_bytree
+        min: 0.5
+        max: 1
+      reg_lambda:
+        label: 'reg_lambda'
+        min: 0.001
+        max: 25
+        log: True
+      learning_rate:
+        label: 'learning_rate'
+        min: 0.001
+        max: 0.99
+        log: True
+  logreg:
+    label: 'logreg'
+    filename: logreg_model.pkl
+    hyperparameter_range:
+      penalty:
+        - l1
+        - l2
+        # - elasticnet
+        # - None
+      solver:
+        # - lbfgs
+        # - newton-cg
+        # - liblinear
+        # - sag
+        - saga
+      C:
+        min: 0.001
+        max: 1.0
+        log: true
+      max_iter:
+        min: 100
+        max: 5000
+  svm:
+    label: 'svm'
+    filename: svm_model.pkl
+    hyperparameter_range:
+      C:
+        min: 0.1
+        max: 1000
+        log: true
+      gamma:
+        min: 0.0001
+        max: 1
+        log: true
+      kernel:
+        - rbf
+        - sigmoid
+        # - linear
+  knn:
+    label: 'knn'
+    filename: knn_model.pkl
+    hyperparameter_range:
+      n_neighbors:
+        min: 3
+        max: 20
+      weights:
+        - uniform
+        - distance
+      metric:
+        - minkowski
+        - euclidean
+        - manhattan
+  naivebayes:
+    label: 'naivebayes'
+    filename: naivebayes_model.pkl
+    hyperparameter_range:
+      var_smoothing:
+        min: 1.0e-12
+        max: 1.0e-2
+        log: true
+  nn:
+    label: 'nn'
+    filename: nn_model.pkl
+    hyperparameter_range:
+      hidden_layers:
+        min: 16
+        max: 128
+      num_layers:
+        min: 1
+        max: 4
+      lr:
+        min: 1.0e-4
+        max: 1.0e-1
+        log: True
+      epochs:
+        min: 10
+        max: 50
+      batch_size:
+        - 16
+        - 32
+        - 64
+  
+features: # todo: use this list to extract features
+  static:
+    gender:
+      extract: true
+      apache: false
+      dtype: bool
+      ids: null
+      processed: true
+    age:
+      extract: true
+      apache: true
+      dtype: int
+      ids: null
+      processed: true
+    height:
+      extract: true
+      apache: false
+      dtype: float
+      ids:
+        - 3035463 #  Body height Estimated
+        - 3023540 # Body height Measured
+        - 3036277 #  Body height
+      processed: True
+    mortality:
+      extract: True
+      apache: True
+      dtype: int
+      ids: null
+      processed: True
+    weight:
+      extract: true
+      apache: false
+      dtype: float
+      ids:
+        - 3026600 #  Body weight Estimated
+        - 3025315 #  Body weight
+        - 3013762 #  Body weight Measured
+      processed: True
+    emergency_surgery:
+      extract: false
+      apache: True
+      dtype: bool
+      ids: null
+      processed: false
+    admission_origin:
+      extract: false
+      apache: true
+      dtype: categorical
+      options:
+        floor:
+          - INW - Inwendig 
+          - MDL - Maag-,Darm-,Leverziekten
+          - LON - Longziekte
+          - NCH - Neurochirurgie
+          - ICV - Intensive Care Volwassenen
+          - HGE - Heelkunde Gastro-enterologie
+          - Z - Anders
+          - NEU - Neurologie
+          - CAR - Cardiologie
+          - URO - Urologie
+          - TRA - Traumatologie
+          - VAT - Vaatchirurgie
+          - HLO - Heelkunde Longen/Oncologie
+          - NEF - Nefrologie
+          - ORT - Orthopedie
+          - KNO - Keel, Neus & Oorarts
+          - GYN - Gynaecologie
+          - HON - Heelkunde Oncologie
+          - HEM - Hematologie
+          - ONI - Oncologie Inwendig
+          - VER - Verloskunde
+          - REU - Reumatologie
+          - PCH - Plastische chirurgie
+          - MON - Mondheelkunde
+          - OBS - Obstetrie
+          - OOG - Oogheelkunde
+          - emergency
+          - AMC INTERNE GENEESKUNDE F6 NOORD/MPU
+          - AMC INTERNE GENEESKUNDE F6 ZUID
+          - VUMC INTENSIVE CARE VOLWASSENEN
+          - AMC TRAUMACHIRURGIE
+          - AMC VERLOSCENTRUM (ZWANGEREN/VERLOS) H3 ZUID
+          - AMC CHIRURGIE EN MDL G6ZUID
+          - AMC NIERZIEKTEN, NIERTRANS, REUMA EN HDZ
+          - AMC GYNAECOLOGIE/INTERNE GENEESKUNDE
+          - AMC HARTBEWAKING / EERSTE HART HULP
+          - AMC CARDIOLOGIE
+          - AMC NEUROCENTER
+          - AMC HCK
+          - AMC ACUTE OPNAME AFDELING
+          - AMC CHIRURGIE EN MDL
+          - AMC ENDOSCOPIE
+          - AMC ORTHOPEDIE EN SPORTGENEESKUNDE
+          - AMC INTERNE GENEESKUNDE F7 NOORD
+          - VUMC ACUTE OPNAME
+          - AMC CENTRALE MEDIUM CARE
+          - VUMC 5C LON/HLO
+          - VUMC HLK/TRA/PCH
+          - AMC KORTVERBLIJF H5
+          - icu
+          - VUMC 2B NEUROCENTRUM
+          - VUMC CARDIOLOGIE
+          - AMC INTENSIVE CARE KINDEREN
+          - AMC PSYCH ACADEMISCHE HIC AMSTERDAM
+          - VUMC 8C OBS
+          - VUMC 3C ONI
+          - VUMC 6B HON/MDL/HGE
+          - AMC VAATCHIRURGIE/MKA
+          - AMC INTERNE SHORT STAY / BESTRALINGSUNIT
+          - VUMC 1B KORT VERBLIJF
+          - VUMC INT/MPU/NGK
+          - VUMC 2C NEUROCENTRUM
+          - VUMC HEMATOLOGIE
+          - VUMC ENDOSCOPIE
+          - VUMC UROLOGIE
+          - VUMC 5D HARTBEWAKING EN EHH
+          - VUMC CHIRURGISCHE ONCOLOGIE EN MDL
+          - VUMC 1C KNO
+          - VUMC 4C MEDISCH PSYCHIATRISCHE UNIT
+          - VUMC 8B GYN
+          - VUMC DAGBEHANDELING ONCOLOGIE
+          - AMC PSYCH MPU VOLWASSENEN
+          - AMC ANESTHESIOLOGIE
+          - AMC TIJDELIJKE AFWEZIGHEID
+          - AMC ORTHOPEDIE, SPORT EN PLASTISCHE CHIRURGIE
+          - EMMA SPORT
+          - AMC DAGBEHANDELING F6 ZUID
+          - VUMC DAGBEHANDELING INTERNE
+        or_pacu:
+          - AMC KLINISCHE OK COMPLEX
+          - or
+          - AMC DAGCENTRUM OK COMPLEX
+          - AMC DAGBEHANDELING INTERVENTIE RADIOLOGIE
+          - AMC DAGCENTRUM VERKOEVER
+        transfer:
+          - transfer from another hospital
+      ids: null
+      processed: false
+    admission_diagnosis:
+      extract: false
+      apache: True
+      dtype: categorical
+      ids: null
+      processed: false
+    chronic_health_comorbidities:
+      extract: false
+      apache: True
+      dtype: categorical
+      options:
+        - none
+        - aids
+        - hepatic_failure
+        - lymphoma
+        - metastatic_cancer
+        - leukemia
+        - immunosuppression
+        - cirrhosis
+      ids: null
+      processed: false
+    thrombolytic_therapy:
+      extract: false
+      apache: true
+      dtype: bool
+      ids: null
+      processed: false
+    preicu_los_in_days:
+      extract: false
+      apache: True
+      dtype: int
+      processed: false
+  dynamic:
+    aado2: 
+      extract: null
+      apache: true
+      dtype: float
+      ids: null
+      ref_value: null
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: True
+    albumin:
+      extract: true
+      apache: True
+      dtype: float
+      ids:
+        - 3024561 # Albumin [Mass/volume] in Serum or Plasma
+      ref_value: 45 # g/L
+      ref_value_apache: 3.5 # g/dL
+      min_max_cutoff: [0, 50]
+      distribution: normal
+      processed: True
+    base_excess:
+      extract: true
+      apache: false
+      dtype: float
+      ids:
+        - 3003396 # Base excess in Arterial blood by calculation
+        - 3012501 # Base excess in Blood by calculation
+        - 3003129 # Base excess in Capillary blood by calculation
+        - 1616922 # Base excess in Central venous blood by calculation
+        - 3023001 # Base excess in Mixed venous blood by calculation
+        - 3002032 # Base excess in Venous blood by calculation
+      ref_value: 0
+      ref_value_apache: null
+      min_max_cutoff: [-30, 30]
+      distribution: normal
+      processed: True
+    bicarbonate:
+      extract: true
+      apache: false
+      dtype: float
+      ids:
+        - 3008152 # Bicarbonate [Moles/volume] in Arterial blood
+        - 3006576 # Bicarbonate [Moles/volume] in Blood
+        - 3015235 # Bicarbonate [Moles/volume] in Capillary blood
+        - 1616794 # Bicarbonate [Moles/volume] in Central venous blood
+        - 3025817 # Bicarbonate [Moles/volume] in Mixed venous blood
+        - 3027273 # Bicarbonate [Moles/volume] in Venous blood
+      ref_value: 25
+      ref_value_apache: null
+      min_max_cutoff: [0, 50]
+      distribution: normal
+      processed: True
+    bilirubin:
+      extract: True
+      apache: True
+      dtype: float
+      ids:
+        - 3005772 # Bilirubin.conjugated [Moles/volume] in Serum or Plasma
+        - 3043995 # Bilirubin.conjugated+indirect [Moles/volume] in Serum or Plasma
+      ref_value: 0
+      ref_value_apache: 0
+      min_max_cutoff: [0, 200]
+      distribution: right-skew
+      processed: True
+    crp:
+      extract: True
+      apache: false
+      dtype: int
+      ids:
+        - 3020460
+      ref_value: 0
+      ref_value_apache: null
+      min_max_cutoff: [0, 500]
+      distribution: right-skew
+      processed: True
+    chloride:
+      extract: True
+      apache: false
+      dtype: float
+      ids:
+        - 3031248 # Chloride [Moles/volume] in Arterial blood
+        - 3018572 # Chloride [Moles/volume] in Blood
+        - 3039964 # Chloride [Moles/volume] in Capillary blood
+        - 323 # Chloride [Moles/volume] in Mixed venous blood
+        - 324 # Chloride [Moles/volume] in Central venous blood
+        - 3007733 # Chloride [Moles/volume] in Urine
+        - 3035285 # Chloride [Moles/volume] in Venous blood
+      ref_value: 101
+      ref_value_apache: null
+      min_max_cutoff: [50, 150]
+      distribution: normal
+      processed: True
+    creatinine:
+      extract: True
+      apache: True
+      dtype: int
+      ids:
+        - 3020564 # Creatinine [Moles/volume] in Serum or Plasma
+      ref_value: 100 # mmol/L
+      ref_value_apache: 1.0 # mg/dL
+      min_max_cutoff: [0, 1000]
+      distribution: right-skew
+      processed: True
+    diastolic_pressure:
+      extract: True
+      apache: false
+      dtype: int
+      ids:
+        - 21490851 # Invasive Diastolic blood pressure
+        - 21490850 # Invasive Blood pressure placeholder
+        - 21492240 # Diastolic blood pressure by Noninvasive
+        - 21492238 # Blood pressure by Noninvasive placeholder
+      ref_value: 60
+      ref_value_apache: null
+      min_max_cutoff: [0, 150]
+      distribution: normal
+      processed: False
+    glucose:
+      extract: True
+      apache: True
+      dtype: float
+      ids:
+        - 3044242 # Glucose [Moles/volume] in Arterial blood
+        - 3020491 # Glucose [Moles/volume] in Blood
+        - 3040151 # Glucose [Moles/volume] in Capillary blood
+        - 367 # Glucose [Moles/volume] in Mixed venous blood
+        - 368 # Glucose [Moles/volume] in Central venous blood
+        - 3038515 # Glucose [Moles/volume] in Venous blood
+      ref_value: 7.0 # mmol/L
+      ref_value_apache: 130 # mg/dL
+      min_max_cutoff: [0, 50]
+      distribution: right-skew
+      processed: True
+    heart_rate:
+      extract: True
+      apache: True
+      dtype: int
+      ids:
+        - 21490872 # Heart rate.beat-to-beat by EKG
+        - 3001376 # Heart rate by Pulse oximetry
+        - 21490670 # Heart rate Intra arterial line by Invasive
+        - 3003841 # Heart rate Peripheral artery by palpation
+        - 3027018 # Heart rate placeholder
+      ref_value: 75
+      ref_value_apache: 75
+      min_max_cutoff: [1, 185]
+      distribution: normal
+      processed: True
+    hematocrit:
+      extract: True
+      apache: true
+      dtype: int
+      ids:
+        - 3023230 # Hematocrit [Volume Fraction] of Arterial blood
+        - 3009542 # Hematocrit [Volume Fraction] of Blood
+        - 3028813 # Hematocrit [Volume Fraction] of Capillary blood
+        - 3034037 # Hematocrit [Volume Fraction] of Mixed venous blood
+        - 3034976 # Hematocrit [Volume Fraction] of Venous blood
+      ref_value: 45.5
+      ref_value_apache: 45.5
+      min_max_cutoff: [0, 80]
+      distribution: normal
+      processed: True
+    hemoglobin:
+      extract: True
+      apache: False
+      dtype: float
+      ids: 
+        - 21490721 # Hemoglobin [Moles/volume] in Arterial blood
+        - 40762351 # Hemoglobin [Moles/volume] in Blood
+        - 381 # Hemoglobin [Moles/volume] in Capillary blood
+        - 382 # Hemoglobin [Moles/volume] in Mixed venous blood
+        - 383 # Hemoglobin [Moles/volume] in Central venous blood
+        - 1002216 # Hemoglobin [Moles/volume] in Venous blood
+      ref_value: 8
+      ref_value_apache: null
+      min_max_cutoff: [0, 15]
+      distribution: normal
+      processed: True
+    ionized_calcium:
+      extract: True
+      apache: false
+      dtype: float
+      ids:
+        - 3044331 # Calcium.ionized [Moles/volume] in Arterial blood
+        - 3021119 # Calcium.ionized [Moles/volume] in Blood
+        - 3035279 # Calcium.ionized [Moles/volume] in Capillary blood
+        - 3032271 # Calcium.ionized [Moles/volume] in Mixed venous blood
+        - 3021119 # Calcium.ionized [Moles/volume] in Central venous blood
+        - 3033705 # Calcium.ionized [Moles/volume] in Venous blood
+      ref_value: 1.3
+      ref_value_apache: null
+      min_max_cutoff: [0, 2]
+      distribution: null
+      processed: True
+    lactate:
+      extract: True
+      apache: false
+      dtype: float
+      ids:
+        - 3018405 # Lactate [Moles/volume] in Arterial blood
+        - 3047181 # Lactate [Moles/volume] in Blood
+        - 3005949 # Lactate [Moles/volume] in Central venous blood
+        - 390 # Lactate [Moles/volume] in Mixed venous blood
+        - 3008037 # Lactate [Moles/volume] in Venous blood
+        - 3028271 #Lactate [Moles/volume] in Venous blood
+      ref_value: 0
+      ref_value_apache: 
+      min_max_cutoff: [0, 50]
+      distribution: right-skew
+      processed: True
+    wbc:
+      extract: True
+      apache: True
+      dtype: float
+      ids:
+        - 3010813 # Leukocytes [#/volume] in Blood
+        - 3003282 # Leukocytes [#/volume] in Blood by Manual count
+      ref_value: 11.5
+      ref_value_apache: 11.5
+      min_max_cutoff: [0, 70]
+      distribution: right-skew
+      processed: True
+    map:
+      extract: True
+      apache: true
+      dtype: int
+      ids:
+        - 21490852 # Invasive Mean blood pressure
+        - 21492241 # Mean blood pressure by Noninvasive
+      ref_value: 90
+      ref_value_apache: 90
+      min_max_cutoff: [0, 200]
+      distribution: normal
+      processed: True
+    arf: # to be extracted from NICE data set
+      extract: null
+      apache: True
+      dtype: bool
+      ids: null
+      ref_value: false
+      ref_value_apache: false
+      min_max_cutoff: null
+      processed: false
+    potassium:
+      extract: True
+      apache: false
+      dtype: float
+      ids:
+        - 3043409 # Potassium [Moles/volume] in Arterial blood
+        - 3005456 # Potassium [Moles/volume] in Blood
+        - 3040893 # Potassium [Moles/volume] in Capillary blood
+        - 3031219 # Potassium [Moles/volume] in Mixed venous blood
+        - 3041354 # Potassium [Moles/volume] in Venous blood
+        - 460 # Potassium [Moles/volume] in Central venous blood
+      ref_value: 4
+      ref_value_apache: 4
+      min_max_cutoff: [0, 10]
+      distribution: normal
+      processed: True
+    respiratory_rate:
+      extract: True
+      apache: True
+      dtype: int
+      ids:
+        - 3024171 # Respiratory rate
+        - 21490867 # Respiratory rate by Impedance.transthoracic
+        - 1175625 # Breath rate spontaneous
+        - 3043148 # Breath rate mechanical --on ventilator
+        - 3026892 # Breath rate spontaneous --on ventilator
+        - 3024171 # Respiratory rate non-invasive
+        - 3007469 # Breath rate setting Ventilator
+      ref_value: 15
+      ref_value_apache: 15
+      min_max_cutoff: [3, 45]
+      distribution: normal
+      processed: True
+    sodium:
+      extract: True
+      apache: True
+      dtype: float
+      ids:
+        - 3019550 #Sodium [Moles/volume] in Arterial blood
+        - 3038702 # Sodium [Moles/volume] in Serum or Plasma
+        - 3031579 # Sodium [Moles/volume] in Capillary blood
+        - 3003181 # Sodium [Moles/volume] in Mixed venous blood
+        - 3041473 # Sodium [Moles/volume] in Venous blood
+        - 489 # Sodium [Moles/volume] in Central Venous blood
+      ref_value: 145.5
+      ref_value_apache: 145.5
+      min_max_cutoff: [110, 170]
+      distribution: normal
+      processed: True
+    systolic_pressure: # todo add extract is True
+      extract: True
+      apache: false
+      dtype: int
+      ids:
+        - 21490853 # Invasive Systolic blood pressure
+        - 21490850 # Invasive Blood pressure placeholder
+        - 21492239 # Systolic blood pressure by Noninvasive
+        - 21492238  # Blood pressure by Noninvasive placeholder
+      ref_value: 120
+      ref_value_apache: null
+      min_max_cutoff: [0, 250]
+      distribution: normal
+      processed: True
+    temperature:
+      extract: true
+      apache: True
+      dtype: float
+      ids:
+        - 21490586 # Blood temperature
+        - 3006322 # Oral temperature
+        - 21490906 # Nasal temperature
+        - 3020891 # Body temperature placeholder
+        - 21490907 # Ear temperature
+        - 21490585 # Toe temperature
+        - 3022060 # Rectal temperature
+        - 3039856 # Temperature of Skin
+        - 21490584 # Finger temperature
+        - 21490652 # Airway temperature
+        - 3025085 # Axillary temperature
+        - 21490588 # Esophageal temperature
+        - 21493955 # Temperature of Extremity
+        - 21490870 # Bladder temperature via Foley
+        - 21490590  # Nasopharyngeal temperature
+      ref_value: 37
+      ref_value_apache: 37
+      min_max_cutoff: [15, 50]
+      processed: True
+    thrombocytes:
+      extract: True
+      apache: false
+      dtype: int
+      ids:
+        - 3007461 # Platelets [#/volume] in Blood
+      ref_value: 300
+      ref_value_apache: null
+      min_max_cutoff: [0, 1000]
+      distribution: right-skew
+      processed: True
+    troponin:
+      extract: True
+      apache: false
+      dtype: int
+      ids:
+        - 3019800 # Troponin T.cardiac [Mass/volume] in Serum or Plasma
+        - 40769783  # Troponin T.cardiac [Mass/volume] in Serum or Plasma by High sensitivity method
+      ref_value: 5
+      ref_value_apache: null
+      min_max_cutoff: [0, 10000]
+      distribution: right-skew
+      processed: True
+    gcs_eye:
+      extract: True
+      apache: True
+      dtype: int
+      ids:
+        - 3016335 # Glasgow coma score eye opening
+      ref_value: 4 # max value
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: True
+    gcs_motor:
+      extract: True
+      apache: true
+      dtype: int
+      ids:
+        - 3008223 # Glasgow coma score motor
+      ref_value: 6 # max value
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: True
+    gcs_verbal:
+      extract: True
+      apache: True
+      dtype: int
+      ids:
+        - 3009094 # Glasgow coma score verbal
+      ref_value: 5
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: True
+    urea:
+      extract: true
+      apache: True
+      dtype: float
+      ids:
+        - 3020779 # Urea [Moles/volume] in Serum or Plasma
+      ref_value: 0
+      ref_value_apache: 0
+      min_max_cutoff: [0, 75]
+      processed: True
+    urine_output:
+      extract: True
+      apache: true
+      dtype: float
+      ids:
+        - 145  # 
+        - 149  # 
+        - 150  # 
+        - 151  # 
+        - 140   # 
+      ref_value: null
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: True
+    pao2:
+      extract: True
+      apache: true
+      dtype: float
+      ids:
+        - 3027801 # Oxygen [Partial pressure] in Arterial blood
+        - 3028626 # Oxygen [Partial pressure] in Capillary blood
+        - 1616654 # Oxygen [Partial pressure] in Central venous blood
+        # - 3038071  # Oxygen [Partial pressure] in Mixed venous blood
+      ref_value: 100
+      ref_value_apache: 100
+      min_max_cutoff: null
+      processed: True
+    paco2:
+      extract: True
+      apache: True
+      dtype: float
+      ids:
+        - 3027946 # Carbon dioxide [Partial pressure] in Arterial blood
+        - 3023024 # Carbon dioxide [Partial pressure] in Capillary blood
+        - 1616989 # Carbon dioxide [Partial pressure] in Central venous blood
+        # - 3021513 # Carbon dioxide [Partial pressure] in Mixed venous blood
+      ref_value: 40
+      ref_value_apache: null
+      min_max_cutoff: [0, 100]
+      distribution: right-skew
+      processed: True
+    ph:
+      extract: true
+      apache: true
+      dtype: float
+      ids:         
+        - 3019977 # pH of Arterial blood
+        - 3010421 # pH of Blood
+        - 3009343 # pH of Capillary blood
+        - 1616438 # pH of Central venous blood
+        - 3012388 # pH of Mixed venous blood
+        - 3012544 # pH of Venous blood
+      ref_value: 7.4
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: True
+    ventilated:
+      extract: True
+      apache: true
+      dtype: bool
+      ids: 
+        # - 573 # Backup frequency to ventilate when a specified backup interval has passed
+        # - 574 # Interval time without ventilation after which bakup ventilation is started with a backup frequency
+        # - 583 # Physiological dead space as calculated using the Bohr equation and includes both alveolar and anatomical dead space
+        # - 594 # Fraction of Inspired Oxygen --during invasive mechanical ventilation
+        # - 599 # Ventilator trigger setting to start inspiration based on a specified flow threshold
+        # - 618 # Inspiratory breath [Time] --on ventilator
+        # - 619 # Inspiratory breath [Time] --on ventilator perc
+        # - 620 # Inspiratory time setting Ventilator
+        # - 621 # Inspiratory time setting Ventilator perc
+        # - 623 # Dynamic lung compliance
+        # - 624 # Compliance.static Lung
+        # - 625 # Lung compliance
+        # - 626 # Pressure.max Respiratory system airway --on ventilator
+        # - 631 # Minute volume setting Ventilator
+        # - 648 # Peak inspiratory gas flow setting Ventilator
+        # - 649 # Airway pressure Ventilator --at peak inspiratory flow setting
+        # - 650 # Airway pressure Ventilator --at peak inspiratory flow measured
+        # - 652 # Positive end expiratory pressure setting Ventilator
+        # - 655 # Inspiratory pause time Ventilator
+        # - 656 # Pressure support setting Ventilator
+        # - 657 # Inflation trigger pressure setting Ventilator
+        # - 663 # Breath rate mechanical --on ventilator
+        # - 664 # Breath rate spontaneous --on ventilator
+        # - 666 # Breath rate setting Ventilator
+        # - 676 # Tidal volume Ventilator --on ventilator
+        # - 677 # Tidal volume.spontaneous+mechanical/Body weight [Volume/mass] --on ventilator
+        # - 679 # Tidal volume setting Ventilator
+        # - 680 # Tidal volume.spontaneous --on ventilator
+        # - 41686 # pressure bilevel positive airway ventilator
+        # - 41688 # Airway pressure backup setting Ventilator
+        - 3004921 # Ventilation mode Ventilator
+        - 3000461 # Pressure support setting Ventilator
+        - 42527136 # Airway pressure backup setting Ventilator
+        - 3043415 # Inspiratory breath [Time] --on ventilator
+        - 36303705 # high pressure hold time setting ventilator
+        - 36304672 # Inspiratory time setting Ventilator
+        - 21490854 # Tidal volume Ventilator --on ventilator
+        - 36306099 # low pressure hold time setting ventilator
+        - 3009065 # Inspiration/Expiration setting Ventilator
+      ref_value: null
+      ref_value_apache: null
+      min_max_cutoff: null
+      processed: false
+    fio2:
+      extract: True
+      apache: True
+      dtype: int
+      ids:
+        - 593 # Fraction of Inspired Oxygen --using high flow oxygen therapy
+        - 594 # Fraction of Inspired Oxygen --during invasive mechanical ventilation
+        - 595 # The value of Fraction of inspired Oxygen as registered for the National Intensive Care Evaluation dataset
+        - 596 # Fraction of Inspired Oxygen --during non-invasive ventilation
+        - 597 # Fraction of Inspired Oxygen setting
+        - 598 # Fraction of Inspired Oxygen
+      ref_value: null
+      ref_value_apache: null
+      min_max_cutoff: [0, 100]
+      processed: True
