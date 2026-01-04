@@ -1,0 +1,1745 @@
+apache_variables: # TODO first list static, dynamic, then int/bool/categorical
+  heart_rate:
+    dtype: int
+  map:
+    dtype: int
+  temperature:
+    dtype: float
+  respiratory_rate:
+    dtype: int
+  ventilated:
+    dtype: bool
+  aado2:
+    dtype: float
+  pao2:
+    dtype: float
+  hematocrit:
+    dtype: float
+  wbc: 
+    dtype: float
+  creatinine: 
+    dtype: int
+  arf:
+    dtype: bool
+  urea:
+    dtype: int
+  urine_output:
+    dtype: float
+  sodium:
+    dtype: float
+  albumin:
+    dtype: float
+  bilirubin:
+    dtype: int
+  glucose:
+    dtype: float
+  pco2:
+    dtype: float
+  ph:
+    dtype: float
+  gcs_obtained: 
+    dtype: bool
+  gcs_eye:
+    dtype: int
+  gcs_motor:
+    dtype: int
+  gcs_verbal:
+    dtype: int
+  admission_diagnosis:
+    dtype: categorical
+  thrombolytic_therapy:
+    dtype: bool
+  preicu_los_in_days:
+    dtype: int
+  age:
+    dtype: int
+  chronic_health_comorbidities:
+    dtype: categorical
+  icu_origin:
+    dtype: categorical
+  emergency_surgery:
+    dtype: bool
+
+aps_reference_value:
+  heart_rate:
+    value: 75
+    unit: bpm
+  map:
+    value: 90
+    unit: mmhg
+  temperature: 
+    value: 38
+    unit: C
+  respiratory_rate: 
+    value: 19
+    unit: /min
+  hematocrit: 
+    value: 45.5
+    unit: percentage
+  wbc: 
+    value: 11.5
+    unit: x10^9/L
+  creatinine:
+    value: 1.0
+    unit: mg/dl
+  urea: 
+    value: 0
+    unit: mg/dl
+  sodium: 
+    value: 145.5
+    unit: mmol/l
+  albumin: 
+    value: 3.5
+    unit: g/dl
+  bilirubin: 
+    value: 0
+    unit: mg/dl
+  glucose: 
+    value: 130
+    unit: mg/dl
+  gcs_eye:
+    value: 0
+    unit: na
+  gcs_motor: 
+    value: 0
+    unit: na
+  gcs_verbal:
+    value: 0
+    unit: na
+  paco2:
+    value: 40
+    unit: mmhg
+  ph:
+    value: 7.4
+    unit: na
+
+conversion_factors: # for mg/dL to mmol/L
+  albumin: 10 # g/dL to g/L
+  bilirubin: 17.1 # mg/dL to mmol/L
+  urea: 0.3571 # mg/dL to mmol/L
+  creatinine: 88.42 # mg/dL to mmol/L
+  glucose: 0.05556 # mg/dL to mmol/L
+
+aps_points:
+  heart_rate:
+    1:
+      min: null
+      max: 40
+      points: 8
+    2:
+      min: 40
+      max: 50
+      points: 5
+    3:
+      min: 50
+      max: 100
+      points: 0
+    4:
+      min: 100
+      max: 110
+      points: 1
+    5:
+      min: 110
+      max: 129
+      points: 5
+    6:
+      min: 120
+      max: 140
+      points: 7
+    7:
+      min: 140
+      max: 155
+      points: 13
+    8:
+     min: 155
+     max: null
+     points: 17
+  map:
+    1:
+      min: null
+      max: 40
+      points: 23
+    2:
+      min: 40
+      max: 60
+      points: 15
+    3:
+      min: 60
+      max: 70
+      points: 7
+    4:
+      min: 70
+      max: 80
+      points: 6
+    5:
+      min: 80
+      max: 100
+      points: 0
+    6:
+      min: 100
+      max: 120
+      points: 4
+    7:
+      min: 120
+      max: 130
+      points: 7
+    8:
+      min: 130
+      max: 140
+      points: 9
+    9:
+      min: 140
+      max: null
+      points: 10
+  temperature:
+    1:
+      min: null
+      max: 33
+      points: 20
+    2:
+      min: 33
+      max: 33.5
+      points: 16
+    3:
+      min: 33.5
+      max: 34
+      points: 13
+    4:
+      min: 34
+      max: 35
+      points: 8
+    5:
+      min: 35
+      max: 36
+      points: 2
+    6:
+      min: 36
+      max: 40
+      points: 0
+    7:
+      min: 40
+      max: null
+      points: 4
+  respiratory_rate:
+    without_ventilation:
+      1:
+        min: null
+        max: 6
+        points: 17
+      2:
+        min: 6
+        max: 12
+        points: 8
+      3:
+        min: 12
+        max: 14
+        points: 7
+      4:
+        min: 14
+        max: 25
+        points: 0
+      5:
+        min: 25
+        max: 35
+        points: 6
+      6:
+        min: 35
+        max: 40
+        points: 9
+      7:
+        min: 40
+        max: 50
+        points: 11
+      8:
+        min: 50
+        max: null
+        points: 18
+    with_ventilation:
+      1:
+        min: null
+        max: 6
+        points: 17
+      2:
+        min: 6
+        max: 12
+        points: 0
+      3:
+        min: 12
+        max: 14
+        points: 7
+      4:
+        min: 14
+        max: 25
+        points: 0
+      5:
+        min: 25
+        max: 35
+        points: 6
+      6:
+        min: 35
+        max: 40
+        points: 9
+      7:
+        min: 40
+        max: 50
+        points: 11
+      8:
+        min: 50
+        max: null
+        points: 18
+  oxygenation:
+    aado2:
+      1:
+        min: null
+        max: 100
+        points: 0
+      2:
+        min: 100
+        max: 250
+        points: 7
+      3:
+        min: 250
+        max: 350
+        points: 9
+      4:
+        min: 350
+        max: 500
+        points: 11
+      5:
+        min: 500
+        max: null
+        points: 14
+    pao2:
+      1:
+        min: null
+        max: 50
+        points: 15
+      2:
+        min: 50
+        max: 69
+        points: 5
+      3:
+        min: 69
+        max: 79
+        points: 2
+      4:
+        min: 79
+        max: null
+        points: 0
+  hematocrit:
+    1:
+      min: null
+      max: 41
+      points: 3
+    2:
+      min: 41
+      max: 50
+      points: 0
+    3:
+      min: 50
+      max: null
+      points: 3
+  wbc:
+    1:
+      min: null
+      max: 1.0
+      points: 19
+    2:
+      min: 1.0
+      max: 3.0
+      points: 5
+    3:
+      min: 3.0
+      max: 20
+      points: 0
+    4:
+      min: 20
+      max: 25
+      points: 1
+    5:
+      min: 25
+      max: null
+      points: 5
+  creatinine:
+    without_arf:
+      1:
+        min: null
+        max: 0.5
+        points: 3
+      2:
+        min: 0.5
+        max: 1.5
+        points: 0
+      3:
+        min: 1.5
+        max: 1.95
+        points: 4
+      4:
+        min: 1.95
+        max: null
+        points: 7
+    with_arf:
+      1:
+        min: null
+        max: 1.5
+        points: 0
+      2:
+        min: 1.5
+        max: null
+        points: 10
+  urine_output:
+    1:
+      min: null
+      max: 400
+      points: 15
+    2:
+      min: 400
+      max: 600
+      points: 8
+    3:
+      min: 600
+      max: 900
+      points: 7
+    4:
+      min: 900
+      max: 1500
+      points: 5
+    5:
+      min: 1500
+      max: 2000
+      points: 4
+    6:
+      min: 2000
+      max: 4000
+      points: 0
+    7:
+      min: 4000
+      max: null
+      points: 1
+  urea:
+    1:
+      min: null
+      max: 17
+      points: 0
+    2:
+      min: 17
+      max: 20
+      points: 2
+    3:
+      min: 20
+      max: 40
+      points: 7
+    4:
+      min: 40
+      max: 80
+      points: 11
+    5:
+      min: 80
+      max: null
+      points: 12
+  sodium:
+    1:
+      min: null 
+      max: 120
+      points: 3
+    2:
+      min: 120
+      max: 135
+      points: 2
+    3:
+      min: 135
+      max: 155
+      points: 0
+    4:
+      min: 155
+      max: null
+      points: 4
+  albumin:
+    1:
+      min: null
+      max: 2.0
+      points: 11
+    2:
+      min: 2.0
+      max: 2.5
+      points: 6
+    3:
+      min: 2.5
+      max: 4.5
+      points: 0
+    4:
+      min: 4.5
+      max: null
+      points: 4
+  bilirubin:
+    1:
+      min: null
+      max: 2.0
+      points: 0
+    2:
+      min: 2.0
+      max: 3.0
+      points: 5
+    3:
+      min: 3.0
+      max: 5.0
+      points: 6
+    4:
+      min: 5.0
+      max: 8.0
+      points: 8
+    5:
+      min: 8.0
+      max: null
+      points: 16
+  glucose:
+    1:
+      min: null
+      max: 40
+      points: 8
+    2:
+      min: 40
+      max: 60
+      points: 9
+    3:
+      min: 60
+      max: 200
+      points: 0
+    4:
+      min: 200
+      max: 350
+      points: 3
+    5:
+      min: 350
+      max: null
+      points: 5
+  acid_base:
+    1:
+      ph:
+        min: null
+        max: 7.2
+      paco2:
+        min: null
+        max: 50
+      points: 12
+    2:
+      ph:
+        min: null
+        max: 7.2
+      paco2:
+        min: 50
+        max: null
+      points: 4
+    3:
+      ph:
+        min: 7.2
+        max: 7.35
+      paco2:
+        min: null
+        max: 30
+      points: 9
+    4:
+      ph: 
+        min: 7.2
+        max: 7.3
+      paco2:
+        min: 30
+        max: 40
+      points: 6
+    5:
+      ph:
+        min: 7.2
+        max: 7.3
+      paco2:
+        min: 40
+        max: 50
+      points: 3
+    6:
+      ph:
+        min: 7.2
+        max: 7.3
+      paco2:
+        min: 50
+        max: null
+      points: 2
+    7:
+      ph:
+        min: 7.35
+        max: 7.5
+      paco2:
+        min: null
+        max: 30
+      points: 5
+    8:
+      ph:
+        min: 7.3
+        max: 7.45
+      paco2:
+        min: 30
+        max: 45
+      points: 0
+    9:
+      ph:
+        min: 7.3
+        max: 7.45
+      paco2:
+        min: 45
+        max: null
+      points: 1
+    10:
+      ph:
+        min: 7.45
+        max: 7.5
+      paco2:
+        min: 30
+        max: 35
+      points: 0
+    11:
+      ph:
+        min: 7.45
+        max: 7.5
+      paco2:
+        min: 35
+        max: 45
+      points: 2
+    12:
+      ph:
+        min: 7.6
+        max: null
+      paco2:
+        min: null
+        max: 25
+      points: 0
+    13:
+      ph:
+        min: 7.5
+        max: 7.6
+      paco2:
+        min: null
+        max: 25
+      points: 3
+    14:
+      ph:
+        min: 7.5
+        max: null
+      paco2:
+        min: 25
+        max: 40
+      points: 3
+    15:
+      ph:
+        min: 7.45
+        max: null
+      paco2:
+        min: 45
+        max: null
+      points: 12
+    16:
+      ph:
+        min: 7.5
+        max: null
+      paco2:
+        min: 40
+        max: null
+      points: 12 
+  neurological:
+    eye_score:
+      1:
+        motor_score:
+          6:
+            verbal_score:
+              1:
+                points: 16
+          5:
+            verbal_score:
+              1:
+                points: 16
+          4:
+            verbal_score:
+              3:
+                points: 24
+              2:
+                points: 24
+              1:
+                points: 33
+          3:
+            verbal_score:
+              3:
+                points: 24
+              2:
+                points: 24
+              1:
+                points: 33
+          2:
+            verbal_score:
+              3:
+                points: 29
+              2:
+                points: 29
+              1:
+                points: 48
+          1:
+            verbal_score:
+              3:
+                points: 29
+              2:
+                points: 29
+              1:
+                points: 48
+      2:
+        motor_score:
+          6:
+            verbal_score: 
+              5:
+                points: 0
+              4:
+                points: 3
+              3:
+                points: 10
+              2:
+                points: 10
+              1:
+                points: 15
+          5:
+            verbal_score:
+              5:
+                points: 3
+              4:
+                points: 8
+              3:
+                points: 13
+              2:
+                points: 13
+              1:
+                points: 15
+          4:
+            verbal_score:
+              5:
+                points: 3
+              4:
+                points: 13
+              3:
+                points: 24
+              2:
+                points: 24
+              1:
+                points: 24
+          3:
+            verbal_score:
+              5:
+                points: 3
+              4:
+                points: 13
+              3:
+                points: 24
+              2:
+                points: 24
+              1:
+                points: 24
+          2:
+            verbal_score:
+              5:
+                points: 3
+              4:
+                points: 13
+              3:
+                points: 29
+              2:
+                points: 29
+              1:
+                points: 29
+          1:
+            verbal_score:
+              5:
+                points: 3
+              4:
+                points: 13
+              3:
+                points: 29
+              2:
+                points: 29
+              1:
+                points: 29
+
+disease_mapping:
+  Cardiovascular:
+    Non-Operative:
+      - AMI_ANT: Infarction, acute myocardial (MI), ANTERIOR
+      - AMI_INFLAT: Infarction, acute myocardial (MI), INFEROLATERAL
+      - AMI_NONQ: Infarction, acute myocardial (MI), NON Q Wave
+      - AMI_OTHER: Infarction, acute myocardial (MI), none of the above - DOES NOT GET A COEFFICIENT = 1
+      - CVOTH: Anaphylaxis
+      - MEDAORT: Aneurysm, dissecting aortic
+      - PERIART: Aneurysm/pseudoaneurysm, other
+      - CHESTPAIN: Angina, stable (asymp or stable pattern of symptoms w/meds)
+      - USTAANG: Angina, unstable (angina interferes w/quality of life or meds are tolerated poorly)
+      - CARDARR: Cardiac arrest (with or without respiratory arrest; for respiratory arrest see Respiratory System)
+      - CARDIOMY: Cardiomyopathy
+      - CVOTH: Cardiovascular medical, other
+      - CHESTPAIN: Chest pain, atypical (noncardiac chest pain)
+      - CHESTPAIN: Chest pain, epigastric
+      - CHESTPAIN: Chest pain, musculoskeletal
+      - CHESTPAIN: Chest pain, respiratory
+      - CHESTPAIN: Chest pain, unknown origin
+      - CHFD: CHF, congestive heart failure
+      - CVOTH: Complications of previous open heart
+      - MULTRAUM: Contusion, myocardial (include R/O)
+      - CVOTH: Effusion, pericardial
+      - CVOTH: Endocarditis
+      - CVOTH: Hematomas
+      - HEMORRHAE: Hemorrhage (for gastrointestinal bleeding GI-see GI system) (for trauma see Trauma)
+      - HYPERT: Hypertension, uncontrolled (for cerebrovascular
+      - HYPOVOLEM: Hypovolemia (including dehydration. Do NOT include shock states.)
+      - CVOTH: MI admitted > 24hrs after onset of ischemia
+      - CVOTH: Monitoring, hemodynamic (pre-operative evaluation)
+      - CARDIOG: Papillary muscle rupture
+      - CVOTH: Pericarditis
+      - RHYTHM: Rhythm disturbance (atrial, supraventricular)
+      - RHYTHM: Rhythm disturbance (conduction defect)
+      - RHYTHM: Rhythm disturbance (ventricular)
+      - SEPSISCUT: Sepsis, cutaneous/soft tissue
+      - SEPSISGI: Sepsis, GI
+      - SEPTICUT: Sepsis, gynecologic
+      - SEPSISOTH: Sepsis, other
+      - SEPSISPULM: Sepsis, pulmonary
+      - SEPTICUT: Sepsis, renal/UTI (including bladder)
+      - SEPSISUNK: Sepsis, unknown
+      - CARDIOG: Shock, cardiogenic
+      - CVOTH: Tamponade, pericardial
+      - CVOTH: Thrombosis, vascular (deep vein)
+      - PERIART: Thrombus, arterial
+      - DRUGTOXIC: Toxicity, drug (i.e., beta blockers, calcium channel blockers, etc.)
+      - CVOTH: Vascular medical, other
+    Post-Operative:
+      - SCARDOTH: Ablation or mapping of cardiac conduction pathway
+      - SCARDOTH: Aneurysm repair, ventricular
+      - SELAORT: Aneurysm, abdominal aortic
+      - SAORTDIS: Aneurysm, abdominal aortic; with dissection
+      - SRUPAOR: Aneurysm, abdominal aortic; with rupture
+      - SELAORT: Aneurysm, thoracic aortic
+      - SAORTDIS: Aneurysm, thoracic aortic; with dissection
+      - SRUPAOR: Aneurysm, thoracic aortic; with rupture
+      - SCARDOTH: Aneurysms, repair of other (except ventricular)
+      - SVALVE: Aortic and Mitral valve replacement
+      - SVALVE: Aortic valve replacement (isolated)
+      - SCARDOTH: Atrial Septal Defect (ASD) Repair
+      - SVHDCABG: CABG redo with valve repair/replacement
+      - SCABGVALV: CABG with aortic valve replacement
+      - SVHDCABG: CABG with double valve repair/replacement
+      - SCABGVALV: CABG with mitral valve repair
+      - SCABGVALV: CABG with mitral valve replacement
+      - SCABGVALV: CABG with pulmonic or tricuspid valve repair or replacement.
+      - SCARDOTH: CABG, Minimally invasive; Mid-CABG
+      - SCARDOTH: Cardiovascular surgery, other
+      - SCARDOTH: Complications of prev. peripheral vasc. surgery, surgery for (i.e.ligation of bleeder, exploration and evacuation of hematoma, debridement, pseudoaneurysms, clots, fistula, etc.)
+      - SCARDOTH: Complications of previous open-heart surgery, surgery for (i.e. bleeding, infection, mediastinal rewiring, leaking aortic graft etc.)
+      - SCARDOTH: Congenital Defect Repair (Other)
+      - SCARDOTH: Defibrillator, automatic implantable cardiac; insertion of
+      - SPERISC: Dilatation (with general anesthesia)
+      - SPERISC: Dilatation (without general anesthesia)
+      - SPERISC: Embolectomy (with general anesthesia)
+      - SPERISC: Embolectomy (without general anesthesia)
+      - SCARDOTH: Endarterectomy (other vessels)
+      - SCAROTID: Endarterectomy, carotid
+      - SCARDOTH: Graft for dialysis, insertion of
+      - SAGRAFT: Graft, aorto-femoral bypass
+      - SAGRAFT: Graft, aorto-iliac bypass
+      - SCARDOTH: Graft, femoral-femoral bypass
+      - SFEMPGRAF: Graft, femoral-popliteal bypass
+      - SPERISC: Grafts, all other bypass (except renal)
+      - SPERISC: Grafts, all renal bypass
+      - SCARDOTH: Grafts, removal of infected vascular
+      - SVALVE: Mitral valve repair
+      - SVALVE: Mitral valve replacement
+      - SCARDOTH: Pericardial effusion/tamponade
+      - SCARDOTH: Pericardiectomy (total/subtotal)
+      - SVALVE: Pulmonary valve surgery
+      - SPERISC: Thrombectomy (with general anesthesia)
+      - SPERISC: Thrombectomy (without general anesthesia)
+      - SVALVE: Tricuspid valve surgery
+      - SCARDOTH: Tumor removal, intracardiac
+      - SCARDOTH: Vascular surgery, other
+      - SCARDOTH: Vena cava clipping
+      - SCARDOTH: Vena cava filter insertion
+      - SCARDOTH: Ventricular Septal Defect (VSD) Repair
+  Genitourinary:
+    Non-Operative:
+      - RENOTH: Genitourinary medical, other
+      - CVOTH: Hemorrhage, postpartum (female only)
+      - HEPATF: Hepato-renal syndrome
+      - HYPERT: Pre-eclampsia/eclampsia (female only)
+      - RENOTH: Renal bleeding
+      - RENOTH: Renal failure, acute
+      - RENOTH: Renal infection/abscess
+      - RENOTH: Renal neoplasm, cancer
+      - RENOTH: Renal obstruction
+    Post-Operative:
+      - SRENOTH: Bladder repair for perforation/rupture
+      - GENOTH: Cesarean section
+      - GENOTH: Cyst, ruptured ovarian
+      - SRENOTH: Cystectomy (other reasons)
+      - SRENCA: Cystectomy for neoplasm
+      - GENOTH: Ectopic pregnancy (all)
+      - GENOTH: Exenteration, pelvic -male
+      - GENOTH: Exenteration, pelvic-female
+      - GENOTH: Genitourinary surgery, other
+      - SOBHYST: Hysterectomy for cancer with or without lymph node dissection
+      - SOBHYST: Hysterectomy for other benign neoplasm/fibroids
+      - GENOTH: Lymph node dissection, pelvic or retroperitoneal(female)
+      - GENOTH: Lymph node dissection, pelvic or retroperitoneal(male)
+      - GENOTH: Mastectomy (all)
+      - SRENOTH: Nephrectomy (other reasons)
+      - SRENCA: Nephrectomy for neoplasm
+      - SRENCA: Obstruction due to neoplasm, surgery for (with or without ileal-conduit)
+      - SRENOTH: Obstruction due to nephrolithiasis, surgery for (with or without ileal-conduit)
+      - SRENOTH: Obstruction/other, surgery for (with or without ileal-conduit)
+      - GENOTH: Oophorectomy with/without salpingectomy with/without lymph node dissection
+      - SRENOTH: Orchiectomy with/without pelvic lymph node dissection
+      - GENOTH: Pelvic relaxation (cystocele, rectocele, etc.)
+      - SRENOTH: Prostatectomy, suprapubic; for benign prostatic hypertrophy
+      - SRENCA: Prostatectomy, suprapubic; for cancer
+      - SRENOTH: TURP, transurethral prostate resection for benign prostatic hypertrophy
+      - SRENCA: TURP, transurethral prostate resection for cancer
+  Gastrointestinal (GI):
+    Non-Operative:
+      - OD: Alcohol withdrawal
+      - GIBLVAR: Bleeding, GI from esophageal varices/portal hypertension
+      - GIBLEED: Bleeding, GI-location unknown
+      - GIBLEUL: Bleeding, lower GI
+      - GIBLEED: Bleeding, upper GI
+      - GINEOP: Cancer, colon/rectal
+      - GINEOP: Cancer, esophageal
+      - GINEOP: Cancer, other GI
+      - GINEOP: Cancer, pancreatic
+      - GINEOP: Cancer, stomach
+      - GIINFLA: Cholangitis
+      - GIINFLA: Diverticular disease
+      - HEPATF: Encephalopathy, hepatic
+      - GIINFLA: GI Abscess/cyst
+      - GIOTHER: GI medical, other
+      - GIOBSTR: GI Obstruction
+      - GIPERF: GI Perforation/rupture
+      - GIVASC: GI Vascular insufficiency
+      - PERITOHEM: Hemorrhage, intra/retroperitoneal
+      - HEPATF: Hepatic failure, acute
+      - GIINFLA: Inflammatory bowel disease
+      - PANCRE: Pancreatitis
+      - GIINFLA: Peritonitis
+      - GIOTHER: Ulcer disease, peptic
+    Post-Operative:
+      - SGIOTH: Appendectomy
+      - SGIBLEE: Bleeding-lower GI, surgery for
+      - SGIBLEE: Bleeding-other GI, surgery for
+      - SGIBLEE: Bleeding-upper GI, surgery for
+      - SGIBLEE: Bleeding-variceal, surgery for (excluding vascular shunting-see surgery for portosystemic shunt)
+      - SGICA: Cancer-colon/rectal, surgery for (including abdominoperineal resections)
+      - SGICA: Cancer-esophageal, surgery for (abdominal approach)
+      - SGICA: Cancer-other GI tract, surgery for (i.e. hepatoma, gallbladder etc.)
+      - SGICA: Cancer-small intestinal, surgery for
+      - SGICA: Cancer-stomach, surgery for
+      - SGIOTH: CAPD catheter insertion
+      - SGICHOL: Cholecystectomy/cholangitis, surgery for (gallbladder removal)
+      - SGIOTH: Complications of previous GI surgery; surgery for (anastomotic leak, bleeding, abscess, infection, dehiscence, etc.)
+      - SGIINFL: Diverticular disease, surgery for
+      - SGIOTH: Esophageal surgery, other
+      - SGIABCES: Fistula/abscess, surgery for (not inflammatory bowel disease)
+      - SGIOTH: Gastrostomy
+      - SGIABCES: GI Abscess/cyst-primary, surgery for (for complications of GI surgery see below)
+      - SGIOBS: GI Obstruction, surgery for (including lysis of adhesions)
+      - SGIPERF: GI Perforation/rupture, surgery for
+      - SGIOTH: GI surgery, other
+      - SGIVASC: GI Vascular ischemia, surgery for (resection)
+      - SGIOTH: Hernia-hiatal, esophageal surgery for
+      - SGIOTH: Herniorrhaphy
+      - SGIINFL: Inflammatory bowel disease, surgery for
+      - SGIOTH: Obesity-morbid, surgery for
+      - SGIOTH: Pancreatitis, surgery for
+      - SGIOTH: Peritoneal lavage
+      - SGIPERF: Peritonitis, surgery for
+      - SGIOTH: Shunt, peritoneal-venous; surgery for
+      - SGIOTH: Shunt-portosystemic, surgery for
+      - SGIOTH: Splenectomy
+      - SGICA: Whipple-surgery for pancreatic cancer
+  Hematology (HEMATO):
+    Non-Operative:
+      - HEMAMISC: Anemia
+      - HEMAMISC: Blood transfusion reaction
+      - COAGTHRO: Coagulopathy
+      - HEMAMISC: Hematologic medical, other
+      - HEMAMISC: Leukemia, acute lymphocytic
+      - HEMAMISC: Leukemia, acute myelocytic
+      - HEMAMISC: Leukemia, chronic lymphocytic
+      - HEMAMISC: Leukemia, chronic myelocytic
+      - HEMAMISC: Leukemia, other
+      - HEMAMISC: Lymphoma, Hodgkins
+      - HEMAMISC: Lymphoma, non-Hodgkins
+      - COAGTHRO: Neutropenia
+      - COAGTHRO: Pancytopenia
+      - HEMAMISC: Sickle cell crisis
+      - COAGTHRO: Thrombocytopenia
+    Post-Operative:
+      - HEMAMISC: Hematologic surgery, other
+      - HEMAMISC: Lymphoma Hodgkins, surgery for (including staging)
+      - HEMAMISC: Lymphoma, non-Hodgkins; surgery for (including staging)
+  Metabolic/Endocrine (METAB/ENDO):
+    Non-Operative:
+      - ACIDBASE: Acid-base electrolyte disturbance
+      - METAMISC: Addisons disease
+      - GIOTHER: Adrenal neoplasm (including pheochromocytoma)
+      - COMAMETU: Diabetic hyperglycemic hyperosmolar nonketotic coma (HHNC)
+      - DIABETIC: Diabetic ketoacidosis
+      - METAMISC: Heat exhaustion/stroke
+      - METAMISC: Hyperthermia
+      - METAMISC: Hyperthyroid storm/crisis
+      - METAMISC: Hypoglycemia
+      - METAMISC: Hypothermia
+      - METAMISC: Hypothyroid/myxedema
+      - METAMISC: Metabolic/endocrine medical, other
+      - METAMISC: Thyroid neoplasm
+    Post-Operative:
+      - HEMAMISC: Adrenalectomy
+      - HEMAMISC: Metabolic/endocrine surgery, other
+      - HEMAMISC: Parathyroidectomy
+      - HEMAMISC: Thyroidectomy and parathyroidectomy
+      - HEMAMISC: Thyroidectomy
+  Musculoskeletal/Skin (MUSKELSKIN):
+    Non-Operative:
+      - GENOTH: Arthritis, rheumatoid
+      - GENOTH: Arthritis, septic
+      - PERIART: Cellulitis and localized soft tissue infections
+      - GENOTH: Connective tissue disease (mixed)
+      - GENOTH: Lupus, systemic
+      - GENOTH: Musculoskeletal medical, other
+      - GENOTH: Myositis, viral
+      - GENOTH: Rhabdomyolysis
+      - GENOTH: Scleroderma
+      - GENOTH: Vasculitis
+    Post-Operative:
+      - SAMPUTATE: Amputation (non-traumatic)
+      - SPERISC: Cellulitis and localized soft tissue infections, surgery for
+      - GENOTH: Cosmetic surgery (all)
+      - GENOTH: Fracture-pathological, non-union, non-traumatic, for fractures due to trauma see Trauma
+      - GENOTH: Grafting, skin (all)
+      - GENOTH: Hip replacement, total (non-traumatic)
+      - GENOTH: Knee replacement, total (non-traumatic)
+      - GENOTH: Orthopedic surgery, other
+      - GENOTH: Skin surgery, other
+  Neurologic (NEUROLOGIC):
+    Non-Operative:
+      - NEURINF: Abscess, neurologic
+      - NEURMUS: Amyotrophic lateral sclerosis
+      - COMAMETU: Coma/change in level of consciousness (for hepatic see GI, for diabetic see Endocrine, if related to cardiac arrest, see CV)
+      - STROKE: CVA, cerebrovascular accident/stroke
+      - OD: Drug withdrawal
+      - NEURINF: Encephalitis
+      - COMAMETU: Encephalopathies (excluding hepatic)
+      - NEURMUS: Guillian-Barre syndrome
+      - SAHMED: Hematoma, epidural
+      - SAHMED: Hematoma, subdural
+      - ICHMED: Hemorrhage/hematoma, intracranial
+      - NEUROTH: Hydrocephalus, obstructive
+      - NEURINF: Meningitis
+      - NEURMUS: Myasthenia gravis
+      - NEONEUR: Neoplasm, neurologic
+      - NEUROTH: Neurologic medical, other
+      - NEURMUS: Neuromuscular medical, other
+      - CARDARR: Nontraumatic coma due to anoxia/ischemia
+      - OD: Overdose, alcohols (bethanol, methanol, ethylene glycol)
+      - OD: Overdose, analgesic (aspirin, acetaminophen)
+      - OD: Overdose, antidepressants (cyclic, lithium)
+      - OD: Overdose, other toxin, poison or drug
+      - OD: Overdose, sedatives, hypnotics, antipsychotics, benzodiazepines
+      - OD: Overdose, street drugs (opiates, cocaine, amphetamine)
+      - CARDARR: Poisoning, carbon monoxide, arsenic, cyanide
+      - SEIZ: Seizures (primary-no structural brain disease)
+      - SAHICH: Subarachnoid hemorrhage/arteriovenous malformation
+      - SAHICH: Subarachnoid hemorrhage/intracranial aneurysm
+    Post-Operative:
+      - SNEUROTH: Abscess/infection-cranial, surgery for
+      - SNEUROTH: Anastomosis, vascular
+      - SNEUROTH: Arteriovenous malformation, surgery for
+      - SNEUROTH: Biopsy, brain
+      - SNEUROTH: Burr hole placement
+      - SNEUROTH: Cerebrospinal fluid leak, surgery for
+      - SLAMINE: Complications of previous spinal cord surgery, surgery for
+      - SNEUROTH: Cranial nerve, decompression/ligation
+      - SNEUROTH: Cranioplasty and complications from previous craniotomies
+      - SLAMINE: Devices for spine fracture/dislocation
+      - SLAMINE: Fusion-spinal/Harrington rods
+      - SSDH: Hematoma, epidural, surgery for
+      - SSDH: Hematoma, subdural, surgery for
+      - SICH: Hemorrhage/hematoma-intracranial, surgery for
+      - SLAMINE: Laminectomy/spinal cord decompression (excluding malignancies)
+      - SCRANNEO: Neoplasm-cranial, surgery for (excluding transphenoidal)
+      - SLAMINE: Neoplasm-spinal cord surgery or other related procedures
+      - SNEUROTH: Neurologic surgery, other
+      - SNEUROTH: Seizures-intractable, surgery for
+      - SNEUROTH: Shunts and revisions
+      - SLAMINE: Spinal cord surgery, other
+      - SNEUROTH: Stereotactic procedure
+      - SSAH: Subarachnoid hemorrhage/intracranial aneurysm, surgery for
+      - SLAMINE: Sympathectomy
+      - SCRANNEO: Transphenoidal surgery
+      - SNEUROTH: Ventriculostomy
+  Respiratory (RESPIRAT):
+    Non-Operative:
+      - RESPOTH: Apnea, sleep
+      - PULEDEM: ARDS-adult respiratory distress syndrome, non-cardiogenic pulmonary edema
+      - RESPARR: Arrest, respiratory (without cardiac arrest)
+      - ALLERGY: Asthma
+      - RESPOTH: Atelectasis
+      - RESPCA: Cancer, laryngeal
+      - RESPCA: Cancer, lung
+      - RESPCA: Cancer, oral
+      - RESPCA: Cancer, tracheal
+      - PLEUREFFUS: Effusions, pleural
+      - PULEMB: Embolus, pulmonary
+      - COPD: Emphysema/bronchitis
+      - RESPOTH: Hemorrhage/hemoptysis, pulmonary
+      - RESPOTH: Hemothorax
+      - RESPOTH: Hypertension-pulmonary, primary/idiopathic
+      - RESPOTH: Near drowning accident
+      - AIROBS: Obstruction-airway (i.e. acute epiglottitis, post-extubation edema, foreign body, etc.)
+      - ASPPNEU: Pneumonia, aspiration
+      - BACPNEU: Pneumonia, bacterial
+      - PARAPNEU: Pneumonia, fungal
+      - BACPNEU: Pneumonia, other
+      - PARAPNEU: Pneumonia, parasitic (i.e. Pneumocystis pneumonia)
+      - BACVPNEU: Pneumonia, viral
+      - RESPOTH: Pneumothorax
+      - RESPOTH: Respiratory-medical, other
+      - RESLUNGDIS: Restrictive lung disease (i.e. sarcoidosis, pulmonary fibrosis)
+      - RESPOTH: Smoke inhalation
+      - RESPOTH: Weaning from mechanical ventilation (transfer from other unit or hospital only)
+    Post-Operative:
+      - SRESOTH: Apnea-sleep; surgery for (i.e. UPPP -uvulopalatopharyngoplasty)
+      - SLUNG: Biopsy, open lung
+      - SRESOTH: Bullectomy
+      - SRESPLAR: Cancer oral/sinus, surgery for
+      - SRESPLAR: Cancer-laryngeal/tracheal, surgery for
+      - SRESOTH: Facial surgery (if related to trauma, see Trauma)
+      - SRESPINF: Infection/abscess, other surgery for
+      - SRESOTH: Respiratory surgery, other
+      - SRESPCA: Thoracotomy for benign tumor (i.e. mediastinal chest wall mass, thymectomy)
+      - SRESOTH: Thoracotomy for bronchopleural fistula
+      - SGICA: Thoracotomy for esophageal cancer
+      - SRESPCA: Thoracotomy for lung cancer
+      - SRESOTH: Thoracotomy for lung reduction
+      - SRESPCA: Thoracotomy for other malignancy in chest
+      - SRESOTH: Thoracotomy for other reasons
+      - SLUNG: Thoracotomy for pleural disease
+      - SRESPINF: Thoracotomy for thoracic/respiratory infection
+      - SRESOTH: Tracheostomy
+  Transplant (TRANSPLANT):
+    Non-Operative:
+      - RENOTH: Kidney transplant
+      - HEPATF: Liver transplant
+      - NON-PREDICTIVE: ALL OTHER NON-OPERATIVE TRANSPLANTS
+    Post-Operative:
+      - SRENTRAN: Kidney transplant
+      - SLIVERTR: Liver transplant
+      - NON-PREDICTIVE: ALL OTHER POST-OPERATIVE TRANSPLANTS
+  Trauma (TRAUMA):
+    Non-Operative:
+      - MULTRAUM: Abdomen only trauma
+      - MULTRAUM: Abdomen/extremity trauma
+      - MULTRAUM: Abdomen/face trauma
+      - MULTRAUM: Abdomen/multiple trauma
+      - MULTRAUM: Abdomen/pelvis trauma
+      - MULTRAUM: Abdomen/spinal trauma
+      - MULTRAUM: Chest/abdomen trauma
+      - MULTRAUM: Chest/extremity trauma
+      - MULTRAUM: Chest/face trauma
+      - TRAUMCHSP: Chest/multiple trauma
+      - MULTRAUM: Chest/pelvis trauma
+      - TRAUMCHSP: Chest/spinal trauma
+      - MULTRAUM: Chest/thorax only trauma
+      - MULTRAUM: Extremity only trauma
+      - MULTRAUM: Extremity/face trauma
+      - MULTRAUM: Extremity/multiple trauma
+      - MULTRAUM: Face only trauma
+      - MULTRAUM: Face/multiple trauma
+      - TRHEADONLY: Head (CNS) only trauma
+      - HEADTR: Head/abdomen trauma
+      - HEADTR: Head/chest trauma
+      - TRHEADEXF: Head/extremity trauma
+      - TRHEADEXF: Head/face trauma
+      - TRHEADMULT: Head/multiple trauma
+      - HEADTR: Head/pelvis trauma
+      - HEADTR: Head/spinal trauma
+      - MULTRAUM: Pelvis/extremity trauma
+      - MULTRAUM: Pelvis/face trauma
+      - MULTRAUM: Pelvis/hip only trauma
+      - MULTRAUM: Pelvis/multiple trauma
+      - MULTRAUM: Pelvis/spinal trauma
+      - TRAUMSPINE: Spinal cord only trauma
+      - MULTRAUM: Spinal/extremity trauma
+      - MULTRAUM: Spinal/face trauma
+      - MULTRAUM: Spinal/multiple trauma
+      - MULTRAUM: Trauma medical, other
+    Post-Operative:
+      - SMULTR: Abdomen only trauma, surgery for
+      - SMULTR: Abdomen/extremity trauma, surgery for
+      - SMULTR: Abdomen/face trauma, surgery for
+      - SMULTR: Abdomen/multiple trauma, surgery for
+      - SMULTR: Abdomen/pelvis trauma, surgery for
+      - SMULTR: Abdomen/spinal trauma, surgery for
+      - SMULTR: Chest/abdomen trauma, surgery for
+      - SMULTR: Chest/extremity trauma, surgery for
+      - SMULTR: Chest/face trauma, surgery for
+      - SMULTR: Chest/multiple trauma, surgery for
+      - SMULTR: Chest/pelvis trauma, surgery for
+      - SMULTR: Chest/spinal trauma, surgery for
+      - SMULTR: Chest/thorax only trauma, surgery for
+      - STRAUMEXT: Extremity only trauma, surgery for
+      - SMULTR: Extremity/face trauma, surgery for
+      - SMULTR: Extremity/multiple trauma, surgery for
+      - SMULTR: Face only trauma, surgery for
+      - SMULTR: Face/multiple trauma, surgery for
+      - STRHDONLY: Head (CNS) only trauma, surgery for
+      - SHEADTR: Head/abdomen trauma, surgery for
+      - SHEADTR: Head/chest trauma, surgery for
+      - SHEADTR: Head/extremity trauma, surgery for
+      - SHEADTR: Head/face trauma, surgery for
+      - SHEADTR: Head/multiple trauma, surgery for
+      - SHEADTR: Head/pelvis trauma, surgery for
+      - SHEADTR: Head/spinal trauma, surgery for
+      - SMULTR: Pelvis/extremity trauma, surgery for
+      - SMULTR: Pelvis/face trauma, surgery for
+      - SMULTR: Pelvis/hip only trauma, surgery for
+      - SMULTR: Pelvis/multiple trauma, surgery for
+      - SMULTR: Pelvis/spinal trauma, surgery for
+      - SMULTR: Spinal cord only trauma, surgery for
+      - SMULTR: Spinal/extremity trauma, surgery for
+      - SMULTR: Spinal/face trauma, surgery for
+      - SMULTR: Spinal/multiple trauma, surgery for
+      - SMULTR: Trauma surgery, other
+
+mort_coeff:
+  intercept: -5.950471952
+  age:
+    age: 
+      coeff: 0.024177455
+    age1:
+      coeff: -4.38862e-06
+      knot: 27
+    age2:
+      coeff: 5.01422e-05
+      knot: 51
+    age3:
+      coeff: -0.000127787
+      knot: 64
+    age4:
+      coeff: 0.000109606
+      knot: 74
+    age5:
+      coeff: -2.75723e-05
+      knot: 86
+  chronic_health:
+    none: 0
+    aids: 0.958100516
+    hepatic_failure: 1.037379925
+    lymphoma: 0.743471748
+    metastatic_cancer: 1.086423752
+    leukemia: 0.969308299
+    immunosuppression: 0.435581083
+    cirrhosis: 0.814665088
+  aps:
+    aps:
+      coeff: 0.055634916
+    aps1:
+      coeff: 8.71852e-06
+      knot: 10
+    aps2:
+      coeff: -4.51101e-05
+      knot: 22
+    aps3:
+      coeff: 5.038e-05
+      knot: 32
+    aps4:
+      coeff: -1.31231e-05
+      knot: 48
+    aps5:
+      coeff: -8.65349e-07
+      knot: 89
+  pf_ratio: -0.000397068
+  ventilated: 0.271760036
+  admission_origin:
+    floor: 0.017149193
+    transfer: 0.022106266
+    or_pacu: -0.583828121
+  emergency_surgery: 0.249073458
+  preicu_los:
+    square_root_of_days:
+      coeff: -0.310487496
+    prelos21:
+      coeff: 1.474672511
+      knot: 0.121
+    prelos22:
+      coeff: -2.8618857
+      knot: 0.423
+    prelos23:
+      coeff: 1.42165901
+      knot: 0.794
+    prelos24:
+      coeff: -0.034445822
+      knot: 2.806
+  admission_diagnosis:
+    ACIDBASE: -0.640575517
+    AIROBS: -0.977669154
+    ALLERGY: -1.540678498
+    AMI_ANT: 0.102949765
+    AMI_INFRLATR: -0.152525079
+    AMI_NONQ: -0.270872458
+    ASPPNEU: -0.37223658
+    BACPNEU: -0.043365914
+    BACVPNEU: 0.254374904
+    CARDARR: 0.416919141
+    CARDIOG: 0.239711472
+    CARDIOMY: 0.059962444
+    CHESTPAIN: -1.122354572
+    CHFD: -0.422587793
+    COAGTHRO: 0.258172435
+    COMAMETU: -0.927156778
+    COPDD: -0.398697453
+    CVOTH: -0.369658509
+    DIABETIC: -1.775702142
+    DRUGTOXIC: -0.690943246
+    GENOTH: -0.667576408
+    GIBLEED: -0.551832894
+    GIBLEUL: -0.579471867
+    GIBLVAR: -0.527719358
+    GIINFLA: -0.211771894
+    GINEOP: 0.195130291
+    GIOBSTR: -0.369945003
+    GIOTHER: -0.252586643
+    GIPERF: -0.327171182
+    GIVASC: 0.714879336
+    HEADTR: -0.372350315
+    HEMAMISC: -0.342352862
+    HEMORRHAGE: -0.656757432
+    HEPATF: -0.119675791
+    HYPERT: -0.813921325
+    HYPOVOLEM: -0.622592285
+    ICHMED: 0.945056155
+    MEDAORT: 0.649149305
+    METAMISC: -0.986438209
+    MULTRAUM: -0.678110274
+    NEONEUR: 0.018952727
+    NEURINF: -0.535783229
+    NEURMUS: -0.550653067
+    NEUROTH: -0.176828697
+    OD: -1.55261952
+    PANCRE: -0.513627563
+    PARAPNEU: 1.056187347
+    PERIART: -0.502752032
+    PERITOHEM: -0.659544401
+    PLEUREFFUS: 0.189900524
+    PULEDEM: -0.2416873
+    PULEMB: -0.051527401
+    RENOTH: -0.54158014
+    RESLUNGDIS: 1.55529658
+    RESPARR: -0.390631425
+    RESPCA: 0.966313802
+    RESPOTH: -0.202823617
+    RHYTHM: -0.603060945
+    SAGRAFT: -0.831194514
+    SAHICH: 0.615950385
+    SAHMED: 0.295093901
+    SAMPUTATE: 0.604910303
+    SAORTDIS: -0.178456475
+    SCABGVALV: -1.199434806
+    SCARDOTH: -0.59044574
+    SCAROTID: -1.332642438
+    SCRANNEO: -0.437737676
+    SEIZ: -0.942170992
+    SELAORT: -0.760703396
+    SEPSISCUT: 0.126440315
+    SEPSISGI: -0.13010935
+    SEPSISOTH: -0.04233671
+    SEPSISPULM: -0.258766455
+    SEPSISUNK: -0.093377498
+    SEPTICUT: -0.732788506
+    SFEMPGRAF: -0.786571016
+    SGIABCES: -0.556661177
+    SGIBLEE: -0.329679773
+    SGICA: 0.136282662
+    SGICHOL: -0.593293673
+    SGIINFL: -0.165585527
+    SGIOBS: -0.189005132
+    SGIOTH: -0.295894316
+    SGIPERF: -0.189960264
+    SGIVASC: 0.498328014
+    SHEADTR: 0.357797735
+    SICH: 0.52671741
+    SLAMINE: -0.628609547
+    SLIVERTR: -1.370278559
+    SLUNG: 0.405738008
+    SMULTR: -0.377807998
+    SNEUROTH: 0.003996339
+    SOBHYST: -0.795847883
+    SPERISC: -0.504208244
+    SRENCA: -1.397212695
+    SRENOTH: -0.693574061
+    SRENTRAN: -1.308449407
+    SRESOTH: -0.249217228
+    SRESPCA: 0.086933576
+    SRESPINF: -0.005937516
+    SRESPLAR: -1.152870135
+    SRUPAOR: 0.204404736
+    SSAH: 0.318905704
+    SSDH: 0.715682622
+    STRAUMEXT: -0.180386981
+    STRHDONLY: 1.088819324
+    STROKE: 0.519453035
+    SVALVE: -1.371763972
+    SVHDCABG: -0.155141644
+    TRAUMCHSP: -0.717432122
+    TRAUMSPINE: 0.033769484
+    TRHEADEXF: -0.364128015
+    TRHEADMULT: -0.067960926
+    TRHEADONLY: 0.595869416
+    USTAANG: -1.212730735
+  thrombolytic_therapy: -0.579874039
+  unable_to_get_gcs: 0.785764316
+  adjusted_gcs: 0.039117532
+
+los_coeff:
+  intercept: 1.673887925
+  age:
+    age: 
+      coeff: 0.017603395
+    age1:
+      coeff: -7.68259e-06
+      knot: 27
+    age2:
+      coeff: 3.95667e-05
+      knot: 51
+    age3:
+      coeff: -0.000166793
+      knot: 64
+    age4:
+      coeff: 0.000228156
+      knot: 74
+    age5:
+      coeff: -9.32478E-05
+      knot: 86
+  chronic_health:
+    none: 0
+    aids: -0.10285942
+    hepatic_failure: -0.16012995
+    lymphoma: -0.28079854
+    metastatic_cancer: -0.491932974
+    leukemia: -0.803754341
+    immunosuppression: -0.07438064
+    cirrhosis: 0.362658613
+  aps:
+    aps:
+      coeff: 0.04442699
+    aps1:
+      coeff: -5.83049e-05
+      knot: 10
+    aps2:
+      coeff: 0.000297008
+      knot: 22
+    aps3:
+      coeff: -0.000404434
+      knot: 32
+    aps4:
+      coeff: 0.000189251
+      knot: 48
+    aps5:
+      coeff: -2.35199e-05
+      knot: 89
+  pf_ratio: -0.004581842
+  ventilated: 1.835309541
+  admission_origin:
+    floor: 0.006529382
+    transfer: 0.855505043
+    or_pacu: -0.599591763
+  readmission: 0.540368459
+  emergency_surgery: 1.040690632
+  preicu_los:
+    square_root_of_days:
+      coeff: 0.459823129
+    prelos21:
+      coeff: 0.397791937
+      knot: 0.121
+    prelos22:
+      coeff: -0.945210953
+      knot: 0.423
+    prelos23:
+      coeff: 0.588651266
+      knot: 0.794
+    prelos24:
+      coeff: -0.041232251
+      knot: 2.806
+  admission_diagnosis:
+    ACIDBASE: -0.640575517
+    AIROBS: -0.977669154
+    ALLERGY: -1.540678498
+    AMI_ANT: 0.102949765
+    AMI_INFRLATR: -0.152525079
+    AMI_NONQ: -0.270872458
+    ASPPNEU: -0.37223658
+    BACPNEU: -0.043365914
+    BACVPNEU: 0.254374904
+    CARDARR: 0.416919141
+    CARDIOG: 0.239711472
+    CARDIOMY: 0.059962444
+    CHESTPAIN: -1.122354572
+    CHFD: -0.422587793
+    COAGTHRO: 0.258172435
+    COMAMETU: -0.927156778
+    COPDD: -0.398697453
+    CVOTH: -0.369658509
+    DIABETIC: -1.775702142
+    DRUGTOXIC: -0.690943246
+    GENOTH: -0.667576408
+    GIBLEED: -0.551832894
+    GIBLEUL: -0.579471867
+    GIBLVAR: -0.527719358
+    GIINFLA: -0.211771894
+    GINEOP: 0.195130291
+    GIOBSTR: -0.369945003
+    GIOTHER: -0.252586643
+    GIPERF: -0.327171182
+    GIVASC: 0.714879336
+    HEADTR: -0.372350315
+    HEMAMISC: -0.342352862
+    HEMORRHAGE: -0.656757432
+    HEPATF: -0.119675791
+    HYPERT: -0.813921325
+    HYPOVOLEM: -0.622592285
+    ICHMED: 0.945056155
+    MEDAORT: 0.649149305
+    METAMISC: -0.986438209
+    MULTRAUM: -0.678110274
+    NEONEUR: 0.018952727
+    NEURINF: -0.535783229
+    NEURMUS: -0.550653067
+    NEUROTH: -0.176828697
+    OD: -1.55261952
+    PANCRE: -0.513627563
+    PARAPNEU: 1.056187347
+    PERIART: -0.502752032
+    PERITOHEM: -0.659544401
+    PLEUREFFUS: 0.189900524
+    PULEDEM: -0.2416873
+    PULEMB: -0.051527401
+    RENOTH: -0.54158014
+    RESLUNGDIS: 1.55529658
+    RESPARR: -0.390631425
+    RESPCA: 0.966313802
+    RESPOTH: -0.202823617
+    RHYTHM: -0.603060945
+    SAGRAFT: -0.831194514
+    SAHICH: 0.615950385
+    SAHMED: 0.295093901
+    SAMPUTATE: 0.604910303
+    SAORTDIS: -0.178456475
+    SCABGVALV: -1.199434806
+    SCARDOTH: -0.59044574
+    SCAROTID: -1.332642438
+    SCRANNEO: -0.437737676
+    SEIZ: -0.942170992
+    SELAORT: -0.760703396
+    SEPSISCUT: 0.126440315
+    SEPSISGI: -0.13010935
+    SEPSISOTH: -0.04233671
+    SEPSISPULM: -0.258766455
+    SEPSISUNK: -0.093377498
+    SEPTICUT: -0.732788506
+    SFEMPGRAF: -0.786571016
+    SGIABCES: -0.556661177
+    SGIBLEE: -0.329679773
+    SGICA: 0.136282662
+    SGICHOL: -0.593293673
+    SGIINFL: -0.165585527
+    SGIOBS: -0.189005132
+    SGIOTH: -0.295894316
+    SGIPERF: -0.189960264
+    SGIVASC: 0.498328014
+    SHEADTR: 0.357797735
+    SICH: 0.52671741
+    SLAMINE: -0.628609547
+    SLIVERTR: -1.370278559
+    SLUNG: 0.405738008
+    SMULTR: -0.377807998
+    SNEUROTH: 0.003996339
+    SOBHYST: -0.795847883
+    SPERISC: -0.504208244
+    SRENCA: -1.397212695
+    SRENOTH: -0.693574061
+    SRENTRAN: -1.308449407
+    SRESOTH: -0.249217228
+    SRESPCA: 0.086933576
+    SRESPINF: -0.005937516
+    SRESPLAR: -1.152870135
+    SRUPAOR: 0.204404736
+    SSAH: 0.318905704
+    SSDH: 0.715682622
+    STRAUMEXT: -0.180386981
+    STRHDONLY: 1.088819324
+    STROKE: 0.519453035
+    SVALVE: -1.371763972
+    SVHDCABG: -0.155141644
+    TRAUMCHSP: -0.717432122
+    TRAUMSPINE: 0.033769484
+    TRHEADEXF: -0.364128015
+    TRHEADMULT: -0.067960926
+    TRHEADONLY: 0.595869416
+    USTAANG: -1.212730735
+  thrombolytic_therapy: 0.062385214
+  unable_to_get_gcs: 1.789326613
+  adjusted_gcs: -0.015182904
+
+mort_coeff_cabg:
+  intercept: -7.246664
+  age:
+    range1:
+      lower: null
+      upper: 44
+      coeff: 0
+    range2:
+      lower: 45
+      upper: 54
+      coeff: -0.737078
+    range3:
+      lower: 55
+      upper: 59
+      coeff: -0.765009
+    range4:
+      lower: 60
+      upper: 64
+      coeff: -0.529345
+    range5:
+      lower: 65
+      upper: 69
+      coeff: -0.222009
+    range6:
+      lower: 70
+      upper: 74
+      coeff: 0.107859
+    range7:
+      lower: 75
+      upper: 84
+      coeff: 0.169567
+    range8:
+      lower: 85
+      upper: null
+      coeff: 0.765707
+  aps:
+    aps:
+      coeff: 0.044207
+    aps1:
+      coeff: 0.17313
+      knot: 15
+    aps2:
+      coeff: -0.041316
+      knot: 30
+    aps3:
+      coeff: -1.145473
+      knot: 40
+    aps4:
+      coeff: 1.713847
+      knot: 50
+  emergency_surgery: 0.76644
+  female: 0.861304
+  redo: 1.206335
+  number_of_grafts: 0.082575
+    
+
+los_coeff_cabg:
+  intercept: 2.0045829
+  age:
+    age:
+      coeff: 0.012993875
+    age1:
+      coeff: -8.19e-06
+      knot: 46
+    age2:
+      coeff: 5.92e-05
+      knot: 59
+    age3:
+      coeff: -0.000180565
+      knot: 67
+    age4:
+      coeff: 0.000188933
+      knot: 73
+    age5:
+      coeff: -5.94e-05
+      knot: 81
+  diabetes: 0.15989613
+  aps:
+    aps:
+      coeff: -0.028429719
+    aps1:
+      coeff: 0.000125748
+      knot: 15
+    aps2:
+      coeff: -0.000294773
+      knot: 25
+    aps3:
+      coeff: 0.000167218
+      knot: 32
+    aps4:
+      coeff: -1.04e-06
+      knot: 40
+    aps5:
+      coeff: 2.85e-06
+      knot: 61
+  emergency_surgery: 0.28464163
+  creatinine:
+    crea:
+      coeff: -0.004944826
+    crea1:
+      coeff: -3.581329
+      knot: 0.6
+    crea2:
+      coeff: 21.941241
+      knot: 0.8
+    crea3:
+      coeff: -608.02125
+      knot: 1.09
+    crea4:
+      coeff: 591.27197
+      knot: 1.1
+    crea5:
+      coeff: -1.610631
+      knot: 1.9
+  ejection_fraction:
+    ef:
+      coeff: -0.005926882
+    ef1:
+      coeff: -7.65e-06
+      knot: 20
+    ef2:
+      coeff: 0.000136034
+      knot: 45
+    ef3:
+      coeff: -0.000333984
+      knot: 54.215523
+    ef4:
+      coeff: 0.000210656
+      knot: 60
+    ef5:
+      coeff: 5.06e-06
+      knot: 99
+  female: 0.27859712
+  redo: 0.33622134
+  ima_used: -0.19782124
+  midur: 0.21488111
+  number_of_grafts:
+    2: 0.05294438
+    3: 0.11127672
+    4: -0.053387858
+    5: -0.23305144
+    6: -0.43716431
+    7: -0.48272647
+
+
+
+# TODO finish list above
+
+# add 'false' as min or max for easier coding
