@@ -1,6 +1,8 @@
 from utils.helpers import config, ROOT
 from src.extraction import main as extraction
-from src.extraction import main as preprocess_presplit
+from src.preprocessing_presplit import main as preprocess_presplit
+from src.splitting import main as splitting
+from src.preprocessing_postsplit import main as preprocess_postsplit
 
 
 def main():
@@ -12,6 +14,12 @@ def main():
 
     if config['preprocessing_presplit'] == True:
         preprocess_presplit()
+
+    if config['splitting'] == True:
+        splitting()
+
+    if config['preprocessing_postsplit'] == True:
+        preprocess_postsplit()
 
 
     return
