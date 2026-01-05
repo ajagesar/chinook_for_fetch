@@ -2,6 +2,7 @@ import pandas as pd
 from utils.helpers import ROOT, config, apache_config
 import numpy as np
 import matplotlib.pyplot as plt
+import yaml
 
 def main():
 
@@ -36,7 +37,7 @@ def main():
     print("")
     print("preprocessed data has been saved (without APACHE calculations)")
     print("")
-
+    
 
     ### --- APACHE preprocessing --- ###
 
@@ -63,6 +64,15 @@ def main():
     print("")
     print("preprocessed data has been saved (including APACHE calculations)")
     print("")
+
+
+    ### --- remove features not selected in config --- ###
+
+    features = select_features()
+
+    # save selected features
+    with open('features.yaml', 'w') as f:
+        yaml.dump(features, f)
 
 
 def load_data():
@@ -1017,6 +1027,38 @@ def calculate_hos_mort_cabg(df, apache_config):
     df_apache['prediction'] = df_apache['natural_antilog'] / (1 + df_apache['natural_antilog'])
 
     return df_apache['prediction']
+
+
+def select_features():
+
+    # load data
+    preprocessed_data = pd.read_csv(ROOT + '/saved_files/preprocessed_presplit.csv')
+    
+    # select features which are 'turned on'
+    config_of_features = config['features']
+    
+    features = [] # declare empty list to be filled with the features to be used in modeling
+    
+    for feature_type, feature in config_of_features.items():
+
+            for feature_name, feature_config in feature.items():
+                    
+                    if feature_config['processed'] is True:
+                        
+                        features.append(feature_name)
+
+    # print which features are not found in the dataframe
+    not_in_data = set(features) - set(list(preprocessed_data.columns))
+
+    print("")
+    print(f"Features not in dataset: {not_in_data}")
+    print("")
+
+    # keep only features that are in the actual preprocessed date column names (features that are set as processed but not found will be ignored)
+    features = set(features) & set(list(preprocessed_data.columns))
+    features = list(features) # convert dictionary to list
+
+    return features
 
 
 if __name__=="__main__":
