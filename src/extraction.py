@@ -322,10 +322,9 @@ def get_measurements(conn, features, extraction_window):
 def database_connect(path_to_duck_db):
 
     # connect to database
-    conn = duckdb.connect(path_to_duck_db)
+    conn = duckdb.connect(path_to_duck_db, read_only=True)
 
     return conn
-
 
 
 def close_connection(conn):
