@@ -30,7 +30,7 @@ def get_mortality(conn, features):
             SELECT 
                 person_id,
                 death_datetime
-            FROM death
+            FROM omop.death
         """
 
         sql_mortuary = f"""
@@ -38,7 +38,7 @@ def get_mortality(conn, features):
                 person_id,
                 -- visit_start_datetime,
                 visit_end_datetime AS death_datetime
-            FROM visit_occurrence
+            FROM omop.visit_occurrence
             WHERE LOWER(discharged_to_source_value) LIKE '%mortuarium%'
         """
 
@@ -81,8 +81,8 @@ def get_admissions(conn, features):
         visit_occurrence.visit_start_datetime,
         visit_occurrence.visit_end_datetime,
         visit_occurrence.admitted_from_source_value
-    FROM person
-    LEFT JOIN visit_occurrence
+    FROM omop.person AS person
+    LEFT JOIN omop.visit_occurrence AS visit_occurrence
         ON person.person_id = visit_occurrence.person_id
     """
 
@@ -142,9 +142,9 @@ def get_weight(conn, features):
                 v.visit_start_datetime,
                 (m.measurement_datetime - v.visit_start_datetime) AS timediff,
                 m.value_as_number
-            FROM measurement AS m
+            FROM omop.measurement AS m
             FULL OUTER JOIN
-                visit_occurrence AS v
+                omop.visit_occurrence AS v
                 ON m.person_id = v.person_id
             WHERE 
                 (measurement_concept_id IN ({weight_concept_ids})) AND
@@ -189,9 +189,9 @@ def get_height(conn, features):
                 v.visit_start_datetime,
                 (m.measurement_datetime - v.visit_start_datetime) AS timediff,
                 m.value_as_number
-            FROM measurement AS m
+            FROM omop.measurement AS m
             FULL OUTER JOIN
-                visit_occurrence AS v
+                omop.visit_occurrence AS v
                 ON m.person_id = v.person_id
             WHERE 
                 (measurement_concept_id IN ({height_concept_ids})) AND
@@ -233,9 +233,9 @@ def get_ventilated(conn, features, extraction_window):
             m.value_as_concept_id,
             v.visit_start_datetime,
             (m.measurement_datetime - v.visit_start_datetime) AS timediff
-        FROM measurement AS m
+        FROM omop.measurement AS m
             FULL OUTER JOIN
-                visit_occurrence AS v
+                omop.visit_occurrence AS v
                 ON m.person_id = v.person_id
         WHERE
             (measurement_concept_id IN ({vent_ids})) AND
@@ -298,9 +298,9 @@ def get_measurements(conn, features, extraction_window):
         {case_statement},
         v.visit_start_datetime,
         (m.measurement_datetime - v.visit_start_datetime) AS timediff
-    FROM measurement AS m
+    FROM omop.measurement AS m
         FULL OUTER JOIN
-            visit_occurrence AS v
+            omop.visit_occurrence AS v
             ON m.person_id = v.person_id
     WHERE 
         (measurement_concept_id IN ({all_ids})) AND
@@ -315,6 +315,7 @@ def get_measurements(conn, features, extraction_window):
     print("measurements csv has been saved")
     print("")
     return measurements
+
 
 ### --- database connection and close functions below --- ###
 
