@@ -10,7 +10,7 @@ def main():
     features = config['features']
     extraction_window = config['window_in_hours']
 
-    if config['pipeline']['print_schema'] == True:
+    if config['pipeline']['save_schema'] == True:
         save_schema(conn)
 
     mortality = get_mortality(conn, features)
@@ -58,6 +58,7 @@ def save_schema(conn):
     print("Schema exported to schema.yaml")
 
     return
+
 
 def get_mortality(conn, features):
 
@@ -332,7 +333,7 @@ def get_measurements(conn, features, extraction_window):
         m.measurement_datetime,
         m.measurement_concept_id,
         m.value_as_number,
-        m.value_as_concept_id,
+        -- m.value_as_concept_id, -> not in this omop version
         {case_statement},
         v.visit_start_datetime,
         (m.measurement_datetime - v.visit_start_datetime) AS timediff
