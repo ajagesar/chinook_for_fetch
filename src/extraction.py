@@ -4,7 +4,7 @@ import pandas as pd
 
 def main():
 
-    conn = database_connect(path_to_duck_db=config['icudata_external'])
+    conn = database_connect(path_to_duck_db=config['data']['icudata_external'])
 
     features = config['features']
     extraction_window = config['window_in_hours']
