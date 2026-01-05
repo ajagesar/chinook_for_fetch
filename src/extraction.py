@@ -269,7 +269,7 @@ def get_ventilated(conn, features, extraction_window):
             TRUE as ventilated,
             m.measurement_concept_id,
             m.value_as_number,
-            m.value_as_concept_id,
+            -- m.value_as_concept_id,
             v.visit_start_datetime,
             (m.measurement_datetime - v.visit_start_datetime) AS timediff
         FROM omop.measurement AS m
