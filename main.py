@@ -8,16 +8,16 @@ from src.preprocessing_postsplit import main as preprocess_postsplit
 def main():
 
 
-    if config['extraction'] == True:
+    if config['pipeline']['extraction'] == True:
         extraction()
 
-    if config['preprocessing_presplit'] == True:
+    if config['pipeline']['preprocessing_presplit'] == True:
         preprocess_presplit()
 
-    if config['splitting'] == True:
+    if config['pipeline']['splitting'] == True:
         splitting()
 
-    if config['preprocessing_postsplit'] == True:
+    if config['pipeline']['preprocessing_postsplit'] == True:
         preprocess_postsplit()
 
 
