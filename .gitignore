@@ -1,3 +1,24 @@
+### --- only include certain files --- ###
+
+# ignore everything
+*
+
+# Allow gitignore
+!*.gitignore
+
+# Allow directories
+!*/
+
+# Allow certain file types
+!*.py
+!*.yaml
+!*.yml
+!*.md
+!*.lock
+!*.toml
+
+### --- exclude below --- ### (Redundant with the above, but still noted for reference. Also includes specific folders)
+
 # Ignore CSV files
 *.csv
 
