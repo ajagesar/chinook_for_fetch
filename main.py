@@ -11,7 +11,6 @@ def main():
     if config['extraction'] == True:
         extraction()
 
-
     if config['preprocessing_presplit'] == True:
         preprocess_presplit()
 

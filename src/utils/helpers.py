@@ -1,8 +1,8 @@
 import yaml
 import pandas as pd
 
-ROOT = "C:/Users/Ameet/Documents/research/repositories/chinook_for_fetch/"
-# ROOT = 
+# ROOT = "C:/Users/Ameet/Documents/research/repositories/chinook_for_fetch/" # local
+ROOT = "/home/ameet.jagesar@mydre.org/research/chinook/chinook_for_fetch/" # mydre
 
 with open(ROOT + 'config.yaml', 'r') as file:
     config = yaml.safe_load(file)

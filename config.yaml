@@ -1,4 +1,5 @@
-ROOT: "/home/ameet.jagesar@mydre.org/research/chinook/"
+# ROOT: "/home/ameet.jagesar@mydre.org/research/chinook/chinook_for_fetch/" # mydre
+# ROOT: "C:/Users/Ameet/Documents/research/repositories/chinook/chinook_for_fetch/" # local
 
 data:
   icudata_full: "/home/olof.sigling@mydre.org/output/icudata/full_omop.duckdb"
