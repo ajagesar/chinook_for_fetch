@@ -1,6 +1,7 @@
 from utils.helpers import ROOT, config
 import duckdb
 import pandas as pd
+import yaml
 
 def main():
 
@@ -8,6 +9,9 @@ def main():
 
     features = config['features']
     extraction_window = config['window_in_hours']
+
+    if config['pipeline']['print_schema'] == True:
+        save_schema(conn)
 
     mortality = get_mortality(conn, features)
     admissions = get_admissions(conn, features)
@@ -20,6 +24,40 @@ def main():
 
     return
 
+
+def save_schema(conn):
+
+    # Get all tables and columns
+    result = conn.execute(f"""
+        SELECT 
+            table_name,
+            column_name,
+            data_type,
+            is_nullable
+        FROM information_schema.columns
+        ORDER BY table_name, ordinal_position
+    """).fetchdf()
+
+    # Organize data by table
+    schema = {}
+    for table_name in result['table_name'].unique():
+        table_cols = result[result['table_name'] == table_name]
+        schema[table_name] = []
+        
+        for _, row in table_cols.iterrows():
+            schema[table_name].append({
+                'column_name': row['column_name'],
+                'data_type': row['data_type'],
+                'is_nullable': row['is_nullable']
+            })
+
+    # Write to YAML file
+    with open(ROOT + 'data/raw/schema.yaml', 'w') as f:
+        yaml.dump(schema, f, default_flow_style=False, sort_keys=False)
+
+    print("Schema exported to schema.yaml")
+
+    return
 
 def get_mortality(conn, features):
 
