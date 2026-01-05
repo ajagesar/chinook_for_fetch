@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def main():
+
+    ### --- general preprocessing --- ###
+
+    # read data
     admissions, mortality, height, weight, measurements = load_data()
 
     # remove CTC patients if configured as such
@@ -16,7 +20,6 @@ def main():
     measurements = get_most_deviating_values_apache(measurements)
     measurements = get_most_deviating_values_non_apache(measurements)
     measurements = pivot_measurements(measurements)
-    # measurements = calculate_aps_score(measurements) -> moved to separate APACHE script
     weight = preprocess_weight(weight)
     height = preprocess_height(height)
     measurements = preprocess_ventilated(measurements)
@@ -28,15 +31,39 @@ def main():
     table = impute_with_normal_values(table)
     table = calculate_derivations(table)
 
-    # calculate apache # TODO add code here from old pipeline
-
-
-
-    table.to_csv(ROOT + '/data/intermediate/preprocessed_presplit.csv')
+    table.to_csv(ROOT + '/data/intermediate/preprocessed_presplit_pre-apache.csv') # intermediate save
 
     print("")
-    print("preprocessed data has been saved")
+    print("preprocessed data has been saved (without APACHE calculations)")
     print("")
+
+
+    ### --- APACHE preprocessing --- ###
+
+    preprocessed_data = pd.read_csv(ROOT + '/data/intermediate/preprocessed_presplit_pre-apache.csv')
+    preprocessed_data = rename_for_apache(df=preprocessed_data)
+    preprocessed_data = get_admission_origin(df=preprocessed_data, config=config)
+    missing_apache_variables = check_apache_elements(df=preprocessed_data, config=config)
+    preprocessed_data = impute_apache_elements(df=preprocessed_data, missing_apache_variables=missing_apache_variables, config=config)
+    check_apache_elements(df=preprocessed_data, config=config)
+    df = map_apache_diagnosis(df=preprocessed_data, apache_config=apache_config)
+
+    # apache calculation
+    df = calculate_aps_score(df=preprocessed_data, apache_config=apache_config)
+    
+    df['apache_hos_mort_prob'] = calculate_hos_mort_non_cabg(df, apache_config=apache_config, result='probability')
+    #df['apache_hos_mort_logodds'] = calculate_hos_mort_non_cabg(df, apache_config=apache_config, result='logodds')
+    #df['apache_hos_mort_prob_calibrated'] = calculate_hos_mort_non_cabg_recalibrated(df, logodds='apache_hos_mort_logodds', mortality='mortality')
+
+    df['apache_hos_mort_prob_cabg'] = calculate_hos_mort_cabg(df, apache_config=apache_config)
+
+    # save results
+    df.to_csv(ROOT + '/data/intermediate/preprocessed_presplit.csv.csv')
+
+    print("")
+    print("preprocessed data has been saved (including APACHE calculations)")
+    print("")
+
 
 def load_data():
     admissions = pd.read_csv(ROOT + '/data/raw/admissions.csv')
@@ -48,11 +75,13 @@ def load_data():
 
     return admissions, mortality, height, weight, measurements
 
+
 def drop_ctc(admissions):
 
     admissions = admissions[~admissions['admitted_from_source_value'].str.contains("CCH|Cardiochi|CARDIOTHOR", na=False, case=False)]
 
     return admissions
+
 
 def preprocess_admissions(admissions):
 
@@ -63,6 +92,7 @@ def preprocess_admissions(admissions):
 
     return admissions
 
+
 def convert_to_mmhg(measurements, variable_name, value):
 
     # convert kpa pao2 (defined as values <= 20) to mmhg by multiplying with factor 7.5
@@ -72,6 +102,7 @@ def convert_to_mmhg(measurements, variable_name, value):
     measurements.loc[(measurements[variable_name] == 'paco2') & (measurements[value] <= 20), value] = measurements.loc[measurements[variable_name] == 'paco2'][value] * 7.5
 
     return measurements
+
 
 def cleanup_measurements(measurements, variable_name='variable_name', value='value_as_number'): 
     
@@ -181,6 +212,7 @@ def get_most_deviating_values_apache(measurements):
 
     return measurements
 
+
 def get_most_deviating_values_non_apache(measurements):
 
     # declare column with difference between measured variables and reference values
@@ -227,6 +259,7 @@ def get_most_deviating_values_non_apache(measurements):
 
     return measurements
 
+
 def pivot_measurements(measurements):
 
     # drop unnecessary column
@@ -249,17 +282,20 @@ def pivot_measurements(measurements):
 
     return measurements_merged
 
+
 def preprocess_weight(weight):
     
     weight = weight.sort_values(by=['person_id', 'visit_start_datetime', 'timediff']).drop_duplicates(subset=['person_id', 'visit_start_datetime'])
 
     return weight
 
+
 def preprocess_height(height):
     
     height = height.sort_values(by=['person_id', 'visit_start_datetime', 'timediff']).drop_duplicates(subset=['person_id', 'visit_start_datetime'])
 
     return height
+
 
 def preprocess_ventilated(measurements):
 
@@ -270,6 +306,7 @@ def preprocess_ventilated(measurements):
     measurements.loc[measurements['ventilated'].isna(), 'ventilated'] = False
 
     return measurements
+
 
 def preprocess_mortality(admissions, mortality):
 
@@ -300,6 +337,7 @@ def merge_all(admissions, mortality, height, weight, measurements):
     merged.loc[merged['ventilated'].isna(), 'ventilated'] = False
 
     return merged
+
 
 def get_missing_statistics(df):
 
@@ -333,6 +371,7 @@ def get_patient_characteristics(df):
     # TODO get table 1 / patient characteristics here
 
     pass
+
 
 def impute_with_normal_values(df):
     
@@ -381,6 +420,7 @@ def impute_with_normal_values(df):
 
     return df
 
+
 def calculate_derivations(df):
     
     # calculate AaDO2, calculation if FiO2 and PaCO2 are present in data. Assumptions: Patm = 760 mmHg, PH2O = 47 mmHg. https://en.wikipedia.org/wiki/Alveolar%E2%80%93arterial_gradient
@@ -392,6 +432,7 @@ def calculate_derivations(df):
         df['aado2'] = ((df['fio2'] / 100) * (760 - 47) - (df['paco2'] / 0.8)) - df['pao2']
 
     return df
+
 
 def rename_for_apache(df):
 
