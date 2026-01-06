@@ -74,7 +74,7 @@ def main():
     features = select_features()
 
     # save selected features
-    with open('features.yaml', 'w') as f:
+    with open(ROOT + 'data/intermediate/features.yaml', 'w') as f:
         yaml.dump(features, f)
 
 
