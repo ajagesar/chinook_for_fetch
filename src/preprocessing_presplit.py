@@ -58,6 +58,9 @@ def main():
 
     df['apache_hos_mort_prob_cabg'] = calculate_hos_mort_cabg(df, apache_config=apache_config)
 
+    # rename back for further pipeline
+    df = rename_back(df=df)
+
     # save results
     df.to_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')
 
@@ -1027,6 +1030,14 @@ def calculate_hos_mort_cabg(df, apache_config):
     df_apache['prediction'] = df_apache['natural_antilog'] / (1 + df_apache['natural_antilog'])
 
     return df_apache['prediction']
+
+def rename_back(df):
+    
+    df = df.rename(columns={
+        'mortality':'in_icu_death'
+    })
+
+    return df
 
 
 def select_features():
