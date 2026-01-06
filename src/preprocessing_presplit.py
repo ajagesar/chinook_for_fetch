@@ -59,7 +59,7 @@ def main():
     df['apache_hos_mort_prob_cabg'] = calculate_hos_mort_cabg(df, apache_config=apache_config)
 
     # save results
-    df.to_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv.csv')
+    df.to_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')
 
     print("")
     print("preprocessed data has been saved (including APACHE calculations)")
