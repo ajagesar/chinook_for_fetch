@@ -45,4 +45,4 @@ __pycache__/
 
 # ignore archive and data folders
 archive/
-data/4
+data/
