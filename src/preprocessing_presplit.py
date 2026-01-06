@@ -132,7 +132,7 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
 
                 ## create and save plot
                 plt.hist(values)
-                plt.savefig(ROOT + f'data/intermediate/data_exploration/{feature_name}_precleanup_hist.png')
+                plt.savefig(ROOT + f'data/intermediate/exploration/{feature_name}_precleanup_hist.png')
                 plt.cla()
 
     # apply specific cutoff rules for certain variables
@@ -177,7 +177,7 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
 
                 ## create and save plot
                 plt.hist(values)
-                plt.savefig(ROOT + f'data/intermediate/data_exploration/{feature_name}_postcleanup_hist.png')
+                plt.savefig(ROOT + f'data/intermediate/exploration/{feature_name}_postcleanup_hist.png')
                 plt.cla()
 
     return measurements
@@ -374,7 +374,7 @@ def get_missing_statistics(df):
     })
 
     # export to html for easier import in paper through myst-md
-    missing_value_df.to_html(ROOT + 'data/intermediate/data_exploration/missing_values.html', index=False)
+    missing_value_df.to_html(ROOT + 'data/intermediate/exploration/missing_values.html', index=False)
 
 def get_patient_characteristics(df):
 
@@ -1032,7 +1032,7 @@ def calculate_hos_mort_cabg(df, apache_config):
 def select_features():
 
     # load data
-    preprocessed_data = pd.read_csv(ROOT + '/saved_files/preprocessed_presplit.csv')
+    preprocessed_data = pd.read_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')
     
     # select features which are 'turned on'
     config_of_features = config['features']
