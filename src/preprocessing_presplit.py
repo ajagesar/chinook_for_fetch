@@ -32,7 +32,7 @@ def main():
     table = impute_with_normal_values(table)
     table = calculate_derivations(table)
 
-    table.to_csv(ROOT + '/data/intermediate/preprocessed_presplit_pre-apache.csv') # intermediate save
+    table.to_csv(ROOT + 'data/intermediate/preprocessed_presplit_pre-apache.csv') # intermediate save
 
     print("")
     print("preprocessed data has been saved (without APACHE calculations)")
@@ -41,7 +41,7 @@ def main():
 
     ### --- APACHE preprocessing --- ###
 
-    preprocessed_data = pd.read_csv(ROOT + '/data/intermediate/preprocessed_presplit_pre-apache.csv')
+    preprocessed_data = pd.read_csv(ROOT + 'data/intermediate/preprocessed_presplit_pre-apache.csv')
     preprocessed_data = rename_for_apache(df=preprocessed_data)
     preprocessed_data = get_admission_origin(df=preprocessed_data, config=config)
     missing_apache_variables = check_apache_elements(df=preprocessed_data, config=config)
@@ -59,7 +59,7 @@ def main():
     df['apache_hos_mort_prob_cabg'] = calculate_hos_mort_cabg(df, apache_config=apache_config)
 
     # save results
-    df.to_csv(ROOT + '/data/intermediate/preprocessed_presplit.csv.csv')
+    df.to_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv.csv')
 
     print("")
     print("preprocessed data has been saved (including APACHE calculations)")
@@ -76,12 +76,12 @@ def main():
 
 
 def load_data():
-    admissions = pd.read_csv(ROOT + '/data/raw/admissions.csv')
-    mortality = pd.read_csv(ROOT + '/data/raw/mortality.csv')
-    height = pd.read_csv(ROOT + '/data/raw/height.csv')
-    weight = pd.read_csv(ROOT + '/data/raw/weight.csv')
-    # ventilated = pd.read_csv(ROOT + '/data/raw/ventilated.csv')
-    measurements = pd.read_csv(ROOT + '/data/raw/measurements.csv')
+    admissions = pd.read_csv(ROOT + 'data/raw/admissions.csv')
+    mortality = pd.read_csv(ROOT + 'data/raw/mortality.csv')
+    height = pd.read_csv(ROOT + 'data/raw/height.csv')
+    weight = pd.read_csv(ROOT + 'data/raw/weight.csv')
+    # ventilated = pd.read_csv(ROOT + 'data/raw/ventilated.csv')
+    measurements = pd.read_csv(ROOT + 'data/raw/measurements.csv')
 
     return admissions, mortality, height, weight, measurements
 
@@ -132,7 +132,7 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
 
                 ## create and save plot
                 plt.hist(values)
-                plt.savefig(ROOT + f'/data/intermediate/data_exploration/{feature_name}_precleanup_hist.png')
+                plt.savefig(ROOT + f'data/intermediatedata_exploration/{feature_name}_precleanup_hist.png')
                 plt.cla()
 
     # apply specific cutoff rules for certain variables
@@ -177,7 +177,7 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
 
                 ## create and save plot
                 plt.hist(values)
-                plt.savefig(ROOT + f'/data/intermediate/data_exploration/{feature_name}_postcleanup_hist.png')
+                plt.savefig(ROOT + f'data/intermediatedata_exploration/{feature_name}_postcleanup_hist.png')
                 plt.cla()
 
     return measurements
@@ -374,7 +374,7 @@ def get_missing_statistics(df):
     })
 
     # export to html for easier import in paper through myst-md
-    missing_value_df.to_html(ROOT + '/data/intermediate/data_exploration/missing_values.html', index=False)
+    missing_value_df.to_html(ROOT + 'data/intermediatedata_exploration/missing_values.html', index=False)
 
 def get_patient_characteristics(df):
 

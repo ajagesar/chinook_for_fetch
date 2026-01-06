@@ -26,8 +26,8 @@ imputation_method: # set one of two as true, cannot be neither or both. Will be 
   mice: false
 
 pipeline:
-  save_schema: true
-  extraction: true
+  save_schema: false
+  extraction: false
   preprocessing_presplit: true
   splitting: true
   preprocessing_postsplit: true

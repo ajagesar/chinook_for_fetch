@@ -23,8 +23,8 @@ def load_data():
 
 
     # load data
-    X_train = pd.read_csv(ROOT + '/data/intermediate/X_train.csv')
-    X_test = pd.read_csv(ROOT + '/data/intermediate/X_test.csv')
+    X_train = pd.read_csv(ROOT + 'data/intermediate/X_train.csv')
+    X_test = pd.read_csv(ROOT + 'data/intermediate/X_test.csv')
 
 
     return X_train, X_test
@@ -64,8 +64,8 @@ def impute(X_train, X_test):
         X_train_imputed = X_train.copy()
         X_test_imputed = X_test.copy()
 
-    X_train_imputed.to_csv(ROOT + '/data/intermediate/X_train_imputed.csv', index=False)
-    X_test_imputed.to_csv(ROOT + '/data/intermediate/X_test_imputed.csv', index=False)
+    X_train_imputed.to_csv(ROOT + 'data/intermediate/X_train_imputed.csv', index=False)
+    X_test_imputed.to_csv(ROOT + 'data/intermediate/X_test_imputed.csv', index=False)
 
     return
 
@@ -81,8 +81,8 @@ def oversample():
     random_state = config['random_state']
 
     # load data
-    X_train = pd.read_csv(ROOT + '/data/intermediate/X_train_imputed.csv')
-    y_train = pd.read_csv(ROOT + '/data/intermediate/y_train.csv')
+    X_train = pd.read_csv(ROOT + 'data/intermediate/X_train_imputed.csv')
+    y_train = pd.read_csv(ROOT + 'data/intermediate/y_train.csv')
 
     # create smote model and apply it
     smote = SMOTE(random_state=random_state)
@@ -90,8 +90,8 @@ def oversample():
     X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)
 
     # export training data
-    X_train_smote.to_csv(ROOT + '/data/intermediate/X_train_smote.csv', index=False)
-    y_train_smote.to_csv(ROOT + '/data/intermediate/y_train_smote.csv', index=False)
+    X_train_smote.to_csv(ROOT + 'data/intermediate/X_train_smote.csv', index=False)
+    y_train_smote.to_csv(ROOT + 'data/intermediate/y_train_smote.csv', index=False)
 
     return
 
