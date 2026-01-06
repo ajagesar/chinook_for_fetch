@@ -31,9 +31,36 @@ def dbs_read_sql(sql:str, list_of_con:list, keep_source_db_id=False):
 
 
 def impute_dataframe(imputer, df):
-    
+
+    # Identify columns that are completely NaN (no valid data at all)
+    # These columns will be dropped by sklearn's imputer during transform
+    all_nan_cols = df.columns[df.isna().all()]
+
+    if all_nan_cols:
+        print(f"Warning: Columns with all NaN values: {all_nan_cols}. Will all be imputed with 0")
+
+    # Transform the dataframe using the fitted imputer
+    # Note: This will only return columns that weren't all-NaN during fitting
     df_imputed = pd.DataFrame(imputer.transform(df))
-    df_imputed.columns = df.columns
+
+    # Assign column names, but only for the columns that were kept by the imputer
+    # We filter out the all-NaN columns to match the actual number of columns returned
+    df_imputed.columns = [col for col in df.columns if col not in all_nan_cols]
+
+    # Preserve the original row index
     df_imputed.index = df.index
+    
+    # Manually add back the all-NaN columns that were dropped by the imputer
+    # Fill them with a default value (0 in this case, but could be np.nan or another value)
+    for col in all_nan_cols:
+        df_imputed[col] = 0  # or np.nan, or some other default
+
+    # Reorder columns to match the original dataframe's column order
+    # This ensures consistency between the input and output dataframes
+    df_imputed = df_imputed[df.columns]
+
+    # df_imputed = pd.DataFrame(imputer.transform(df))
+    # df_imputed.columns = df.columns
+    # df_imputed.index = df.index
 
     return df_imputed
