@@ -8,7 +8,7 @@ def main():
 
     # load data & features
     preprocessed_data = pd.read_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')
-    with open('features.yaml', 'r') as f:
+    with open(ROOT + 'data/intermediate/features.yaml', 'r') as f:
         features = yaml.safe_load(f)
 
     X = preprocessed_data[features]
