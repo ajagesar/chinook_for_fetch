@@ -3,6 +3,7 @@ from src.extraction import main as extraction
 from src.preprocessing_presplit import main as preprocess_presplit
 from src.splitting import main as splitting
 from src.preprocessing_postsplit import main as preprocess_postsplit
+from src.hyperparameter_tuning import main as hyperparameter_tuning
 
 
 def main():
@@ -19,6 +20,9 @@ def main():
 
     if config['pipeline']['preprocessing_postsplit'] == True:
         preprocess_postsplit()
+
+    if config['pipeline']['hyperparameter_tuning'] == True:
+        hyperparameter_tuning()
 
 
     return
