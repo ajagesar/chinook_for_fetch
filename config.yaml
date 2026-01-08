@@ -28,8 +28,8 @@ imputation_method: # set one of two as true, cannot be neither or both. Will be 
 pipeline:
   save_schema: false
   extraction: false
-  preprocessing_presplit: true
-  splitting: true
+  preprocessing_presplit: false
+  splitting: false
   preprocessing_postsplit: true
   hyperparameter_tuning: true
   modeling: true
