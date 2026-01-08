@@ -49,7 +49,7 @@ def main():
             if model_key == 'xgb':
 
                 # make shortcut 
-                para_sc = model_key['hyperparameter_range']
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
 
                 # set parameters # TODO add all hyperparameters
                 params = {
@@ -89,7 +89,7 @@ def main():
             if model_key == 'logreg':
 
                 # make shortcut
-                para_sc = model_key['hyperparameter_range']
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
                 # para_sc['penalty'].append(None) # add as hyperparameter
 
                 print("X_train shape:", X_train.shape)
@@ -121,7 +121,7 @@ def main():
             if model_key == 'svm':
 
                 # make shortcut
-                para_sc = model_key['hyperparameter_range']
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
 
                 # set parameters to search by optuna
                 params = {
@@ -147,7 +147,7 @@ def main():
             if model_key == 'knn':
                 
                 # make shortcut
-                para_sc = model_key['hyperparameter_range']
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
 
                 # set parameters to search by optuna
                 params = {
@@ -173,7 +173,7 @@ def main():
             if model_key == 'naivebayes':
 
                 # make shortcut
-                para_sc = model_key['hyperparameter_range']
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
 
                 # set parameters to search by optuna
                 params = {
@@ -197,7 +197,7 @@ def main():
             if model_key == 'nn':
                 
                 # make shortcut
-                para_sc = model_key['hyperparameter_range']
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
 
                 # set parameters to search by optuna
                 params = {
