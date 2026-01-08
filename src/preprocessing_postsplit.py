@@ -7,8 +7,13 @@ from imblearn.over_sampling import SMOTE
 
 def main():
 
+    if config['use_validation_set'] == True:
+        X_train, X_validate, X_test = load_data()
 
-    X_train, X_test = load_data()
+    else:
+        X_train, X_test = load_data()
+
+
     impute(X_train=X_train, X_test=X_test)
 
     # TODO implement scaling if necessary
@@ -26,8 +31,12 @@ def load_data():
     X_train = pd.read_csv(ROOT + 'data/intermediate/X_train.csv')
     X_test = pd.read_csv(ROOT + 'data/intermediate/X_test.csv')
 
+    if config['use_validation_set'] == True:
+        X_validate = pd.read_csv(ROOT + 'data/intermediate/X_validate.csv')
+        return X_train, X_validate, X_test
 
-    return X_train, X_test
+    else:
+        return X_train, X_test
 
 
 def impute(X_train, X_test):
