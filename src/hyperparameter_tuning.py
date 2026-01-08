@@ -76,6 +76,7 @@ def main():
                     return scores.values[-1][2]
                     
                 elif config['use_validation_set'] is True:
+                    model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_validate)[:,1]
                     return roc_auc_score(y_validate, y_pred)
 
@@ -111,6 +112,7 @@ def main():
                     return scores.mean()
                 
                 elif config['use_validation_set'] is True:
+                    model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_validate)[:,1]
                     return roc_auc_score(y_validate, y_pred)
 
@@ -164,6 +166,7 @@ def main():
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
+                    model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_validate)[:,1]
                     return roc_auc_score(y_validate, y_pred)
 
@@ -188,6 +191,7 @@ def main():
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
+                    model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_validate)[:,1]
                     return roc_auc_score(y_validate, y_pred)
 
@@ -231,6 +235,7 @@ def main():
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
+                    model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_validate_tensor)[:,1]
                     return roc_auc_score(y_validate, y_pred)
 
