@@ -24,6 +24,7 @@ assume_normal_values_for_nan: true
 imputation_method: # set one of two as true, cannot be neither or both. Will be applied after previous step of setting normal values for nan
   median: true
   mice: false
+optuna_jobs: -1
 
 pipeline:
   save_schema: false

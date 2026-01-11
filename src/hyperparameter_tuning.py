@@ -2,8 +2,7 @@ from utils.helpers import ROOT, config
 import pandas as pd
 import yaml
 import optuna
-# import sklearn
-# sklearn.set_config(array_api_dispatch=False) # to prevent error: Unsupported device for NumPy: device(type='cpu')
+import os
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -21,6 +20,11 @@ def main():
     model_algorithms = config['model_algorithms']
     n_trials = config['optuna_trials']
     random_state = config['random_state']
+    n_jobs = config['optuna_jobs'] # Use all cores by default, or specify in config
+
+    # Create directories for persistent storage
+    os.makedirs(ROOT + 'data/final/optuna_studies', exist_ok=True)
+    os.makedirs(ROOT + 'data/final/optuna_best_parameters', exist_ok=True)
 
     # load train set
     if config['oversample'] is True:
@@ -62,7 +66,7 @@ def main():
                 }
 
                 # initiate model
-                model = xgb.XGBClassifier(**params, objective="binary:logistic", enable_categorical=True, random_state=random_state)
+                model = xgb.XGBClassifier(**params, objective="binary:logistic", enable_categorical=True, random_state=random_state, n_jobs=-1, tree_method='hist')
 
                 # TODO make XGBoost work with sklearn's cross_val_score API
                 # # apply 5-fold crossvalidation -> does not work with sklearn API
@@ -72,7 +76,7 @@ def main():
                 # dvalidate = xgb.DMatric(X_validate, label=y_validate)
 
                 if config['use_cross_validation'] is True:
-                    scores = xgb.cv(params, dtrain, nfold=5, stratified=True, early_stopping_rounds=40, num_boost_round=10000, seed=random_state, metrics='auc')
+                    scores = xgb.cv(params, dtrain, nfold=5, stratified=True, early_stopping_rounds=40, num_boost_round=10000, seed=random_state, metrics='auc', nthread=-1)
                     return scores.values[-1][2]
                     
                 elif config['use_validation_set'] is True:
@@ -105,10 +109,10 @@ def main():
                 }
 
                 # initiate model
-                model = LogisticRegression(**params, random_state=random_state)
+                model = LogisticRegression(**params, random_state=random_state, n_jobs=-1)
 
                 if config['use_cross_validation'] is True:
-                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc')
+                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc', n_jobs=-1)
                     return scores.mean()
                 
                 elif config['use_validation_set'] is True:
@@ -133,10 +137,10 @@ def main():
                 }
 
                 # initiate model
-                model = svm.SVC(**params, random_state=random_state)
+                model = svm.SVC(**params, random_state=random_state, probability=True)
             
                 if config['use_cross_validation'] is True:
-                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc')
+                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc', n_jobs=-1)
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
@@ -159,10 +163,10 @@ def main():
                 }
 
                 # initiate model
-                model = KNeighborsClassifier(**params)
+                model = KNeighborsClassifier(**params, n_jobs=-1)
 
                 if config['use_cross_validation'] is True:
-                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc')
+                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc', n_jobs=-1)
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
@@ -187,7 +191,7 @@ def main():
                 model = GaussianNB(**params)
 
                 if config['use_cross_validation'] is True:
-                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc')
+                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc', n_jobs=-1)
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
@@ -242,24 +246,59 @@ def main():
                 else:
                     return 'error, no method specified to tune hyperparameters'
                                
-                
-        # create optuna study
-        # sampler = optuna.samplers.RandomSampler()
+        
+        # Create optuna study with persistent storage and parallel execution
         sampler = optuna.samplers.TPESampler()
-        study = optuna.create_study(direction='maximize', sampler=sampler) # stop trial if it takes longer than 1 hour (3600 seconds)
-        # to consider: add following argument -> pruner=optuna.pruners.TimeoutPruner(SECONDS) -> enter the amount of seconds 1 trial is allowed to take
+        
+        # Create unique study name and storage path
+        study_name = f'{model_key}_optimization'
+        storage_name = f'sqlite:///{ROOT}data/final/optuna_studies/{model_key}_study.db'
+        
+        # Load existing study or create new one
+        study = optuna.create_study(
+            study_name=study_name,
+            storage=storage_name,
+            direction='maximize', 
+            sampler=sampler,
+            load_if_exists=True  # Resume from existing study if available
+        )
+        
+        # Check if study has existing trials
+        n_completed_trials = len(study.trials)
+        n_remaining_trials = max(0, n_trials - n_completed_trials)
+        
+        print(f"\n{'='*60}")
+        print(f"Model: {model_key}")
+        print(f"Completed trials: {n_completed_trials}/{n_trials}")
+        print(f"Remaining trials: {n_remaining_trials}")
+        print(f"Using {n_jobs} parallel jobs")
+        print(f"{'='*60}\n")
 
-        # optimize for 100 trials
-        study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+        # Only optimize if there are remaining trials
+        if n_remaining_trials > 0:
+            # Run optimization with parallel execution
+            study.optimize(
+                objective, 
+                n_trials=n_remaining_trials, 
+                n_jobs=n_jobs,  # Parallel trials
+                show_progress_bar=True
+            )
+        else:
+            print(f"Study for {model_key} already completed {n_trials} trials. Skipping optimization.")
 
-        # export best parameters
+        # Export best parameters
         best_params = study.best_params
         with open(ROOT + f'data/final/optuna_best_parameters/{model_key}_params.yaml', 'w') as f:
             yaml.dump(best_params, f, default_flow_style=False)
 
-        # print best hyperparameters and score
-        print(f"Best hyperparameters: {study.best_params}")
+        # Export all trials to CSV for analysis
+        study_df = study.trials_dataframe()
+        study_df.to_csv(ROOT + f'data/final/optuna_studies/{model_key}_all_trials.csv', index=False)
+
+        # Print best hyperparameters and score
+        print(f"\nBest hyperparameters for {model_key}: {study.best_params}")
         print(f"Best score: {study.best_value:.4f}")
+        print(f"Total completed trials: {len(study.trials)}\n")
 
 
 if __name__=="__main__":
