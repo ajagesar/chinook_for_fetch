@@ -66,7 +66,7 @@ def main():
                 }
 
                 # initiate model
-                model = xgb.XGBClassifier(**params, objective="binary:logistic", enable_categorical=True, random_state=random_state, n_jobs=-1, tree_method='hist')
+                model = xgb.XGBClassifier(**params, objective="binary:logistic", enable_categorical=True, random_state=random_state, tree_method='hist')
 
                 # TODO make XGBoost work with sklearn's cross_val_score API
                 # # apply 5-fold crossvalidation -> does not work with sklearn API
@@ -76,7 +76,7 @@ def main():
                 # dvalidate = xgb.DMatric(X_validate, label=y_validate)
 
                 if config['use_cross_validation'] is True:
-                    scores = xgb.cv(params, dtrain, nfold=5, stratified=True, early_stopping_rounds=40, num_boost_round=10000, seed=random_state, metrics='auc', nthread=-1)
+                    scores = xgb.cv(params, dtrain, nfold=5, stratified=True, early_stopping_rounds=40, num_boost_round=10000, seed=random_state, metrics='auc')
                     return scores.values[-1][2]
                     
                 elif config['use_validation_set'] is True:
@@ -231,14 +231,16 @@ def main():
 
                 X_train_tensor = torch.tensor(X_train.to_numpy(), dtype=torch.float32)
                 y_train_tensor = torch.tensor(y_train.to_numpy(), dtype=torch.float32)
-                X_validate_tensor = torch.tensor(X_validate.to_numpy(), dtype=torch.float32)
-                y_validate_tensor = torch.tensor(y_validate.to_numpy(), dtype=torch.float32)
 
                 if config['use_cross_validation'] is True:
                     scores = cross_val_score(model, X_train_tensor, y_train_tensor, cv=5, scoring='roc_auc')
                     return scores.mean()
                     
                 elif config['use_validation_set'] is True:
+
+                    X_validate_tensor = torch.tensor(X_validate.to_numpy(), dtype=torch.float32)
+                    y_validate_tensor = torch.tensor(y_validate.to_numpy(), dtype=torch.float32)
+
                     model.fit(X_train, y_train)
                     y_pred = model.predict_proba(X_validate_tensor)[:,1]
                     return roc_auc_score(y_validate, y_pred)
@@ -255,12 +257,14 @@ def main():
         storage_name = f'sqlite:///{ROOT}data/final/optuna_studies/{model_key}_study.db'
         
         # Load existing study or create new one
+        optuna_load_study = config['optuna_load_study']
+
         study = optuna.create_study(
             study_name=study_name,
             storage=storage_name,
             direction='maximize', 
             sampler=sampler,
-            load_if_exists=True  # Resume from existing study if available
+            load_if_exists=optuna_load_study  # Resume from existing study if available
         )
         
         # Check if study has existing trials

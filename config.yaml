@@ -25,6 +25,7 @@ imputation_method: # set one of two as true, cannot be neither or both. Will be 
   median: true
   mice: false
 optuna_jobs: -1
+optuna_load_study: true
 
 pipeline:
   save_schema: false
