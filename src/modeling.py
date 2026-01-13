@@ -1,10 +1,8 @@
 from utils.helpers import ROOT, config
 from utils.torchneuralnet import PyTorchNN
 import pandas as pd
-
 import pickle
 import yaml
-
 import matplotlib.pyplot as plt
 import xgboost as xgb
 from sklearn.metrics import roc_curve, auc
@@ -14,76 +12,123 @@ from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from skorch import NeuralNetBinaryClassifier
 import torch
+from tqdm import tqdm
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import logging
+from functools import partial
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def main():
-
-    # load train set
-    if config['oversample'] == True:
+    logger.info("Starting model training pipeline...")
+    
+    # Load train set with progress indicator
+    logger.info("Loading training data...")
+    if config['oversample']:
         X_train = pd.read_csv(ROOT + 'data/intermediate/X_train_smote.csv')
         y_train = pd.read_csv(ROOT + 'data/intermediate/y_train_smote.csv')['in_icu_death']
     else:
         X_train = pd.read_csv(ROOT + 'data/intermediate/X_train_imputed.csv')
         y_train = pd.read_csv(ROOT + 'data/intermediate/y_train.csv')['in_icu_death']
-
-    # TODO load APACHE IV data
-
+    
+    logger.info(f"Data loaded: {X_train.shape[0]} samples, {X_train.shape[1]} features")
+    
     random_state = config['random_state']
+    
+    # Define training tasks
+    training_tasks = [
+        ('XGBoost', train_xgb_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
+        ('Logistic Regression', train_lr_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
+        ('SVM', train_svm_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
+        ('KNN', train_knn_model, {'X_train': X_train, 'y_train': y_train}),
+        ('Naive Bayes', train_naivebayes_model, {'X_train': X_train, 'y_train': y_train}),
+    ]
+    
+    # Train models in parallel (excluding NN which needs special handling)
+    logger.info("Training models in parallel...")
+    models = {}
+    
+    with ProcessPoolExecutor(max_workers=min(5, 32)) as executor:
+        # Submit all tasks
+        future_to_model = {
+            executor.submit(train_model_wrapper, name, func, kwargs): name 
+            for name, func, kwargs in training_tasks
+        }
+        
+        # Process completed tasks with progress bar
+        with tqdm(total=len(training_tasks), desc="Training models") as pbar:
+            for future in as_completed(future_to_model):
+                model_name = future_to_model[future]
+                try:
+                    models[model_name] = future.result()
+                    logger.info(f"✓ {model_name} training completed")
+                except Exception as e:
+                    logger.error(f"✗ {model_name} training failed: {str(e)}")
+                pbar.update(1)
+    
+    # Train neural network separately (PyTorch doesn't pickle well across processes)
+    logger.info("Training Neural Network...")
+    try:
+        models['Neural Network'] = train_nn_model(X_train=X_train, y_train=y_train)
+        logger.info("✓ Neural Network training completed")
+    except Exception as e:
+        logger.error(f"✗ Neural Network training failed: {str(e)}")
+    
+    # Train APACHE IV recalibrated model
+    logger.info("Training APACHE IV recalibrated model...")
+    try:
+        models['APACHE IV Recalibrated'] = train_apiv_recal_model(X_train=X_train, y_train=y_train)
+        logger.info("✓ APACHE IV Recalibrated training completed")
+    except Exception as e:
+        logger.error(f"✗ APACHE IV Recalibrated training failed: {str(e)}")
+    
+    logger.info("All model training completed!")
+    return models
 
-    # xgb_model = xgb.XGBClassifier(objective="binary:logistic", enable_categorical=True, random_state=42, n_estimators=50, eval_metric=["auc"])
-    # xgb_model.fit(X_train, y_train, eval_set=[(X_test, y_test)])
 
-    # train xgb_model
-    xgb_model = train_xgb_model(X_train=X_train, y_train=y_train, random_state=42)
-
-    # train lr model
-    lr_model = train_lr_model(X_train=X_train, y_train=y_train, random_state=random_state)
-
-    # train svm model
-    svm_model = train_svm_model(X_train=X_train, y_train=y_train, random_state=random_state)
-
-    # train knn model
-    knn_model = train_knn_model(X_train=X_train, y_train=y_train)
-
-    # train naive bayes model
-    naivebayes_model = train_naivebayes_model(X_train=X_train, y_train=y_train)
-
-    # train neural network
-    nn_model = train_nn_model(X_train=X_train, y_train=y_train)
-
-    # train recalibrated APACHE IV model
-    apiv_recal_model = train_apiv_recal_model(X_train=X_train, y_train=y_train)
-
-    return
+def train_model_wrapper(name, func, kwargs):
+    """Wrapper function for parallel execution"""
+    return func(**kwargs)
 
 
 def train_xgb_model(X_train, y_train, random_state=42):
-    # load best hyperparameters
+    # Load best hyperparameters
     with open(ROOT + 'data/final/optuna_best_parameters/xgb_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
-
-    # fit model
-    xgb_model = xgb.XGBClassifier(**best_params, objective="binary:logistic", enable_categorical=True, random_state=random_state)
+    
+    # Use all available cores for XGBoost
+    best_params['n_jobs'] = -1
+    best_params['tree_method'] = 'hist'  # Faster histogram-based algorithm
+    
+    # Fit model
+    xgb_model = xgb.XGBClassifier(
+        **best_params, 
+        objective="binary:logistic", 
+        enable_categorical=True, 
+        random_state=random_state
+    )
     xgb_model.fit(X_train, y_train)
-
-    # save model
+    
+    # Save model
     filename = ROOT + 'data/final/models/xgb_model.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(xgb_model, file)
-
+    
     return xgb_model
 
 
 def train_lr_model(X_train, y_train, random_state):
-    
     with open(ROOT + 'data/final/optuna_best_parameters/logreg_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
-
-    # fit model
-    lr_model = LogisticRegression(**best_params, random_state=random_state)
+    
+    # Enable parallel computation
+    lr_model = LogisticRegression(**best_params, random_state=random_state, n_jobs=-1)
     lr_model.fit(X_train, y_train)
-
-    # save model
+    
+    # Save model
     filename = ROOT + 'data/final/models/logreg_model.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(lr_model, file)
@@ -92,15 +137,16 @@ def train_lr_model(X_train, y_train, random_state):
 
 
 def train_svm_model(X_train, y_train, random_state):
-
     with open(ROOT + 'data/final/optuna_best_parameters/svm_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
-
-    # fit model
+    
+    # SVM doesn't have n_jobs for fit, but setting cache_size can help
+    best_params['cache_size'] = 2000  # Increase cache for your 128GB RAM
+    
     svm_model = svm.SVC(**best_params, probability=True, random_state=random_state)
     svm_model.fit(X_train, y_train)
-
-    # save model
+    
+    # Save model
     filename = ROOT + 'data/final/models/svm_model.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(svm_model, file)
@@ -109,87 +155,85 @@ def train_svm_model(X_train, y_train, random_state):
 
 
 def train_knn_model(X_train, y_train):
-    
     with open(ROOT + 'data/final/optuna_best_parameters/knn_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
-
-    # fit model
-    knn_model = KNeighborsClassifier(**best_params)
+    
+    # Enable parallel computation
+    knn_model = KNeighborsClassifier(**best_params, n_jobs=-1)
     knn_model.fit(X_train, y_train)
-
-    # save model
+    
+    # Save model
     filename = ROOT + 'data/final/models/knn_model.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(knn_model, file)
-
+    
     return knn_model
 
 
 def train_naivebayes_model(X_train, y_train):
-    
     with open(ROOT + 'data/final/optuna_best_parameters/naivebayes_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
-
-    # fit model
+    
     naivebayes_model = GaussianNB(**best_params)
     naivebayes_model.fit(X_train, y_train)
-
-    # save model
+    
+    # Save model
     filename = ROOT + 'data/final/models/naivebayes_model.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(naivebayes_model, file)
-
+    
     return naivebayes_model
 
 
 def train_nn_model(X_train, y_train):
-    
     with open(ROOT + 'data/final/optuna_best_parameters/nn_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
-
-    # explicitly define hidden_layers and drop it from dictionary
+    
+    # Extract hidden layers configuration
     num_layers = best_params['num_layers']
     hidden_layers = tuple(best_params[f'layer_{i}'] for i in range(num_layers))
     
     best_params = {k: v for k, v in best_params.items() if 'layer' not in k}
-
-    # rename epochs to max_epochs
     best_params['max_epochs'] = best_params.pop('epochs')
-
-    # fit model
-    nn_model = NeuralNetBinaryClassifier(
-                        PyTorchNN(input_dim=X_train.shape[1], hidden_layers=hidden_layers),
-                        criterion=torch.nn.BCEWithLogitsLoss,
-                        optimizer=torch.optim.Adam,
-                        **best_params
-                    )
     
+    # Set PyTorch to use multiple threads
+    torch.set_num_threads(32)
+    
+    # Prepare data once
     X_train_tensor = torch.tensor(X_train.to_numpy(), dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train.to_numpy(), dtype=torch.float32)
-
+    
+    # Create model with callbacks for progress
+    callbacks = [
+        ('progress', tqdm(desc='NN Training', total=best_params['max_epochs'], leave=False))
+    ]
+    
+    nn_model = NeuralNetBinaryClassifier(
+        PyTorchNN(input_dim=X_train.shape[1], hidden_layers=hidden_layers),
+        criterion=torch.nn.BCEWithLogitsLoss,
+        optimizer=torch.optim.Adam,
+        callbacks=callbacks,
+        **best_params
+    )
+    
     nn_model.fit(X_train_tensor, y_train_tensor)
-
-    # save model
+    
+    # Save model
     filename = ROOT + 'data/final/models/nn_model.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(nn_model, file)
-
+    
     return nn_model
 
 
 def train_apiv_recal_model(X_train, y_train):
+    logger.info("APACHE IV recalibration training starts now.")
     
-    # calculate original APACHE IV logodds on train data set for CABG and non-CABG patients
-    print("script has run until apache iv recalibrated training")
-    print("Apache IV recalibration training starts now.")
-
-    # logodds = calculate_hos_mort_non_cabg(X_train, result='logodds') -> does not work, columns removed for split. Will have to this calculation differently in the pipeline
-
-    # train basic logistic regression model with logodds as independent variable
-
+    # TODO: Implement APACHE IV recalibration
+    # logodds calculation and logistic regression training
     
-    return
+    return None
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
