@@ -32,8 +32,8 @@ pipeline:
   extraction: false
   preprocessing_presplit: false
   splitting: false
-  preprocessing_postsplit: true
-  hyperparameter_tuning: true
+  preprocessing_postsplit: false
+  hyperparameter_tuning: false
   modeling: true
   evaluation: true
 
