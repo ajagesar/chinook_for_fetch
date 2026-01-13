@@ -4,6 +4,9 @@ from src.preprocessing_presplit import main as preprocess_presplit
 from src.splitting import main as splitting
 from src.preprocessing_postsplit import main as preprocess_postsplit
 from src.hyperparameter_tuning import main as hyperparameter_tuning
+from src.modeling import main as modeling
+from src.evaluation import main as evaluation
+from src.plotting import main as plotting
 
 
 def main():
@@ -24,6 +27,15 @@ def main():
     if config['pipeline']['hyperparameter_tuning'] == True:
         hyperparameter_tuning()
 
+    if config['pipeline']['modeling'] == True:
+        modeling()
+
+    if config['pipeline']['evaluation'] == True:
+        evaluation()
+
+    if config['pipeline']['plotting'] == True:
+        plotting()
+        
 
     return
 
