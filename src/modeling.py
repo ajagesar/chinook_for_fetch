@@ -243,50 +243,6 @@ def train_nn_model(X_train, y_train):
     X_train_tensor = torch.tensor(X_train.to_numpy(), dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train.to_numpy(), dtype=torch.float32)
     
-    # Create custom callback for detailed progress
-    class DetailedProgressCallback(Callback):
-        def __init__(self):
-            self.pbar = None
-            self.best_loss = float('inf')
-            
-        def initialize(self):
-            self.best_loss = float('inf')
-            return self
-            
-        def on_train_begin(self, net, X=None, y=None, **kwargs):
-            self.pbar = tqdm(total=net.max_epochs, desc='NN Epochs', unit='epoch')
-            
-        def on_epoch_end(self, net, dataset_train=None, dataset_valid=None, **kwargs):
-            # Get current epoch info
-            current_epoch = len(net.history)
-            train_loss = net.history[-1]['train_loss']
-            valid_loss = net.history[-1].get('valid_loss', None)
-            
-            # Calculate improvement
-            improvement = ""
-            if train_loss < self.best_loss:
-                improvement = f"↓ (best: {self.best_loss:.4f}→{train_loss:.4f})"
-                self.best_loss = train_loss
-            
-            # Update progress bar with detailed info
-            postfix = {
-                'train_loss': f'{train_loss:.4f}',
-            }
-            if valid_loss is not None:
-                postfix['valid_loss'] = f'{valid_loss:.4f}'
-            
-            self.pbar.set_postfix(postfix)
-            self.pbar.update(1)
-            
-            # Log every 10 epochs or on last epoch
-            if current_epoch % 10 == 0 or current_epoch == net.max_epochs:
-                logger.info(f"Epoch {current_epoch}/{net.max_epochs} - Loss: {train_loss:.4f} {improvement}")
-        
-        def on_train_end(self, net, X=None, y=None, **kwargs):
-            if self.pbar:
-                self.pbar.close()
-            logger.info(f"NN Training completed - Final loss: {self.best_loss:.4f}")
-    
     # Create model with detailed callbacks
     callbacks = [
         ('progress', DetailedProgressCallback()),
@@ -304,10 +260,39 @@ def train_nn_model(X_train, y_train):
     logger.info("Starting neural network training...")
     nn_model.fit(X_train_tensor, y_train_tensor)
     
-    # Save model
+    # Save using torch.save instead of pickle to avoid callback serialization issues
     filename = ROOT + 'data/final/models/nn_model.pkl'
-    with open(filename, 'wb') as file:
-        pickle.dump(nn_model, file)
+    
+    # Save the complete model state including the wrapper
+    save_dict = {
+        'module_state_dict': nn_model.module_.state_dict(),
+        'input_dim': X_train.shape[1],
+        'hidden_layers': hidden_layers,
+        'best_params': best_params,
+        'criterion': torch.nn.BCEWithLogitsLoss,
+        'optimizer': torch.optim.Adam
+    }
+    
+    torch.save(save_dict, filename)
+    logger.info(f"Model saved to {filename}")
+    
+    # Also save a version compatible with direct loading (optional)
+    # This creates a new model without callbacks that can be pickled
+    nn_model_clean = NeuralNetBinaryClassifier(
+        PyTorchNN(input_dim=X_train.shape[1], hidden_layers=hidden_layers),
+        criterion=torch.nn.BCEWithLogitsLoss,
+        optimizer=torch.optim.Adam,
+        verbose=0,
+        **best_params
+    )
+    nn_model_clean.initialize()
+    nn_model_clean.module_.load_state_dict(nn_model.module_.state_dict())
+    
+    # Save the clean version with pickle
+    filename_clean = ROOT + 'data/final/models/nn_model_clean.pkl'
+    with open(filename_clean, 'wb') as file:
+        pickle.dump(nn_model_clean, file)
+    logger.info(f"Clean model (no callbacks) saved to {filename_clean}")
     
     return nn_model
 
@@ -320,6 +305,51 @@ def train_apiv_recal_model(X_train, y_train):
     
     return None
 
+### --- helper class & functions --- ###
+
+# Create custom callback for detailed progress
+class DetailedProgressCallback(Callback):
+    def __init__(self):
+        self.pbar = None
+        self.best_loss = float('inf')
+        
+    def initialize(self):
+        self.best_loss = float('inf')
+        return self
+        
+    def on_train_begin(self, net, X=None, y=None, **kwargs):
+        self.pbar = tqdm(total=net.max_epochs, desc='NN Epochs', unit='epoch')
+        
+    def on_epoch_end(self, net, dataset_train=None, dataset_valid=None, **kwargs):
+        # Get current epoch info
+        current_epoch = len(net.history)
+        train_loss = net.history[-1]['train_loss']
+        valid_loss = net.history[-1].get('valid_loss', None)
+        
+        # Calculate improvement
+        improvement = ""
+        if train_loss < self.best_loss:
+            improvement = f"↓ (best: {self.best_loss:.4f}→{train_loss:.4f})"
+            self.best_loss = train_loss
+        
+        # Update progress bar with detailed info
+        postfix = {
+            'train_loss': f'{train_loss:.4f}',
+        }
+        if valid_loss is not None:
+            postfix['valid_loss'] = f'{valid_loss:.4f}'
+        
+        self.pbar.set_postfix(postfix)
+        self.pbar.update(1)
+        
+        # Log every 10 epochs or on last epoch
+        if current_epoch % 10 == 0 or current_epoch == net.max_epochs:
+            logger.info(f"Epoch {current_epoch}/{net.max_epochs} - Loss: {train_loss:.4f} {improvement}")
+    
+    def on_train_end(self, net, X=None, y=None, **kwargs):
+        if self.pbar:
+            self.pbar.close()
+        logger.info(f"NN Training completed - Final loss: {self.best_loss:.4f}")
 
 if __name__ == "__main__":
     main()
