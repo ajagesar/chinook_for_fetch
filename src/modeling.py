@@ -12,6 +12,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from skorch import NeuralNetBinaryClassifier
+from skorch.callbacks import Callback
 import torch
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -43,7 +44,7 @@ def main():
     training_tasks = [
         ('XGBoost', train_xgb_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
         ('Logistic Regression', train_lr_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
-        ('SVM', train_svm_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
+        # ('SVM', train_svm_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}), -> does not converge
         ('KNN', train_knn_model, {'X_train': X_train, 'y_train': y_train}),
         ('Naive Bayes', train_naivebayes_model, {'X_train': X_train, 'y_train': y_train}),
     ]
@@ -243,13 +244,19 @@ def train_nn_model(X_train, y_train):
     y_train_tensor = torch.tensor(y_train.to_numpy(), dtype=torch.float32)
     
     # Create custom callback for detailed progress
-    class DetailedProgressCallback:
-        def __init__(self, total_epochs):
-            self.pbar = tqdm(total=total_epochs, desc='NN Epochs', unit='epoch')
+    class DetailedProgressCallback(Callback):
+        def __init__(self):
+            self.pbar = None
             self.best_loss = float('inf')
-            self.epoch_times = []
             
-        def on_epoch_end(self, net, **kwargs):
+        def initialize(self):
+            self.best_loss = float('inf')
+            return self
+            
+        def on_train_begin(self, net, X=None, y=None, **kwargs):
+            self.pbar = tqdm(total=net.max_epochs, desc='NN Epochs', unit='epoch')
+            
+        def on_epoch_end(self, net, dataset_train=None, dataset_valid=None, **kwargs):
             # Get current epoch info
             current_epoch = len(net.history)
             train_loss = net.history[-1]['train_loss']
@@ -275,8 +282,9 @@ def train_nn_model(X_train, y_train):
             if current_epoch % 10 == 0 or current_epoch == net.max_epochs:
                 logger.info(f"Epoch {current_epoch}/{net.max_epochs} - Loss: {train_loss:.4f} {improvement}")
         
-        def on_train_end(self, net, **kwargs):
-            self.pbar.close()
+        def on_train_end(self, net, X=None, y=None, **kwargs):
+            if self.pbar:
+                self.pbar.close()
             logger.info(f"NN Training completed - Final loss: {self.best_loss:.4f}")
     
     # Create model with detailed callbacks
