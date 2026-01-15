@@ -1,6 +1,7 @@
 from utils.helpers import ROOT, config
 from utils.torchneuralnet import PyTorchNN
 import pandas as pd
+import numpy as np
 import pickle
 import yaml
 import matplotlib.pyplot as plt
@@ -194,18 +195,93 @@ def train_nn_model(X_train, y_train):
     hidden_layers = tuple(best_params[f'layer_{i}'] for i in range(num_layers))
     
     best_params = {k: v for k, v in best_params.items() if 'layer' not in k}
-    best_params['max_epochs'] = best_params.pop('epochs')
+    max_epochs = best_params.pop('epochs')
+    best_params['max_epochs'] = max_epochs
+    
+    # Calculate optimal batch size for your hardware
+    n_samples = len(X_train)
+    n_features = X_train.shape[1]
+    
+    # Estimate memory per sample (features + hidden layers + gradients)
+    total_neurons = n_features + sum(hidden_layers) + 1
+    bytes_per_sample = total_neurons * 4 * 3  # float32 * (forward + backward + optimizer)
+    
+    # Use 80% of available RAM for batch, leave 20% for OS/other processes
+    available_ram_gb = 128 * 0.8
+    available_ram_bytes = available_ram_gb * 1024**3
+    
+    # Calculate theoretical max batch size
+    max_batch_size = int(available_ram_bytes / bytes_per_sample)
+    
+    # Practical constraints for optimal training
+    # 1. Use power of 2 for better hardware utilization
+    # 2. Cap at reasonable values for training dynamics
+    # 3. Ensure at least 10 batches per epoch for proper gradient updates
+    min_batches_per_epoch = 10
+    max_practical_batch = min(
+        n_samples // min_batches_per_epoch,  # At least 10 batches
+        16384,  # Cap at 16K for training stability
+        max_batch_size
+    )
+    
+    # Round down to nearest power of 2
+    optimal_batch_size = 2 ** int(np.log2(max_practical_batch))
+    
+    # Override batch_size if not already optimal
+    if 'batch_size' not in best_params or best_params['batch_size'] < optimal_batch_size:
+        best_params['batch_size'] = optimal_batch_size
+        logger.info(f"Optimized batch_size for 128GB RAM: {optimal_batch_size}")
     
     # Set PyTorch to use multiple threads
     torch.set_num_threads(32)
+    
+    logger.info(f"NN Architecture: {X_train.shape[1]} → {' → '.join(map(str, hidden_layers))} → 1")
+    logger.info(f"Training for {max_epochs} epochs with batch_size={best_params.get('batch_size', 128)}")
     
     # Prepare data once
     X_train_tensor = torch.tensor(X_train.to_numpy(), dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train.to_numpy(), dtype=torch.float32)
     
-    # Create model with callbacks for progress
+    # Create custom callback for detailed progress
+    class DetailedProgressCallback:
+        def __init__(self, total_epochs):
+            self.pbar = tqdm(total=total_epochs, desc='NN Epochs', unit='epoch')
+            self.best_loss = float('inf')
+            self.epoch_times = []
+            
+        def on_epoch_end(self, net, **kwargs):
+            # Get current epoch info
+            current_epoch = len(net.history)
+            train_loss = net.history[-1]['train_loss']
+            valid_loss = net.history[-1].get('valid_loss', None)
+            
+            # Calculate improvement
+            improvement = ""
+            if train_loss < self.best_loss:
+                improvement = f"↓ (best: {self.best_loss:.4f}→{train_loss:.4f})"
+                self.best_loss = train_loss
+            
+            # Update progress bar with detailed info
+            postfix = {
+                'train_loss': f'{train_loss:.4f}',
+            }
+            if valid_loss is not None:
+                postfix['valid_loss'] = f'{valid_loss:.4f}'
+            
+            self.pbar.set_postfix(postfix)
+            self.pbar.update(1)
+            
+            # Log every 10 epochs or on last epoch
+            if current_epoch % 10 == 0 or current_epoch == net.max_epochs:
+                logger.info(f"Epoch {current_epoch}/{net.max_epochs} - Loss: {train_loss:.4f} {improvement}")
+        
+        def on_train_end(self, net, **kwargs):
+            self.pbar.close()
+            logger.info(f"NN Training completed - Final loss: {self.best_loss:.4f}")
+    
+    # Create model with detailed callbacks
     callbacks = [
-        ('progress', tqdm(desc='NN Training', total=best_params['max_epochs'], leave=False))
+        ('progress', DetailedProgressCallback(max_epochs)),
     ]
     
     nn_model = NeuralNetBinaryClassifier(
@@ -213,9 +289,11 @@ def train_nn_model(X_train, y_train):
         criterion=torch.nn.BCEWithLogitsLoss,
         optimizer=torch.optim.Adam,
         callbacks=callbacks,
+        verbose=0,  # Suppress default skorch output
         **best_params
     )
     
+    logger.info("Starting neural network training...")
     nn_model.fit(X_train_tensor, y_train_tensor)
     
     # Save model
