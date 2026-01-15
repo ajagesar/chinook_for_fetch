@@ -289,7 +289,7 @@ def train_nn_model(X_train, y_train):
     
     # Create model with detailed callbacks
     callbacks = [
-        ('progress', DetailedProgressCallback(max_epochs)),
+        ('progress', DetailedProgressCallback()),
     ]
     
     nn_model = NeuralNetBinaryClassifier(
