@@ -34,8 +34,9 @@ pipeline:
   splitting: false
   preprocessing_postsplit: false
   hyperparameter_tuning: false
-  modeling: true
+  modeling: false
   evaluation: true
+  plotting: true
 
 model_algorithms:
   xgb:

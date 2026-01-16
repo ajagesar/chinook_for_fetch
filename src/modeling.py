@@ -261,7 +261,7 @@ def train_nn_model(X_train, y_train):
     nn_model.fit(X_train_tensor, y_train_tensor)
     
     # Save using torch.save instead of pickle to avoid callback serialization issues
-    filename = ROOT + 'data/final/models/nn_model.pkl'
+    filename = ROOT + 'data/final/models/nn_model_w_callback.pkl'
     
     # Save the complete model state including the wrapper
     save_dict = {
@@ -289,7 +289,7 @@ def train_nn_model(X_train, y_train):
     nn_model_clean.module_.load_state_dict(nn_model.module_.state_dict())
     
     # Save the clean version with pickle
-    filename_clean = ROOT + 'data/final/models/nn_model_clean.pkl'
+    filename_clean = ROOT + 'data/final/models/nn_model.pkl'
     with open(filename_clean, 'wb') as file:
         pickle.dump(nn_model_clean, file)
     logger.info(f"Clean model (no callbacks) saved to {filename_clean}")
