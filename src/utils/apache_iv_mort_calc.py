@@ -80,6 +80,10 @@ def check_apache_elements(df, config):
 
 def impute_apache_elements(df, missing_apache_variables, config):
 
+    # impute transfer as from floor
+    df['admission_origin'] = df['admission_origin'].fillna('floor')
+
+    # impute features
     features = config['features']
 
     # go through features in config file
