@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import yaml
 
 
-def calculate_apache_mort_score(df, mortality_column):
+def calculate_apache_mort_score(df):
 
 
     # rename columns if necessary

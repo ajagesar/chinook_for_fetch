@@ -201,92 +201,207 @@ features: # todo: use this list to extract features
       dtype: categorical
       options:
         floor:
-          - INW - Inwendig 
-          - MDL - Maag-,Darm-,Leverziekten
-          - LON - Longziekte
-          - NCH - Neurochirurgie
-          - ICV - Intensive Care Volwassenen
-          - HGE - Heelkunde Gastro-enterologie
-          - Z - Anders
-          - NEU - Neurologie
-          - CAR - Cardiologie
-          - URO - Urologie
-          - TRA - Traumatologie
-          - VAT - Vaatchirurgie
-          - HLO - Heelkunde Longen/Oncologie
-          - NEF - Nefrologie
-          - ORT - Orthopedie
-          - KNO - Keel, Neus & Oorarts
-          - GYN - Gynaecologie
-          - HON - Heelkunde Oncologie
-          - HEM - Hematologie
-          - ONI - Oncologie Inwendig
-          - VER - Verloskunde
-          - REU - Reumatologie
-          - PCH - Plastische chirurgie
-          - MON - Mondheelkunde
-          - OBS - Obstetrie
-          - OOG - Oogheelkunde
-          - emergency
-          - AMC INTERNE GENEESKUNDE F6 NOORD/MPU
-          - AMC INTERNE GENEESKUNDE F6 ZUID
-          - VUMC INTENSIVE CARE VOLWASSENEN
-          - AMC TRAUMACHIRURGIE
-          - AMC VERLOSCENTRUM (ZWANGEREN/VERLOS) H3 ZUID
-          - AMC CHIRURGIE EN MDL G6ZUID
-          - AMC NIERZIEKTEN, NIERTRANS, REUMA EN HDZ
-          - AMC GYNAECOLOGIE/INTERNE GENEESKUNDE
-          - AMC HARTBEWAKING / EERSTE HART HULP
-          - AMC CARDIOLOGIE
-          - AMC NEUROCENTER
-          - AMC HCK
-          - AMC ACUTE OPNAME AFDELING
-          - AMC CHIRURGIE EN MDL
-          - AMC ENDOSCOPIE
-          - AMC ORTHOPEDIE EN SPORTGENEESKUNDE
-          - AMC INTERNE GENEESKUNDE F7 NOORD
-          - VUMC ACUTE OPNAME
+          - C-1 MEDIUM CARE VA
+          - C1 C IC
+          - C4 CARDIOLOGIE VA
+          - C3 B IC
+          - C1 B IC
+          - C1 A IC
+          - C3 A IC
+          - C IC
+          - A IC
+          - AFD IC
+          - SEH IC
+          - RECOVERY IC
+          - CCLI IC
+          - C-1 NEXCOB IC
+          - QI NEO POST IC/HC
+          - D3 HARTBEWAKING
+          - CCU/ICU ander ZH
+          - MC
+          - MEDIUM CARE
+          - Q2 ZEE MEDIUM CARE
+          - VUMC 70 MEDIUM CARE
           - AMC CENTRALE MEDIUM CARE
-          - VUMC 5C LON/HLO
-          - VUMC HLK/TRA/PCH
-          - AMC KORTVERBLIJF H5
-          - icu
+
+          - C2 ORTH VA
+          - C51 HEELKUNDE VA
+          - C52 HEELKUNDE VA
+          - C52 HEELKUNDE GE-ONCO
+          - HEELKUNDE VA
+          - C2 NCH / PCH VA
+          - C2 TRAUMACHIRURGIE VA
+          - C2 HOOFD HALS VA
+          - gcs HOOFD HALS CHIRURGIE VA
+          - C2 HOOFD HALS CHIRURGIE VA
+
+          - N2e NEUROLOGIE VA
+          - A4 NEUROLOGIE EN NCW
+          - VUMC 28 NEUROCENTRUM
+          - AMC NEUROCENTER
           - VUMC 2B NEUROCENTRUM
-          - VUMC CARDIOLOGIE
-          - AMC INTENSIVE CARE KINDEREN
-          - AMC PSYCH ACADEMISCHE HIC AMSTERDAM
-          - VUMC 8C OBS
-          - VUMC 3C ONI
-          - VUMC 6B HON/MDL/HGE
-          - AMC VAATCHIRURGIE/MKA
-          - AMC INTERNE SHORT STAY / BESTRALINGSUNIT
-          - VUMC 1B KORT VERBLIJF
-          - VUMC INT/MPU/NGK
           - VUMC 2C NEUROCENTRUM
+          - VUMC 2C NEUROCENTRUM
+
+          - N3e GERIATRIE VA
+          - AS GERIATRIE
+
+          - A3 NIERZIEKTEN
+          - E22 NIERZIEKTEN VA
+
+          - Eee HEMATOLOGIE VA
+          - A3 HEMATOLOGIE
           - VUMC HEMATOLOGIE
-          - VUMC ENDOSCOPIE
-          - VUMC UROLOGIE
-          - VUMC 5D HARTBEWAKING EN EHH
-          - VUMC CHIRURGISCHE ONCOLOGIE EN MDL
-          - VUMC 1C KNO
-          - VUMC 4C MEDISCH PSYCHIATRISCHE UNIT
-          - VUMC 8B GYN
+          - VUMC HEMATOLOGIE
+
+          - MEDISCHE ONCOLOGIE VA
+          - AS MEDISCHE ONCOLOGIE
+          - MEDISCHE ONCOLOGIE DAGBEHANDELING
+          - VUMC 3C ONI
+          - VUMC 3C ONI
           - VUMC DAGBEHANDELING ONCOLOGIE
-          - AMC PSYCH MPU VOLWASSENEN
-          - AMC ANESTHESIOLOGIE
-          - AMC TIJDELIJKE AFWEZIGHEID
-          - AMC ORTHOPEDIE, SPORT EN PLASTISCHE CHIRURGIE
-          - EMMA SPORT
+
+          - (21e VERLOSKUNDE
+          - AMC VERLOSCENTRUM (ZWANGEREN/VERLOS) HB ZUID
+          - AMC VERLOSCENTRUM (ZWANGEREN/VERLOS) H3 ZUID
+          - VUMC 8C OBS
+          - VUMC 8C OBS
+
+          - gcs URO / GYN VA
+          - VUMC 88 GYN
+          - VUMC 8B GYN
+          - VUMC UROLOGIE
+          - VUMC UROLOGIE
+
+          - Q3 SSU VOLWASSENEN
+          - C53 KORT VERBLIJF
+          - AMC KORTVERBLIJF H5
+          - AMC KORTVERBLIJF HS
+          - VUMC IB KORT VERBLIJF
+
+          - INTERNE SPECIALISMEN DAGBEHANDELING
           - AMC DAGBEHANDELING F6 ZUID
+          - AMC DAGBEHANDELING INTERNE
           - VUMC DAGBEHANDELING INTERNE
+          - Dagbehandeling eigen ziekenhuis
+
+          - AMC INTERNE GENEESKUNDE F6 ZUID
+          - AMC INTERNE GENEESKUNDE F6 NOORD/MPU
+          - AMC INTERNE GENEESKUNDE F7 NOORD
+          - VUMC INT/MPU/NGK
+
+          - AMC ACUTE OPNAME AFDELING
+          - VUMC ACUTE OPNAME
+          - AOA
+
+          - AMC CARDIOLOGIE
+          - VUMC CARDIOLOGIE
+          - VUMC CARDIOLOGIE
+          - AMC HARTBEWAKING / EERSTE HART HULP
+          - VUMC SD HARTBEWAKING EN EHH
+          - VUMC 5D HARTBEWAKING EN EHH
+          - VUMC SD CARDIOLOGIE HOLDING
+
+          - DEKKERSWALD Lila LONGZIEKTEN VA
+          - VUMC BEHANDELKAMER LONGZIEKTEN
+          - VUMC SC LON/HLO
+          - VUMC 5C LON/HLO
+          - VUMC LONGBEHANDELING
+
+          - PSB TB UNIT
+          - PUKI VA
+          - PUK2 VA
+
+          - AMC PSYCH MPU VOLWASSENEN
+          - AMC PSYCH MEDIUM CARE KLINIEK
+          - AMC PSYCH ACADEMISCHE HIC AMSTERDAM
+          - VUMC 4C MEDISCH PSYCHIATRISCHE UNIT
+          - ZZ AMC PSYCH MEDIUM CARE DAGCENTRUM
+
+          - AMC ENDOSCOPIE
+          - VUMC ENDOSCOPIE
+
+          - AMC VAATCHIRURGIE/MKA
+          - AMC ORTHOPEDIE EN SPORTGENEESKUNDE
+          - AMC ORTHOPEDIE, SPORT EN PLASTISCHE CHIRURGIE
+          - VUMC HLK/TRA/PCH
+
+          - AMC ANESTHESIOLOGIE
+          - EMMA SPORT
+          - FAUNA
+          - RI NOODIC
+          - E21
+          - F2A
+          - A4 AIG
+          - EOV AIG VA
         or_pacu:
+          - R OK COMPLEX
           - AMC KLINISCHE OK COMPLEX
-          - or
           - AMC DAGCENTRUM OK COMPLEX
-          - AMC DAGBEHANDELING INTERVENTIE RADIOLOGIE
+          - VUMC KLINISCHE OK COMPLEX
+          - DOK COMPLEX
+          - HCK COMPLEX
+          - OHK COMPLEX
+          - OK COMPLEX
+
           - AMC DAGCENTRUM VERKOEVER
+          - RECOVERY
+          - Recovery OLVG
+          - RECOVERY ander ZH
+
+          - RI HOLDING
+          - Cath kamer OLVG
+          - AFD/MC/CCU OK IC
+          - HUIS IC SEH OK IC
+          - VUMC OK ANDERE ZIEKENHUIZEN
         transfer:
-          - transfer from another hospital
+          - SPOEDEISENDE HULP
+          - AMC SEH
+          - VUMC SEH
+          - SEH
+          - EH OLVG
+          - EH OLVG West
+          - EH ander ZH
+          - Ziekenhuis, eigen SEH/EHH
+          - Via Poli/EHBO ander ziekenhuis
+          - Poli/SEH ander ziekenhuis
+          - Ander ziekenhuis
+          - Poli Radboud
+
+          - Eigen woonomgeving
+          - Eigen woonomgeving (niet zijnde andere instelling) of asielzoekerscentrum en onbekend
+          - Thuissituatie
+          - Thuis
+
+          - Andere afdeling
+          - Andere instelling
+          - andere instelling
+          - Verpleeg- / verzorgingshuis
+          - Verpleeghuis
+          - Revalidatie instelling
+
+          - Ziekenhuis, algemeen
+          - Ziekenhuis, categoraal ziekenhuis
+          - Ziekenhuis, psychiatrisch
+          - Ziekenhuis, ander academisch ziekenhuis
+          - Ziekenhuis, eigen Poli
+          - Ziekenhuis, buitenland
+          - Ziekenhuis Buitenland
+
+          - ANDER ZKH
+          - ANDER ZKH (AFD)
+          - ANDER ZKH (IC)
+          - ANDER ZKH (SEH)
+          - Special (medium) Care ander ZH
+          - OK ander ZH vanaf EH ander ZH
+          - OK ander ZH vanaf afd ander ZH
+          - recovery ander ZH
+          - afdeling ander ZH
+
+          - Vanuit MICIJ
+          - VERLOF RADBOUDUMC
+          - Onbekend
+          - Overig
       ids: null
       processed: false
     admission_diagnosis:
