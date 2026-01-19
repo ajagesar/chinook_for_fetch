@@ -208,6 +208,7 @@ features: # todo: use this list to extract features
           - C1 B IC
           - C1 A IC
           - C3 A IC
+          - C3 C IC
           - C IC
           - A IC
           - AFD IC
@@ -228,33 +229,35 @@ features: # todo: use this list to extract features
           - C51 HEELKUNDE VA
           - C52 HEELKUNDE VA
           - C52 HEELKUNDE GE-ONCO
+          - C53 HEELKUNDE VA
           - HEELKUNDE VA
           - C2 NCH / PCH VA
           - C2 TRAUMACHIRURGIE VA
           - C2 HOOFD HALS VA
-          - gcs HOOFD HALS CHIRURGIE VA
+          - C5 HOOFD HALS CHIRURGIE VA
           - C2 HOOFD HALS CHIRURGIE VA
 
-          - N2e NEUROLOGIE VA
-          - A4 NEUROLOGIE EN NCW
+          - N20 NEUROLOGIE VA
+          - A4 NEUROLOGIE EN NCH
           - VUMC 28 NEUROCENTRUM
           - AMC NEUROCENTER
           - VUMC 2B NEUROCENTRUM
           - VUMC 2C NEUROCENTRUM
           - VUMC 2C NEUROCENTRUM
 
-          - N3e GERIATRIE VA
+          - N30 GERIATRIE VA
           - AS GERIATRIE
 
           - A3 NIERZIEKTEN
           - E22 NIERZIEKTEN VA
 
-          - Eee HEMATOLOGIE VA
+          - E00 HEMATOLOGIE VA
           - A3 HEMATOLOGIE
           - VUMC HEMATOLOGIE
           - VUMC HEMATOLOGIE
 
           - MEDISCHE ONCOLOGIE VA
+          - E30 MEDISCHE ONCOLOGIE VA
           - AS MEDISCHE ONCOLOGIE
           - MEDISCHE ONCOLOGIE DAGBEHANDELING
           - VUMC 3C ONI
@@ -262,12 +265,13 @@ features: # todo: use this list to extract features
           - VUMC DAGBEHANDELING ONCOLOGIE
 
           - (21e VERLOSKUNDE
+          - Q10 VERLOSKUNDE
           - AMC VERLOSCENTRUM (ZWANGEREN/VERLOS) HB ZUID
           - AMC VERLOSCENTRUM (ZWANGEREN/VERLOS) H3 ZUID
           - VUMC 8C OBS
           - VUMC 8C OBS
 
-          - gcs URO / GYN VA
+          - C5 URO / GYN VA
           - VUMC 88 GYN
           - VUMC 8B GYN
           - VUMC UROLOGIE
@@ -302,7 +306,7 @@ features: # todo: use this list to extract features
           - VUMC 5D HARTBEWAKING EN EHH
           - VUMC SD CARDIOLOGIE HOLDING
 
-          - DEKKERSWALD Lila LONGZIEKTEN VA
+          - DEKKERSWALD U10 LONGZIEKTEN VA
           - VUMC BEHANDELKAMER LONGZIEKTEN
           - VUMC SC LON/HLO
           - VUMC 5C LON/HLO
@@ -329,11 +333,42 @@ features: # todo: use this list to extract features
           - AMC ANESTHESIOLOGIE
           - EMMA SPORT
           - FAUNA
-          - RI NOODIC
+          - R1 NOODIC
           - E21
           - F2A
           - A4 AIG
           - EOV AIG VA
+          - SEH --> IC
+          - AFD --> IC
+          - HUIS --> IC
+          - ANDER ZKH (AFD) --> IC
+          - MC --> IC
+          - ANDER ZKH (SEH) --> IC
+          - CCU --> IC
+          - AMC CHIRURGIE EN MDL
+          - AMC NIERZIEKTEN, NIERTRANS, REUMA EN HDZ
+          - AMC CHIRURGIE EN MDL G6ZUID
+          - AMC TRAUMACHIRURGIE
+          - VUMC 1C KNO
+          - VUMC CHIRURGISCHE ONCOLOGIE EN MDL
+          - VUMC 6B HON/MDL/HGE
+          - AMC GYNAECOLOGIE/INTERNE GENEESKUNDE
+          - VUMC 1B KORT VERBLIJF
+          - AMC TIJDELIJKE AFWEZIGHEID
+          - VUMC 7D MEDIUM CARE
+          - AMC INTERNE SHORT STAY / BESTRALINGSUNIT
+          - VUMC TIJDELIJKE AFWEZIGHEID
+          - Verpleeg-/verzorgingshuis
+          - VUMC DAGCHIRURGISCH CENTRUM
+          - EMMA FAUNA
+          - VUMC POLI OOGHEELKUNDE
+          - Afdeling OLVG
+          - CCU OLVG
+          - Afdeling OLVG West
+          - PUK1 VA
+          - A5 GERIATRIE
+          - A5 MEDISCHE ONCOLOGIE
+          - Q1 NEO POST IC/HC
         or_pacu:
           - R OK COMPLEX
           - AMC KLINISCHE OK COMPLEX
@@ -343,6 +378,7 @@ features: # todo: use this list to extract features
           - HCK COMPLEX
           - OHK COMPLEX
           - OK COMPLEX
+          - AMC HCK
 
           - AMC DAGCENTRUM VERKOEVER
           - RECOVERY
@@ -354,6 +390,18 @@ features: # todo: use this list to extract features
           - AFD/MC/CCU OK IC
           - HUIS IC SEH OK IC
           - VUMC OK ANDERE ZIEKENHUIZEN
+          - AFD/MC/CCU --> OK --> IC
+          - RECOVERY --> IC
+          - SEH --> OK --> IC
+   
+          - VUMC 5D CARDIOLOGIE HOLDING
+          - VUMC HCK
+          - OK OLVG vanaf afdeling OLVG
+          - OK OLVG vanaf EH OLVG
+          - OK OLVG vanaf CCU OLVG
+          - OK OLVG vanaf EH OLVG West
+          - OK OLVG vanaf afdeling OLVG West
+          - R1 HOLDING
         transfer:
           - SPOEDEISENDE HULP
           - AMC SEH
@@ -391,6 +439,7 @@ features: # todo: use this list to extract features
           - ANDER ZKH
           - ANDER ZKH (AFD)
           - ANDER ZKH (IC)
+          - ANDER ZKH (IC) --> IC
           - ANDER ZKH (SEH)
           - Special (medium) Care ander ZH
           - OK ander ZH vanaf EH ander ZH
@@ -398,10 +447,14 @@ features: # todo: use this list to extract features
           - recovery ander ZH
           - afdeling ander ZH
 
-          - Vanuit MICIJ
+          - Vanuit MICU
           - VERLOF RADBOUDUMC
           - Onbekend
           - Overig
+          - Anders
+          - AMC INTENSIVE CARE VOLWASSENEN
+          - VUMC INTENSIVE CARE VOLWASSENEN
+          - ICU OLVG West
       ids: null
       processed: false
     admission_diagnosis:

@@ -30,7 +30,7 @@ def calculate_apache_mort_score(df):
 
 
 
-    return
+    return df
 
 def rename_for_apache(df):
 
