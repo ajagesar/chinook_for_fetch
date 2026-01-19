@@ -993,12 +993,21 @@ features: # todo: use this list to extract features
       apache: True
       dtype: int
       ids:
-        - 593 # Fraction of Inspired Oxygen --using high flow oxygen therapy
-        - 594 # Fraction of Inspired Oxygen --during invasive mechanical ventilation
-        - 595 # The value of Fraction of inspired Oxygen as registered for the National Intensive Care Evaluation dataset
-        - 596 # Fraction of Inspired Oxygen --during non-invasive ventilation
-        - 597 # Fraction of Inspired Oxygen setting
-        - 598 # Fraction of Inspired Oxygen
+        # - 593 # Fraction of Inspired Oxygen --using high flow oxygen therapy
+        # - 594 # Fraction of Inspired Oxygen --during invasive mechanical ventilation
+        # - 595 # The value of Fraction of inspired Oxygen as registered for the National Intensive Care Evaluation dataset
+        # - 596 # Fraction of Inspired Oxygen --during non-invasive ventilation
+        # - 597 # Fraction of Inspired Oxygen setting
+        # - 598 # Fraction of Inspired Oxygen
+        - 3025408 # Fraction of Inspired Oxygen --during invasive mechanical ventilation
+        - 2000000204 # Fraction of Inspired Oxygen setting
+        - 3020716 # Inhaled oxygen concentration
+        - 2000000205 # Fraction of Inspired Oxygen
+        - 2000000202 # The value of Fraction of inspired Oxygen as registered for the National Intensive Care Evaluation dataset
+        - 2000000101 # ECMO Fi02
+        - 2000000203 # fi02 --non-invasive
+        - 2000000201 # fi02 --highflow
+        - 3024882 # Oxygen/Total gas setting [Volume Fraction] Ventilator
       ref_value: null
       ref_value_apache: null
       min_max_cutoff: [0, 100]
