@@ -14,6 +14,14 @@ def calculate_apache_mort_score(df):
     # get origin options (floor, ICU or OR/PACU)
     df = get_admission_origin(df=df, config=config)
 
+    # TODO calculate ARF + urine_production notation
+
+        # *Acute Renal Failure (ARF) is defined as creatinine >=1.5 mg/dl
+        # as creatinine >=1.5 mg/dl
+        # and urine output <410 cc/day and no 
+        # chronic dialysis
+
+        
     # check missing variables
     missing_apache_variables = check_apache_elements(df=df, config=config)
 

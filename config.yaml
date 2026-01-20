@@ -889,11 +889,13 @@ features: # todo: use this list to extract features
       apache: true
       dtype: float
       ids:
-        - 145  # 
-        - 149  # 
-        - 150  # 
-        - 151  # 
-        - 140   # 
+        # - 145  # 
+        # - 149  # 
+        # - 150  # 
+        # - 151  # 
+        # - 140   # 
+        - 3014315 # Urine output
+        - 21491173 # Urine output measured by nephrostomy
       ref_value: null
       ref_value_apache: null
       min_max_cutoff: null
