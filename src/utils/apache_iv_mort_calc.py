@@ -21,7 +21,8 @@ def calculate_apache_mort_score(df):
         # and urine output <410 cc/day and no 
         # chronic dialysis
 
-        
+    df = calculate_arf(df=df)
+
     # check missing variables
     missing_apache_variables = check_apache_elements(df=df, config=config)
 
@@ -34,11 +35,11 @@ def calculate_apache_mort_score(df):
     # calculate APS score
     df = calculate_aps_score(df=df, apache_config=apache_config)
 
-    # Code for calculating mortality based on CABG and non-CABG diagnosis
+    # Code for calculating mortality based on CABG and non-CABG diagnosis PM return score in the end!
 
 
 
-    return df
+    return df # TODO change to score at the end
 
 def rename_for_apache(df):
 
@@ -54,6 +55,13 @@ def get_admission_origin(df, config):
     # go through all origin options and assign them to df
     for origin_option, specific_department in config['features']['static']['admission_origin']['options'].items():
         df.loc[df['admitted_from_source_value'].isin(specific_department), 'admission_origin'] = origin_option
+
+    return df
+
+
+def calculate_arf(df):
+
+    df['arf'] = (df['creatinine'] / 0.0884 >= 1.5) & (df['urine_output'] < 410)
 
     return df
 
