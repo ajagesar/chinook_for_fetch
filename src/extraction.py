@@ -385,12 +385,18 @@ def get_nice_aumc():
     # from EHR TODO
 
     # select necessary columns only
+    mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed']
+    epic_ids = ['PSEUDO_PAT_ID', 'PSEUDO_PAT_ENC_CSN_ID']
+
     relevant_columns = ['PatientID_hashed', 'Hospitalnumber_hashed', 'ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model', 'nice_ap4_excluded']
 
-    amc_mv = amc_mv[relevant_columns].copy()
+    amc_mv = amc_mv[mv_ids + relevant_columns].copy()
     # vumc_mv = vumc_mv[relevant_columns].copy() -> not valid
-    amc_epic = amc_epic[relevant_columns].copy()
-    aumc_epic = aumc_epic[relevant_columns].copy()
+    amc_epic = amc_epic[epic_ids + relevant_columns].copy()
+    aumc_epic = aumc_epic[epic_ids + relevant_columns].copy()
+
+    # keep notnas
+    
 
     return
 
