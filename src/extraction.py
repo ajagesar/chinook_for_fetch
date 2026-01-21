@@ -377,12 +377,10 @@ def close_connection(conn):
 def get_nice_aumc():
 
     # from NICE itself
-    amc_mv = pd.read_csv(ROOT + "data/raw/nice/amc_mv_nice_data.csv", index_col=False)
-    # vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv", index_col=False) -> not valid
+    # amc_mv = pd.read_csv(ROOT + "data/raw/nice/amc_mv_nice_data.csv", index_col=False)
+    # vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv", index_col=False) -> use Epic only due to accurate APACHE IV scores
     amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv", index_col=False)
     aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv", index_col=False)
-
-    # from EHR TODO
 
     # select necessary columns only
     mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed']
@@ -390,16 +388,16 @@ def get_nice_aumc():
 
     relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model', 'nice_ap4_excluded']
 
-    amc_mv = amc_mv[mv_ids + relevant_columns].copy()
-    # vumc_mv = vumc_mv[relevant_columns].copy() -> not valid
-    amc_epic = amc_epic[epic_ids + relevant_columns].copy()
+    # amc_mv = amc_mv[mv_ids + relevant_columns].copy()
+    # vumc_mv = vumc_mv[relevant_columns].copy()
+    amc_epic = amc_epic[epic_ids + relevant_columns].copy() # -> use Epic only due to accurate NICE scores
     aumc_epic = aumc_epic[epic_ids + relevant_columns].copy()
 
-    # rename identifiers to OMOP schema: person_id and visit_occurrence_id
-    amc_mv = amc_mv.rename(columns={
-        'PatientID_hashed': 'person_id',
-        'Hospitalnumber_hashed': 'visit_occurrence_id'
-    })
+    # # rename identifiers to OMOP schema: person_id and visit_occurrence_id
+    # amc_mv = amc_mv.rename(columns={
+    #     'PatientID_hashed': 'person_id',
+    #     'Hospitalnumber_hashed': 'visit_occurrence_id'
+    # })
     
     amc_epic = amc_epic.rename(columns={
         'PSEUDO_PAT_ID': 'person_id',
@@ -412,10 +410,11 @@ def get_nice_aumc():
     })
 
     # concat all files to one aumc dataframe
-    aumc_df = pd.concat([amc_mv, amc_epic, aumc_epic], ignore_index=True)
+    # aumc_df = pd.concat([amc_mv, amc_epic, aumc_epic], ignore_index=True)
+    aumc_df = pd.concat([amc_epic, aumc_epic], ignore_index=True)
 
     # drop rows where person_id or visit_occurrence_id is NaN
-    aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id'])
+    aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model'])
     
     # count NaNs per row
     aumc_df['nan_count'] = aumc_df.isna().sum(axis=1)
