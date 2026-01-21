@@ -413,9 +413,16 @@ def get_nice_aumc():
 
     # concat all files to one aumc dataframe
     aumc_df = pd.concat([amc_mv, amc_epic, aumc_epic], ignore_index=True)
+
+    # drop rows where person_id or visit_occurrence_id is NaN
+    aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id'])
     
+    # get number of unique combinations
+    n_unique_combinations = aumc_df[['person_id', 'visit_occurrence_id']].drop_duplicates().shape[0]
+
 
     return
+
 
 if __name__=="__main__":
     main()
