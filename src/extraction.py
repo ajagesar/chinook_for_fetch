@@ -385,7 +385,7 @@ def get_nice_aumc():
     # from EHR TODO
 
     # select necessary columns only
-    relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp insuf', 'imm insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_mode1', 'nice_ap4_exc1uded']
+    relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model', 'nice_ap4_excluded']
 
     amc_mv = amc_mv[relevant_columns].copy()
     vumc_mv = vumc_mv[relevant_columns].copy()
