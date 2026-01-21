@@ -430,7 +430,7 @@ def get_nice_aumc():
     aumc_df = aumc_df.drop(columns=['nan_count'])
 
     # get number of unique combinations
-    n_unique_combinations = aumc_df[['person_id', 'visit_occurrence_id', '']].drop_duplicates().shape[0]
+    n_unique_combinations = aumc_df.shape[0]
 
 
     return
