@@ -428,9 +428,10 @@ def get_nice_aumc():
     # drop the helper column
     aumc_df = aumc_df.drop(columns=['nan_count'])
 
-    # get number of unique combinations
-    n_unique_combinations = aumc_df.shape[0]
+    # get only columns required for modeling
+    aumc_df = aumc_df[["person_id", "visit_occurrence_id", "nice_ap4_score", "nice_ap4_model"]].copy()
 
+    aumc_df.to_csv(ROOT + "intermediate/nice/aumc.csv")
 
     return
 
