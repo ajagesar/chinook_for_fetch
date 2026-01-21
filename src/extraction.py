@@ -22,6 +22,8 @@ def main():
 
     close_connection(conn=conn)
 
+    nice_aumc = get_nice_aumc()
+
     return
 
 
@@ -369,6 +371,15 @@ def database_connect(path_to_duck_db):
 def close_connection(conn):
 
     conn.close()
+
+    return
+
+def get_nice_aumc():
+
+    amc_mv = pd.read_csv(ROOT + "data/raw/amc_mv_nice_data.csv")
+    amc_epic = pd.read_csv(ROOT + "data/raw/nice_icu_data_amc_hashed_clean.csv")
+    vumc_mv = pd.read_csv(ROOT + "data/raw/vumc_mv_nice_data.csv")
+    aumc_epic = pd.read_csv(ROOT + "data/raw/nice_icu_data_aumc_hashed_clean.csv")
 
     return
 
