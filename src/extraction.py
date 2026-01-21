@@ -15,7 +15,7 @@ def main():
 
     mortality = get_mortality(conn, features)
     admissions = get_admissions(conn, features)
-    measurements = get_measurements(conn, features, extraction_window)
+    # measurements = get_measurements(conn, features, extraction_window) 
     weight = get_weight(conn, features)
     height = get_height(conn, features)
     ventilated = get_ventilated(conn, features, extraction_window)
@@ -376,10 +376,10 @@ def close_connection(conn):
 
 def get_nice_aumc():
 
-    amc_mv = pd.read_csv(ROOT + "data/raw/amc_mv_nice_data.csv")
-    amc_epic = pd.read_csv(ROOT + "data/raw/nice_icu_data_amc_hashed_clean.csv")
-    vumc_mv = pd.read_csv(ROOT + "data/raw/vumc_mv_nice_data.csv")
-    aumc_epic = pd.read_csv(ROOT + "data/raw/nice_icu_data_aumc_hashed_clean.csv")
+    amc_mv = pd.read_csv(ROOT + "data/raw/nice/amc_mv_nice_data.csv")
+    amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv")
+    vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv")
+    aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv")
 
     return
 
