@@ -417,8 +417,20 @@ def get_nice_aumc():
     # drop rows where person_id or visit_occurrence_id is NaN
     aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id'])
     
+    # count NaNs per row
+    aumc_df['nan_count'] = aumc_df.isna().sum(axis=1)
+    
+    # keep the row with the least NaNs for each combination
+    aumc_df = aumc_df.sort_values('nan_count').drop_duplicates(
+        subset=['person_id', 'visit_occurrence_id'], 
+        keep='first'
+    )
+    
+    # drop the helper column
+    aumc_df = aumc_df.drop(columns=['nan_count'])
+
     # get number of unique combinations
-    n_unique_combinations = aumc_df[['person_id', 'visit_occurrence_id']].drop_duplicates().shape[0]
+    n_unique_combinations = aumc_df[['person_id', 'visit_occurrence_id', '']].drop_duplicates().shape[0]
 
 
     return
