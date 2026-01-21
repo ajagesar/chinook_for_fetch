@@ -378,17 +378,17 @@ def get_nice_aumc():
 
     # from NICE itself
     amc_mv = pd.read_csv(ROOT + "data/raw/nice/amc_mv_nice_data.csv", index_col=False)
-    vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv", index_col=False)
+    # vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv", index_col=False) -> not valid
     amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv", index_col=False)
     aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv", index_col=False)
 
     # from EHR TODO
 
     # select necessary columns only
-    relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model', 'nice_ap4_excluded']
+    relevant_columns = ['PatientID_hashed', 'Hospitalnumber_hashed', 'ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model', 'nice_ap4_excluded']
 
     amc_mv = amc_mv[relevant_columns].copy()
-    vumc_mv = vumc_mv[relevant_columns].copy()
+    # vumc_mv = vumc_mv[relevant_columns].copy() -> not valid
     amc_epic = amc_epic[relevant_columns].copy()
     aumc_epic = aumc_epic[relevant_columns].copy()
 
