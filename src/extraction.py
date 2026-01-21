@@ -376,10 +376,21 @@ def close_connection(conn):
 
 def get_nice_aumc():
 
-    amc_mv = pd.read_csv(ROOT + "data/raw/nice/amc_mv_nice_data.csv")
-    amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv")
-    vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv")
-    aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv")
+    # from NICE itself
+    amc_mv = pd.read_csv(ROOT + "data/raw/nice/amc_mv_nice_data.csv", index_col=False)
+    vumc_mv = pd.read_csv(ROOT + "data/raw/nice/vumc_mv_nice_data.csv", index_col=False)
+    amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv", index_col=False)
+    aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv", index_col=False)
+
+    # from EHR TODO
+
+    # select necessary columns only
+    relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp insuf', 'imm insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_mode1', 'nice_ap4_exc1uded']
+
+    amc_mv = amc_mv[relevant_columns].copy()
+    vumc_mv = vumc_mv[relevant_columns].copy()
+    amc_epic = amc_epic[relevant_columns].copy()
+    aumc_epic = aumc_epic[relevant_columns].copy()
 
     return
 
