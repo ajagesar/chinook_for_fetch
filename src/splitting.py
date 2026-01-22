@@ -11,7 +11,7 @@ def main():
     with open(ROOT + 'data/intermediate/features.yaml', 'r') as f:
         features = yaml.safe_load(f)
 
-    if config['splitting_method'] == 'sklearn':
+    if config['splitting_method']['sklearn'] == True:
 
         X = preprocessed_data[features]
         y = preprocessed_data['in_icu_death']
@@ -35,7 +35,7 @@ def main():
         return
 
 
-    if config['splitting_method'] == 'nice':
+    if config['splitting_method']['nice'] == True:
 
         # read nice data
         nice_aumc = pd.read_csv(ROOT + "intermediate/nice/aumc.csv")
