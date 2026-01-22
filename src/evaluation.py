@@ -33,10 +33,13 @@ def main():
 
         # convert to tensor if working with the neural network
         if model_algorithm == 'nn':
-            X_test = torch.tensor(X_test.to_numpy(), dtype=torch.float32)
-
-        y_pred_proba = model.predict_proba(X_test)[:,1]
-        y_pred = model.predict(X_test)
+            X_test_tensor = torch.tensor(X_test.to_numpy(), dtype=torch.float32)
+            y_pred_proba = model.predict_proba(X_test_tensor)[:,1]
+            y_pred = model.predict(X_test_tensor)
+        
+        else:
+            y_pred_proba = model.predict_proba(X_test)[:,1]
+            y_pred = model.predict(X_test)
 
         # Calculate the AUC
         fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
@@ -101,7 +104,7 @@ def main():
 def evaluate_apacheiv(X_test, y_test):
 
     # join nice data with test set
-    apache_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc")
+    apache_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
     X_test = pd.merge(left=X_test, right=apache_data, how="left", on=["person_id", "visit_occurrence_id"])
 

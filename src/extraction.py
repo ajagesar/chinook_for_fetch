@@ -449,7 +449,7 @@ def get_nice_aumc():
     # get only columns required for modeling
     aumc_df = aumc_df[["person_id", "visit_occurrence_id", "nice_ap4_score", "nice_ap4_model"]].copy()
 
-    aumc_df.to_csv(ROOT + "intermediate/nice/aumc.csv")
+    aumc_df.to_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
     return
 
