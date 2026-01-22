@@ -38,7 +38,7 @@ def main():
     if config['splitting_method']['nice'] == True:
 
         # read nice data
-        nice_aumc = pd.read_csv(ROOT + "intermediate/nice/aumc.csv")
+        nice_aumc = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
         # merge to keep only matching rows in the same order as nice_aumc
         test_data = nice_aumc[['person_id', 'visit_occurrence_id']].merge(
