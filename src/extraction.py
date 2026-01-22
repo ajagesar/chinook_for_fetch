@@ -114,6 +114,23 @@ def get_mortality(conn, features):
 
 def get_admissions(conn, features):
     
+    sql_admission_w_care_site = f"""
+    SELECT 
+        person.person_id,
+        person.gender_concept_id,
+        person.birth_datetime,
+        visit_occurrence.visit_start_datetime,
+        visit_occurrence.visit_end_datetime,
+        visit_occurrence.admitted_from_source_value,
+        visit_occurrence.care_site_id
+        care_site.care_site_name
+    FROM omop.person AS person
+    LEFT JOIN omop.visit_occurrence AS visit_occurrence
+        ON person.person_id = visit_occurrence.person_id
+    LEFT JOIN omop.care_site AS care_site
+        ON visit_occurrence.care_site_id = care_site.care_site_id
+    """
+
     sql_admission = f"""
     SELECT 
         person.person_id,
@@ -121,7 +138,8 @@ def get_admissions(conn, features):
         person.birth_datetime,
         visit_occurrence.visit_start_datetime,
         visit_occurrence.visit_end_datetime,
-        visit_occurrence.admitted_from_source_value
+        visit_occurrence.admitted_from_source_value,
+        visit_occurrence.care_site_id
     FROM omop.person AS person
     LEFT JOIN omop.visit_occurrence AS visit_occurrence
         ON person.person_id = visit_occurrence.person_id

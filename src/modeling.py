@@ -11,6 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 from skorch import NeuralNetBinaryClassifier
 from skorch.callbacks import Callback
 import torch
@@ -300,7 +301,12 @@ def train_nn_model(X_train, y_train):
 def train_apiv_recal_model(X_train, y_train):
     logger.info("APACHE IV recalibration training starts now.")
     
-    # TODO: Implement APACHE IV recalibration
+    # get apache scores and recalibrate them using a logistic regression model
+
+
+    # get model object and fit (NICE method)
+    apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
+
     # logodds calculation and logistic regression training
     
     return None

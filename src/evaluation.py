@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import xgboost as xgb
 from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score
 from sklearn.calibration import calibration_curve
+from sklearn.linear_model import LogisticRegression
 import torch
 
 
@@ -62,6 +63,9 @@ def main():
 
         dict_of_results[model_algorithms[model_algorithm]['label']] = results
 
+    # evaluate APACHE IV
+    evaluate_apacheiv(X_test=X_test, y_test=y_test)
+
     # export list for results table
     ## convert to serializable format (np.floats are not serializable, native python floats are)
     def convert_to_serializable(obj):
@@ -90,6 +94,22 @@ def main():
         [filename_of_model[0], model_label[1], model_load_from_pickle[2], fpr[3], tpr[4], thresholds[5], auc_model[6], precision[7], recall[8], f1_model[9]]
     ]
     """
+
+    return
+
+
+def evaluate_apacheiv(X_test, y_test):
+
+    # join nice data with test set
+    apache_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc")
+
+    X_test = pd.merge(left=X_test, right=apache_data, how="left", on=["person_id", "visit_occurrence_id"])
+
+    # evaluate logodds & probability with y_test
+
+    # recalibrate
+    apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
+    # apache_recalibrated.fit()
 
     return
 

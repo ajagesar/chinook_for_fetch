@@ -65,8 +65,8 @@ def main():
     # load data for apache calculation
     df = pd.read_csv(ROOT + 'data/intermediate/preprocessed_presplit_pre-apache.csv')
 
-    # calculate apache mortality scores
-    df = calculate_apache_mort_score(df=df)
+    # # calculate apache mortality scores -> for now commented out
+    # df = calculate_apache_mort_score(df=df)
 
     # save results
     df.to_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')

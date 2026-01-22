@@ -38,6 +38,10 @@ pipeline:
   evaluation: true
   plotting: true
 
+splitting_method:
+  sklearn: false
+  nice: true
+
 model_algorithms:
   xgb:
     label: 'xgb'
