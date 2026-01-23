@@ -409,7 +409,7 @@ def get_nice_aumc():
     # mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed']
     # epic_ids = ['PSEUDO_PAT_ID', 'PSEUDO_PAT_ENC_CSN_ID']
     mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed', 'ICOpnameDatumTijd']
-    epic_ids = ['PSEUDO_PAT_ID', 'Hospitalnumber_hashed', 'ICOpnameDatumTijd']
+    epic_ids = ['PSEUDO_PAT_ID', 'PSEUDO_PAT_ENC_CSN_ID', 'ICOpnameDatumTijd']
 
     relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_prob', 'nice_ap4_model', 'nice_ap4_excluded']
 
