@@ -40,22 +40,24 @@ def main():
         # read nice data
         nice_aumc = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
-        # ensure matching dtypes for merge keys
-        nice_aumc['person_id'] = nice_aumc['person_id'].astype(int)
-        nice_aumc['visit_occurrence_id'] = nice_aumc['visit_occurrence_id'].astype(float)
-        preprocessed_data['person_id'] = preprocessed_data['person_id'].astype(int)
-        preprocessed_data['visit_occurrence_id'] = preprocessed_data['visit_occurrence_id'].astype(float)
+        # # ensure matching dtypes for merge keys
+        # nice_aumc['person_id'] = nice_aumc['person_id'].astype(int)
+        # nice_aumc['visit_occurrence_id'] = nice_aumc['visit_occurrence_id'].astype(float)
+        # preprocessed_data['person_id'] = preprocessed_data['person_id'].astype(int)
+        # preprocessed_data['visit_occurrence_id'] = preprocessed_data['visit_occurrence_id'].astype(float)
 
-        # merge to keep only matching rows in the same order as nice_aumc
-        test_data = nice_aumc[['person_id', 'visit_occurrence_id']].merge(
+
+
+        # merge to keep only matching rows in the same order as nice_aumc # TODO check if all nice data rows is getting merge
+        test_data = nice_aumc[['person_id', 'visit_start_datetime']].merge(
             preprocessed_data,
-            on=['person_id', 'visit_occurrence_id'],
+            on=['person_id', 'visit_start_datetime'],
             how='inner'
         )
         
         # create train set from rows not in nice_aumc
-        test_mask = preprocessed_data.set_index(['person_id', 'visit_occurrence_id']).index.isin(
-            nice_aumc.set_index(['person_id', 'visit_occurrence_id']).index
+        test_mask = preprocessed_data.set_index(['person_id', 'visit_start_datetime']).index.isin(
+            nice_aumc.set_index(['person_id', 'visit_start_datetime']).index
         )
         train_data = preprocessed_data[~test_mask]
         

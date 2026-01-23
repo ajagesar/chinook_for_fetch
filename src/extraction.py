@@ -405,11 +405,13 @@ def get_nice_aumc():
     amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv", index_col=False)
     aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv", index_col=False)
 
-    # select necessary columns only TODO fix conversion of icudata hash to person_id and visit_occurrence_id
-    mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed']
-    epic_ids = ['PSEUDO_PAT_ID', 'PSEUDO_PAT_ENC_CSN_ID']
+    # select necessary columns only TODO fix conversion of icudata hash to person_id and visit_occurrence_id -> no link with visit_occurrence_id, use date of admission?
+    # mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed']
+    # epic_ids = ['PSEUDO_PAT_ID', 'PSEUDO_PAT_ENC_CSN_ID']
+    mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed', 'ICOpnameDatumTijd']
+    epic_ids = ['PSEUDO_PAT_ID', 'Hospitalnumber_hashed', 'ICOpnameDatumTijd']
 
-    relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model', 'nice_ap4_excluded']
+    relevant_columns = ['ac_ren_fail', 'dysrhytmia', 'cva', 'gastro_bleed', 'intracran_mass', 'chr_renal_insuf', 'chron_dialysis', 'neoplasm', 'aids', 'hem_malign', 'cirrhosis', 'cardio_vasc_insuf', 'resp_insuf', 'imm_insuf', 'apache_score', 'apache_prob', 'nice_saps_score', 'nice_saps_prob', 'nice_apache_score', 'nice_apache3_score', 'thrombotherap', 'ap4diag1', 'ap4diag2', 'numgraft', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_prob', 'nice_ap4_model', 'nice_ap4_excluded']
 
     # amc_mv = amc_mv[mv_ids + relevant_columns].copy()
     # vumc_mv = vumc_mv[relevant_columns].copy()
@@ -424,27 +426,29 @@ def get_nice_aumc():
     
     amc_epic = amc_epic.rename(columns={
         'PSEUDO_PAT_ID': 'person_id',
-        'PSEUDO_PAT_ENC_CSN_ID': 'visit_occurrence_id'
+        'PSEUDO_PAT_ENC_CSN_ID': 'visit_occurrence_id',
+        'ICOpnameDatumTijd': 'visit_start_datetime'
     })
     
     aumc_epic = aumc_epic.rename(columns={
         'PSEUDO_PAT_ID': 'person_id',
-        'PSEUDO_PAT_ENC_CSN_ID': 'visit_occurrence_id'
+        'PSEUDO_PAT_ENC_CSN_ID': 'visit_occurrence_id',
+        'ICOpnameDatumTijd': 'visit_start_datetime'
     })
 
     # concat all files to one aumc dataframe
     # aumc_df = pd.concat([amc_mv, amc_epic, aumc_epic], ignore_index=True)
-    aumc_df = pd.concat([amc_epic, aumc_epic], ignore_index=True)
+    aumc_df = pd.concat([amc_epic, aumc_epic], ignore_index=True), 
 
     # drop rows where person_id or visit_occurrence_id is NaN
-    aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id', 'nice_ap4_aps' , 'nice_ap4_score', 'nice_ap4_model'])
+    aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id', 'visit_start_datetime', 'nice_ap4_aps' , 'nice_ap4_score', "nice_ap4_prob", 'nice_ap4_model'])
     
     # count NaNs per row
     aumc_df['nan_count'] = aumc_df.isna().sum(axis=1)
     
     # keep the row with the least NaNs for each combination
     aumc_df = aumc_df.sort_values('nan_count').drop_duplicates(
-        subset=['person_id', 'visit_occurrence_id'], 
+        subset=['person_id', 'visit_occurrence_id', 'visit_start_datetime'], 
         keep='first'
     )
     
@@ -452,7 +456,7 @@ def get_nice_aumc():
     aumc_df = aumc_df.drop(columns=['nan_count'])
 
     # get only columns required for modeling
-    aumc_df = aumc_df[["person_id", "visit_occurrence_id", "nice_ap4_score", "nice_ap4_model"]].copy()
+    aumc_df = aumc_df[["person_id", "visit_occurrence_id", 'visit_start_datetime,', "nice_ap4_score", "nice_ap4_prob", "nice_ap4_model"]].copy()
 
     # hash person_id and visit_occurrence_id for merging with icudata using PySpark
     spark = SparkSession.builder.appName("hash_ids").getOrCreate()
