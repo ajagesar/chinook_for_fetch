@@ -40,6 +40,12 @@ def main():
         # read nice data
         nice_aumc = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
+        # ensure matching dtypes for merge keys
+        nice_aumc['person_id'] = nice_aumc['person_id'].astype(int)
+        nice_aumc['visit_occurrence_id'] = nice_aumc['visit_occurrence_id'].astype(float)
+        preprocessed_data['person_id'] = preprocessed_data['person_id'].astype(int)
+        preprocessed_data['visit_occurrence_id'] = preprocessed_data['visit_occurrence_id'].astype(float)
+
         # merge to keep only matching rows in the same order as nice_aumc
         test_data = nice_aumc[['person_id', 'visit_occurrence_id']].merge(
             preprocessed_data,
