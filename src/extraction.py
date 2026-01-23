@@ -3,6 +3,9 @@ import duckdb
 import pandas as pd
 import yaml
 
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, xxhash64
+
 def main():
 
     conn = database_connect(path_to_duck_db=config['data']['icudata_external'])
@@ -402,7 +405,7 @@ def get_nice_aumc():
     amc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_amc_hashed_clean.csv", index_col=False)
     aumc_epic = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv", index_col=False)
 
-    # select necessary columns only
+    # select necessary columns only TODO fix conversion of icudata hash to person_id and visit_occurrence_id
     mv_ids = ['PatientID_hashed', 'Hospitalnumber_hashed']
     epic_ids = ['PSEUDO_PAT_ID', 'PSEUDO_PAT_ENC_CSN_ID']
 
@@ -450,6 +453,23 @@ def get_nice_aumc():
 
     # get only columns required for modeling
     aumc_df = aumc_df[["person_id", "visit_occurrence_id", "nice_ap4_score", "nice_ap4_model"]].copy()
+
+    # hash person_id and visit_occurrence_id for merging with icudata using PySpark
+    spark = SparkSession.builder.appName("hash_ids").getOrCreate()
+    
+    # Convert pandas DataFrame to Spark DataFrame
+    spark_df = spark.createDataFrame(aumc_df)
+    
+    # Apply xxhash64 to person_id and visit_occurrence_id
+    spark_df = spark_df.withColumn("person_id", xxhash64(col("person_id").cast("string")))
+    spark_df = spark_df.withColumn("visit_occurrence_id", xxhash64(col("visit_occurrence_id").cast("string")))
+    
+    # Convert back to pandas
+    aumc_df = spark_df.toPandas()
+    
+    # Stop Spark session
+    spark.stop()
+
 
     aumc_df.to_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
