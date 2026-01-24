@@ -153,7 +153,7 @@ def get_admissions(conn, features):
     # check if age is being set as true for extraction
     if features['static']['age']['extract'] is True:
         # get age
-        admissions = pd.read_sql(sql=sql_admission, con=conn)
+        admissions = pd.read_sql(sql=sql_admission_w_care_site, con=conn)
         admissions['age'] = (admissions['visit_start_datetime'] - admissions['birth_datetime']).dt.days / 365.25
         admissions['age'] = pd.to_numeric(admissions['age'], errors='coerce')
         admissions['age'] = admissions['age'].round().astype('Int64')
