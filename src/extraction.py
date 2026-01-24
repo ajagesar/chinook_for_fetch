@@ -126,8 +126,9 @@ def get_admissions(conn, features):
         visit_occurrence.visit_start_datetime,
         visit_occurrence.visit_end_datetime,
         visit_occurrence.admitted_from_source_value,
-        visit_occurrence.care_site_id
-        care_site.care_site_name
+        visit_occurrence.care_site_id,
+        care_site.care_site_name,
+        visit_occurrence.filename
     FROM omop.person AS person
     LEFT JOIN omop.visit_occurrence AS visit_occurrence
         ON person.person_id = visit_occurrence.person_id
@@ -144,7 +145,8 @@ def get_admissions(conn, features):
         visit_occurrence.visit_start_datetime,
         visit_occurrence.visit_end_datetime,
         visit_occurrence.admitted_from_source_value,
-        visit_occurrence.care_site_id
+        visit_occurrence.care_site_id,
+        visit_occurrence.filename
     FROM omop.person AS person
     LEFT JOIN omop.visit_occurrence AS visit_occurrence
         ON person.person_id = visit_occurrence.person_id
