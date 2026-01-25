@@ -41,6 +41,7 @@ pipeline:
 splitting_method:
   sklearn: false
   nice: true
+  db_origin: false
 
 model_algorithms:
   xgb:
