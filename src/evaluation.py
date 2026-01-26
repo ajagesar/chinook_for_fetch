@@ -107,9 +107,9 @@ def evaluate_apacheiv():
     nice_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
     test_data = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
 
-    # convert nice_data and test_data to datetime
+    # convert nice_data and test_data to date
     nice_data['visit_start_date'] = pd.to_datetime(nice_data['visit_start_datetime']).dt.date
-    test_data['visit_start_date'] = pd.to_datetime(test_data['visit_start_datetime']).dt.date
+    test_data['visit_start_date'] = pd.to_datetime(test_data['visit_start_date']).dt.date
 
 
     test = test_data.merge(nice_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])

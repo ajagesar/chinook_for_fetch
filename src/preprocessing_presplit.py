@@ -386,6 +386,13 @@ def get_missing_statistics(df):
     # export to html for easier import in paper through myst-md
     missing_value_df.to_html(ROOT + 'data/intermediate/exploration/missing_values.html', index=False)
 
+    # Create dictionary format for YAML
+    missing_dict = percent_missing.to_dict()
+    
+    # Save as YAML
+    with open(ROOT + 'data/intermediate/exploration/missing_values.yaml', 'w') as f:
+        yaml.dump(missing_dict, f, default_flow_style=False, sort_keys=False)
+
 def get_patient_characteristics(df):
 
     # TODO get table 1 / patient characteristics here
