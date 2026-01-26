@@ -109,9 +109,13 @@ def evaluate_apacheiv(X_test, y_test):
     # join nice data with test set
     test_data = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
 
-    X_test = pd.merge(left=test_data, right=apache_data, how="left", on=["person_id", "visit_start_date"])
+    # convert apache_data to datetime
+    apache_data['visit_start_date'] = pd.to_datetime(apache_data['visit_start_datetime']).dt.date
+
+    X_test = pd.merge(left=test_data, right=apache_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
 
     # evaluate logodds & probability with y_test
+    
 
     # recalibrate
     apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
