@@ -10,7 +10,7 @@ def main():
     preprocessed_data = pd.read_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')
     with open(ROOT + 'data/intermediate/features.yaml', 'r') as f:
         features_list = yaml.safe_load(f)
-        features = sorted(features_list['features'])
+        features = sorted(features_list)
 
     if config['splitting_method']['sklearn'] == True:
 

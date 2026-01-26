@@ -107,7 +107,7 @@ def train_xgb_model(X_train, y_train, random_state=42):
     best_params['tree_method'] = 'hist'  # Faster histogram-based algorithm
     
     # Fit model
-    xgb_model = xgb.XGBClassifier(
+    xgb_model = xgb.XGBClassifier(  
         **best_params, 
         objective="binary:logistic", 
         enable_categorical=True, 
