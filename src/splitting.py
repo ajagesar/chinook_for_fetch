@@ -9,7 +9,8 @@ def main():
     # load data & features
     preprocessed_data = pd.read_csv(ROOT + 'data/intermediate/preprocessed_presplit.csv')
     with open(ROOT + 'data/intermediate/features.yaml', 'r') as f:
-        features = yaml.safe_load(f)
+        features_dict = yaml.safe_load(f)
+        features = sorted(features_dict['features'])
 
     if config['splitting_method']['sklearn'] == True:
 
@@ -80,7 +81,7 @@ def main():
         X_test.to_csv(ROOT + 'data/intermediate/X_test.csv', index=False)
         y_train.to_csv(ROOT + 'data/intermediate/y_train.csv', index=False)
         y_test.to_csv(ROOT + 'data/intermediate/y_test.csv', index=False)
-        test_data.to_csv(ROOT + "data/intermediate/test_data_complete")
+        test_data.to_csv(ROOT + "data/intermediate/test_data_complete.csv", index=False)
 
         return
 
