@@ -155,7 +155,6 @@ model_algorithms:
         - 16
         - 32
         - 64
-  apacheiv:
   
 features: # todo: use this list to extract features
   static:

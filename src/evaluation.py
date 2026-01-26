@@ -115,20 +115,20 @@ def evaluate_apacheiv():
     test = pd.merge(left=test_data, right=apache_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
 
     # create y_pred, y_pred_proba and y_test
-    y_pred_proba = test['nice_ap4_prob'].values
-    y_pred = (test['nice_ap4_prob'] >= 0.5).astype(int).values
-    y_test_apache = test['in_icu_death'].values
+    y_pred_proba = test['nice_ap4_prob']
+    y_pred = (test['nice_ap4_prob'] >= 0.5).astype(int)
+    y_test = test['in_icu_death']
 
     # Calculate the AUC
-    fpr, tpr, thresholds = roc_curve(y_test_apache, y_pred_proba)
+    fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
     auc_model = auc(fpr, tpr)
 
     # calculate the F1
-    precision, recall, pr_thresholds = precision_recall_curve(y_test_apache, y_pred_proba)
-    f1_model = f1_score(y_test_apache, y_pred)
+    precision, recall, pr_thresholds = precision_recall_curve(y_test, y_pred_proba)
+    f1_model = f1_score(y_test, y_pred)
 
     # calculate calibration values
-    prob_true, prob_pred = calibration_curve(y_test_apache, y_pred_proba, n_bins=10)
+    prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
     results = {
         'fpr': fpr,
