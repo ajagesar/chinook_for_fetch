@@ -104,9 +104,9 @@ def main():
 def evaluate_apacheiv(X_test, y_test):
 
     # join nice data with test set
-    apache_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
+    test_data_data = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
 
-    X_test = pd.merge(left=X_test, right=apache_data, how="left", on=["person_id", "visit_start_datetime"])
+    # X_test = pd.merge(left=X_test, right=apache_data, how="left", on=["person_id", "visit_start_date"])
 
     # evaluate logodds & probability with y_test
 

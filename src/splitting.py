@@ -80,6 +80,7 @@ def main():
         X_test.to_csv(ROOT + 'data/intermediate/X_test.csv', index=False)
         y_train.to_csv(ROOT + 'data/intermediate/y_train.csv', index=False)
         y_test.to_csv(ROOT + 'data/intermediate/y_test.csv', index=False)
+        test_data.to_csv(ROOT + "data/intermediate/test_data_complete")
 
         return
 
