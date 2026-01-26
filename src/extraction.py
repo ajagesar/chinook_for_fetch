@@ -470,6 +470,8 @@ def get_nice_aumc():
     #     'PatientID_hashed': 'person_id',
     #     'Hospitalnumber_hashed': 'visit_occurrence_id'
     # })
+
+    # PM convert ICOpnameDatumTijd to visit_start_date and merge on that
     
     amc_epic = amc_epic.rename(columns={
         'PSEUDO_PAT_ID': 'person_id',
@@ -485,7 +487,7 @@ def get_nice_aumc():
 
     # concat all files to one aumc dataframe
     # aumc_df = pd.concat([amc_mv, amc_epic, aumc_epic], ignore_index=True)
-    aumc_df = pd.concat([amc_epic, aumc_epic], ignore_index=True), 
+    aumc_df = pd.concat([amc_epic, aumc_epic], ignore_index=True)
 
     # drop rows where person_id or visit_occurrence_id is NaN
     aumc_df = aumc_df.dropna(subset=['person_id', 'visit_occurrence_id', 'visit_start_datetime', 'nice_ap4_aps' , 'nice_ap4_score', "nice_ap4_prob", 'nice_ap4_model'])
@@ -503,7 +505,7 @@ def get_nice_aumc():
     aumc_df = aumc_df.drop(columns=['nan_count'])
 
     # get only columns required for modeling
-    aumc_df = aumc_df[["person_id", "visit_occurrence_id", 'visit_start_datetime,', "nice_ap4_score", "nice_ap4_prob", "nice_ap4_model"]].copy()
+    aumc_df = aumc_df[["person_id", "visit_occurrence_id", 'visit_start_datetime', "nice_ap4_score", "nice_ap4_prob", "nice_ap4_model"]].copy()
 
     # hash person_id and visit_occurrence_id for merging with icudata using PySpark
     spark = SparkSession.builder.appName("hash_ids").getOrCreate()

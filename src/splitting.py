@@ -46,18 +46,26 @@ def main():
         # preprocessed_data['person_id'] = preprocessed_data['person_id'].astype(int)
         # preprocessed_data['visit_occurrence_id'] = preprocessed_data['visit_occurrence_id'].astype(float)
 
+        # convert visit_start_datetime to visit_start_date for better merging
+        # Convert to date only and rename the column
+        preprocessed_data['visit_start_date'] = pd.to_datetime(preprocessed_data['visit_start_datetime']).dt.date
+        nice_aumc['visit_start_date'] = pd.to_datetime(nice_aumc['visit_start_datetime']).dt.date
+
+        # Drop the old column
+        preprocessed_data = preprocessed_data.drop('visit_start_datetime', axis=1)
+        nice_aumc = nice_aumc.drop('visit_start_datetime', axis=1)
 
 
         # merge to keep only matching rows in the same order as nice_aumc # TODO check if all nice data rows is getting merge
-        test_data = nice_aumc[['person_id', 'visit_start_datetime']].merge(
+        test_data = nice_aumc[['person_id', 'visit_start_date']].merge(
             preprocessed_data,
-            on=['person_id', 'visit_start_datetime'],
+            on=['person_id', 'visit_start_date'],
             how='inner'
         )
         
         # create train set from rows not in nice_aumc
-        test_mask = preprocessed_data.set_index(['person_id', 'visit_start_datetime']).index.isin(
-            nice_aumc.set_index(['person_id', 'visit_start_datetime']).index
+        test_mask = preprocessed_data.set_index(['person_id', 'visit_start_date']).index.isin(
+            nice_aumc.set_index(['person_id', 'visit_start_date']).index
         )
         train_data = preprocessed_data[~test_mask]
         
