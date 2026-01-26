@@ -359,6 +359,7 @@ def merge_all(admissions, mortality, height, weight, measurements):
     return merged
 
 
+
 def get_missing_statistics(df):
 
     df = df.drop(columns=df.columns[0], axis=1)
@@ -383,15 +384,35 @@ def get_missing_statistics(df):
         'percent_missing': percent_missing
     })
 
-    # export to html for easier import in paper through myst-md
-    missing_value_df.to_html(ROOT + 'data/intermediate/exploration/missing_values.html', index=False)
-
-    # Create dictionary format for YAML
-    missing_dict = percent_missing.to_dict()
+    # Calculate missing statistics stratified by db origin
+    stratified_missing = {}
     
-    # Save as YAML
+    for db in df['db origin'].unique():
+        db_subset = df[df['db origin'] == db]
+        percent_missing_db = db_subset.isnull().sum() * 100 / len(db_subset)
+        stratified_missing[db] = percent_missing_db.to_dict()
+    
+    # Create combined dataframe with all databases
+    stratified_df = pd.DataFrame(stratified_missing).T
+    stratified_df.index.name = 'db origin'
+    stratified_df = stratified_df.reset_index()
+    
+    # Export overall missing to html
+    missing_value_df.to_html(ROOT + 'data/intermediate/exploration/missing_values.html', index=False)
+    
+    # Export stratified missing to html
+    stratified_df.to_html(ROOT + 'data/intermediate/exploration/missing_values_stratified.html', index=False)
+    
+    # Save overall as YAML
+    missing_dict = percent_missing.to_dict()
     with open(ROOT + 'data/intermediate/exploration/missing_values.yaml', 'w') as f:
         yaml.dump(missing_dict, f, default_flow_style=False, sort_keys=False)
+    
+    # Save stratified as YAML
+    with open(ROOT + 'data/intermediate/exploration/missing_values_stratified.yaml', 'w') as f:
+        yaml.dump(stratified_missing, f, default_flow_style=False, sort_keys=False)
+
+
 
 def get_patient_characteristics(df):
 
