@@ -111,7 +111,8 @@ def train_xgb_model(X_train, y_train, random_state=42):
         **best_params, 
         objective="binary:logistic", 
         enable_categorical=True, 
-        random_state=random_state
+        random_state=random_state,
+        feature_names=list(X_train.columns)
     )
     xgb_model.fit(X_train, y_train)
     
