@@ -36,6 +36,7 @@ def main():
     if config['pipeline']['plotting'] == True:
         plotting()
         
+    print("Pipeline has finished!")
 
     return
 
