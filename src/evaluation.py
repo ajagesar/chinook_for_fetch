@@ -103,16 +103,16 @@ def main():
 
 def evaluate_apacheiv():
 
-    # get apache data
-    apache_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
-
-    # join nice data with test set
+    # get apache data and test data
+    nice_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
     test_data = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
 
-    # convert apache_data to datetime
-    apache_data['visit_start_date'] = pd.to_datetime(apache_data['visit_start_datetime']).dt.date
+    # convert nice_data and test_data to datetime
+    nice_data['visit_start_date'] = pd.to_datetime(nice_data['visit_start_datetime']).dt.date
+    test_data['visit_start_date'] = pd.to_datetime(test_data['visit_start_datetime']).dt.date
 
-    test = pd.merge(left=test_data, right=apache_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
+
+    test = test_data.merge(nice_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
 
     # create y_pred, y_pred_proba and y_test
     y_pred_proba = test['nice_ap4_prob']
