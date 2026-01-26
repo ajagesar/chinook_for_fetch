@@ -67,7 +67,7 @@ def main():
         dict_of_results[model_algorithms[model_algorithm]['label']] = results
 
     # evaluate APACHE IV
-    evaluate_apacheiv(X_test=X_test, y_test=y_test)
+    dict_of_results['apacheiv'] = evaluate_apacheiv()
 
     # export list for results table
     ## convert to serializable format (np.floats are not serializable, native python floats are)
@@ -101,7 +101,7 @@ def main():
     return
 
 
-def evaluate_apacheiv(X_test, y_test):
+def evaluate_apacheiv():
 
     # get apache data
     apache_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
@@ -112,7 +112,35 @@ def evaluate_apacheiv(X_test, y_test):
     # convert apache_data to datetime
     apache_data['visit_start_date'] = pd.to_datetime(apache_data['visit_start_datetime']).dt.date
 
-    X_test = pd.merge(left=test_data, right=apache_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
+    test = pd.merge(left=test_data, right=apache_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
+
+    # create y_pred, y_pred_proba and y_test
+    y_pred_proba = test['nice_ap4_prob'].values
+    y_pred = (test['nice_ap4_prob'] >= 0.5).astype(int).values
+    y_test_apache = test['in_icu_death'].values
+
+    # Calculate the AUC
+    fpr, tpr, thresholds = roc_curve(y_test_apache, y_pred_proba)
+    auc_model = auc(fpr, tpr)
+
+    # calculate the F1
+    precision, recall, pr_thresholds = precision_recall_curve(y_test_apache, y_pred_proba)
+    f1_model = f1_score(y_test_apache, y_pred)
+
+    # calculate calibration values
+    prob_true, prob_pred = calibration_curve(y_test_apache, y_pred_proba, n_bins=10)
+
+    results = {
+        'fpr': fpr,
+        'tpr': tpr,
+        'thresholds': thresholds,
+        'auc_model': auc_model,
+        'precision': precision,
+        'recall': recall,
+        'f1_model': f1_model,
+        'prob_true': prob_true,
+        'prob_pred': prob_pred
+    }
 
     # evaluate logodds & probability with y_test
     
@@ -121,7 +149,8 @@ def evaluate_apacheiv(X_test, y_test):
     apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
     # apache_recalibrated.fit()
 
-    return
+    return results
+
 
 
 if __name__=="__main__":
