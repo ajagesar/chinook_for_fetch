@@ -413,6 +413,8 @@ def get_missing_statistics(df):
     with open(ROOT + 'data/intermediate/exploration/missing_values_stratified.yaml', 'w') as f:
         yaml.dump(stratified_missing, f, default_flow_style=False, sort_keys=False)
 
+    return
+
 
 
 def get_patient_characteristics(df):

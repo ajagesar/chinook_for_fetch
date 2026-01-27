@@ -178,7 +178,7 @@ def get_admissions(conn, features):
 
     # convert filename to hospital_ehr
     # Define the hospital and EHR names to look for
-    hospitals = ['amc', 'vumc', 'aumc', 'rumc', 'mcl', 'olvg', 'umcu']
+    hospitals = ['amc', 'vumc', 'aumc', 'rumc', 'mcl', 'olvg', 'umcu', 'cze', 'radboud']
     ehrs = ['epic', 'metavision', 'hix']
 
     def extract_db_origin(filename):
