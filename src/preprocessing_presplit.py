@@ -394,8 +394,9 @@ def get_missing_statistics(df):
     
     # Create combined dataframe with all databases
     stratified_df = pd.DataFrame(stratified_missing).T
-    stratified_df.index.name = 'db origin'
+    stratified_df.index.name = 'database'
     stratified_df = stratified_df.reset_index()
+    stratified_df = stratified_df.rename(columns={'index': 'db origin'})
     
     # Export overall missing to html
     missing_value_df.to_html(ROOT + 'data/intermediate/exploration/missing_values.html', index=False)
