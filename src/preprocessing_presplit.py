@@ -105,10 +105,12 @@ def drop_ctc(admissions):
 
 def preprocess_admissions(admissions):
 
-    admissions.loc[admissions['gender_concept_id'] == 'male', 'gender'] = 0
-    admissions.loc[admissions['gender_concept_id'] == 'female', 'gender'] = 1
+    admissions.loc[(admissions['gender_concept_id'] == 8507) | (admissions['gender_concept_id'] == 1), 'gender'] = 1 # male
+    admissions.loc[(admissions['gender_concept_id'] == 8532) | (admissions['gender_concept_id'] == 2), 'gender'] = 0 # female
 
     admissions = admissions.drop(columns=['gender_concept_id'])
+
+    # missing ehrs: radboud_epic; umcu_metavision; 
 
     return admissions
 
@@ -145,12 +147,15 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
                 plt.savefig(ROOT + f'data/intermediate/exploration/{feature_name}_precleanup_hist.png')
                 plt.cla()
 
-    # apply specific cutoff rules for certain variables
+    # apply specific preprocessing for certain variables
     ## hematocrit: convert all values below 1 (which are assumed to be fractions) to percentages by multiplying with 100
     measurements.loc[(measurements[variable_name] == 'hematocrit') & (measurements[value] < 1), value] = measurements.loc[(measurements[variable_name] == 'hematocrit') & (measurements[value] < 1)][value] * 100
 
     ## white blood cell count: assume all values above 70 are a typo (if entered by hand if feasible to check for that) and divide by 10 to get a more logical value for wbc
     measurements.loc[(measurements[variable_name] == 'wbc') & (measurements[value] > 70), value] = measurements.loc[(measurements[variable_name] == 'wbc') * (measurements[value] > 70)][value] / 10
+
+    ## TODO split blood pressure to diastolic and systolic when combined in one variable
+    
 
     # loop over all features and drop values as specified in 'min_max_cutoff'
     for feature_type, feature in features.items(): # loops over dictionary and returns tuple

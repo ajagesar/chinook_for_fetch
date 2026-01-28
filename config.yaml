@@ -178,6 +178,8 @@ features: # todo: use this list to extract features
         - 3035463 #  Body height Estimated
         - 3023540 # Body height Measured
         - 3036277 #  Body height
+        - 3015514 # Body height --standing
+        - 3019171 # Body height Stated
       processed: True
     mortality:
       extract: True
@@ -193,6 +195,7 @@ features: # todo: use this list to extract features
         - 3026600 #  Body weight Estimated
         - 3025315 #  Body weight
         - 3013762 #  Body weight Measured
+        - 3023166 # Body weight Stated
       processed: True
     emergency_surgery:
       extract: false
@@ -510,6 +513,10 @@ features: # todo: use this list to extract features
       dtype: float
       ids:
         - 3024561 # Albumin [Mass/volume] in Serum or Plasma
+        - 40757478 # Albumin [Moles/volume] in Serum or Plasma -> will be convert to mass/volume in pipeline
+        - 40764996 # Albumin [Moles/volume] in Serum or Plasma by Bromocresol green (BCG) dye binding method
+        - 1260115 # Albumin [Mass/volume] in Serum by Immunoassay
+        - 3028286 # Albumin [Mass/volume] in Serum or Plasma by Electrophoresis
       ref_value: 45 # g/L
       ref_value_apache: 3.5 # g/dL
       min_max_cutoff: [0, 50]
@@ -526,6 +533,8 @@ features: # todo: use this list to extract features
         - 1616922 # Base excess in Central venous blood by calculation
         - 3023001 # Base excess in Mixed venous blood by calculation
         - 3002032 # Base excess in Venous blood by calculation
+        - 1092408 # Base excess in Blood
+        - 1092051 # Base excess in Venous blood
       ref_value: 0
       ref_value_apache: null
       min_max_cutoff: [-30, 30]
@@ -542,6 +551,7 @@ features: # todo: use this list to extract features
         - 1616794 # Bicarbonate [Moles/volume] in Central venous blood
         - 3025817 # Bicarbonate [Moles/volume] in Mixed venous blood
         - 3027273 # Bicarbonate [Moles/volume] in Venous blood
+        - 3016293 # Bicarbonate [Moles/volume] in Serum or Plasma
       ref_value: 25
       ref_value_apache: null
       min_max_cutoff: [0, 50]
@@ -552,8 +562,14 @@ features: # todo: use this list to extract features
       apache: True
       dtype: float
       ids:
-        - 3005772 # Bilirubin.conjugated [Moles/volume] in Serum or Plasma
         - 3043995 # Bilirubin.conjugated+indirect [Moles/volume] in Serum or Plasma
+        - 40757494 # Bilirubin.total [Moles/volume] in Blood
+        - 3006140 # Bilirubin.total [Moles/volume] in Serum or Plasma
+        - 46235782 # Bilirubin.total [Moles/volume] in Serum, Plasma or Blood
+        - 3024128 # Bilirubin.total [Mass/volume] in Serum or Plasma
+        - 1616780 # Bilirubin.total [Moles/volume] in Capillary blood
+        - 1175183 # Bilirubin.total [Moles/volume] in Arterial blood
+        - 1175191 # Bilirubin.total [Moles/volume] in Venous blood
       ref_value: 0
       ref_value_apache: 0
       min_max_cutoff: [0, 200]
@@ -564,7 +580,10 @@ features: # todo: use this list to extract features
       apache: false
       dtype: int
       ids:
-        - 3020460
+        - 46234770 # C reactive protein [Moles/volume] in Serum or Plasma -> to be converted
+        - 1091617 #  C reactive protein [Mass/volume] in Serum, Plasma or Blood
+        - 3020460 # C reactive protein [Mass/volume] in Serum or Plasma
+        - 42870365 # C reactive protein [Mass/volume] in Blood by High sensitivity method
       ref_value: 0
       ref_value_apache: null
       min_max_cutoff: [0, 500]
@@ -578,10 +597,12 @@ features: # todo: use this list to extract features
         - 3031248 # Chloride [Moles/volume] in Arterial blood
         - 3018572 # Chloride [Moles/volume] in Blood
         - 3039964 # Chloride [Moles/volume] in Capillary blood
-        - 323 # Chloride [Moles/volume] in Mixed venous blood
-        - 324 # Chloride [Moles/volume] in Central venous blood
+        # - 323 # Chloride [Moles/volume] in Mixed venous blood
+        # - 324 # Chloride [Moles/volume] in Central venous blood
         - 3007733 # Chloride [Moles/volume] in Urine
         - 3035285 # Chloride [Moles/volume] in Venous blood
+        - 3014576 # Chloride [Moles/volume] in Serum or Plasma
+        - 46235783 # Chloride [Moles/volume] in Serum, Plasma or Blood
       ref_value: 101
       ref_value_apache: null
       min_max_cutoff: [50, 150]
@@ -593,6 +614,8 @@ features: # todo: use this list to extract features
       dtype: int
       ids:
         - 3020564 # Creatinine [Moles/volume] in Serum or Plasma
+        - 46235076 # Creatinine [Moles/volume] in Serum, Plasma or Blood
+        - 40762887 # Creatinine [Moles/volume] in Blood
       ref_value: 100 # mmol/L
       ref_value_apache: 1.0 # mg/dL
       min_max_cutoff: [0, 1000]
@@ -607,6 +630,7 @@ features: # todo: use this list to extract features
         - 21490850 # Invasive Blood pressure placeholder
         - 21492240 # Diastolic blood pressure by Noninvasive
         - 21492238 # Blood pressure by Noninvasive placeholder
+        - 3012888 # Diastolic blood pressure
       ref_value: 60
       ref_value_apache: null
       min_max_cutoff: [0, 150]
@@ -617,11 +641,16 @@ features: # todo: use this list to extract features
       apache: True
       dtype: float
       ids:
+        - 46236948 # Glucose [Moles/volume] in Serum, Plasma or Blood
+        - 3013826 # Glucose [Moles/volume] in Serum or Plasma
         - 3044242 # Glucose [Moles/volume] in Arterial blood
         - 3020491 # Glucose [Moles/volume] in Blood
         - 3040151 # Glucose [Moles/volume] in Capillary blood
-        - 367 # Glucose [Moles/volume] in Mixed venous blood
-        - 368 # Glucose [Moles/volume] in Central venous blood
+        - 2000000141 # Glucose [Moles/volume] in Mixed venous blood
+        - 2000000142 # Glucose [Moles/volume] in Central venous blood
+        - 1761753 # Glucose [Moles/volume] in Mixed venous blood
+        # - 367 # Glucose [Moles/volume] in Mixed venous blood
+        # - 368 # Glucose [Moles/volume] in Central venous blood
         - 3038515 # Glucose [Moles/volume] in Venous blood
       ref_value: 7.0 # mmol/L
       ref_value_apache: 130 # mg/dL
@@ -638,6 +667,9 @@ features: # todo: use this list to extract features
         - 21490670 # Heart rate Intra arterial line by Invasive
         - 3003841 # Heart rate Peripheral artery by palpation
         - 3027018 # Heart rate placeholder
+        - 43533822 # Heart rate Blood Preductal Pulse oximetry
+        - 42527141 # Heart rate by Transthoracic impedance
+        - 21490736 # Heart rate by Noninvasive
       ref_value: 75
       ref_value_apache: 75
       min_max_cutoff: [1, 185]
@@ -653,6 +685,15 @@ features: # todo: use this list to extract features
         - 3028813 # Hematocrit [Volume Fraction] of Capillary blood
         - 3034037 # Hematocrit [Volume Fraction] of Mixed venous blood
         - 3034976 # Hematocrit [Volume Fraction] of Venous blood
+        - 2000000143 # Hematocrit [Volume Fraction] of Central venous blood
+        - 42869584 # hematocrit [volume fraction] of venous blood
+        - 3023314 # Hematocrit [Volume Fraction] of Blood by Automated count
+        - 3050746 # Hematocrit [Volume Fraction] of Blood by Estimated
+        - 42869587 # Hematocrit [Pure volume fraction] of Arterial blood
+        - 42869588 # Hematocrit [Pure volume fraction] of Blood by Automated count
+        - 1092441 # Hematocrit [Pure volume fraction] of Blood
+        - 42869585 # Hematocrit [Pure volume fraction] of Mixed venous blood
+        - 42869586 # Hematocrit [Pure volume fraction] of Capillary blood
       ref_value: 45.5
       ref_value_apache: 45.5
       min_max_cutoff: [0, 80]
@@ -665,10 +706,11 @@ features: # todo: use this list to extract features
       ids: 
         - 21490721 # Hemoglobin [Moles/volume] in Arterial blood
         - 40762351 # Hemoglobin [Moles/volume] in Blood
-        - 381 # Hemoglobin [Moles/volume] in Capillary blood
-        - 382 # Hemoglobin [Moles/volume] in Mixed venous blood
-        - 383 # Hemoglobin [Moles/volume] in Central venous blood
+        - 2000000144 # Hemoglobin [Moles/volume] in Capillary blood
+        - 2000000145 # Hemoglobin [Moles/volume] in Mixed venous blood
+        - 2000000146 # Hemoglobin [Moles/volume] in Central venous blood
         - 1002216 # Hemoglobin [Moles/volume] in Venous blood
+        - 1092194 # Hemoglobin [Moles/volume] in Mixed venous blood
       ref_value: 8
       ref_value_apache: null
       min_max_cutoff: [0, 15]
@@ -685,6 +727,8 @@ features: # todo: use this list to extract features
         - 3032271 # Calcium.ionized [Moles/volume] in Mixed venous blood
         - 3021119 # Calcium.ionized [Moles/volume] in Central venous blood
         - 3033705 # Calcium.ionized [Moles/volume] in Venous blood
+        - 3015774 # Calcium.ionized [Moles/volume] in Serum or Plasma by calculation
+        - 3021347 # Calcium.ionized [Moles/volume] in Serum or Plasma
       ref_value: 1.3
       ref_value_apache: null
       min_max_cutoff: [0, 2]
@@ -697,10 +741,13 @@ features: # todo: use this list to extract features
       ids:
         - 3018405 # Lactate [Moles/volume] in Arterial blood
         - 3047181 # Lactate [Moles/volume] in Blood
-        - 3005949 # Lactate [Moles/volume] in Central venous blood
-        - 390 # Lactate [Moles/volume] in Mixed venous blood
+        - 2000000148 # Lactate [Moles/volume] in Central venous blood
+        - 3005949 # Lactate [Moles/volume] in Mixed venous blood
         - 3008037 # Lactate [Moles/volume] in Venous blood
-        - 3028271 #Lactate [Moles/volume] in Venous blood
+        - 3028271 # Lactate [Moles/volume] in Capillary blood
+        - 3014111 # Lactate [Moles/volume] in Serum or Plasma
+        - 3020410 # Lactate [Moles/volume] in Arterial plasma
+        - 3005491 # Lactate [Moles/volume] in Plasma venous
       ref_value: 0
       ref_value_apache: 
       min_max_cutoff: [0, 50]
@@ -713,6 +760,8 @@ features: # todo: use this list to extract features
       ids:
         - 3010813 # Leukocytes [#/volume] in Blood
         - 3003282 # Leukocytes [#/volume] in Blood by Manual count
+        - 3032393 # Leukocytes [#/volume] in Blood by Estimate
+        - 3000905 # Leukocytes [#/volume] in Blood by Automated count
       ref_value: 11.5
       ref_value_apache: 11.5
       min_max_cutoff: [0, 70]
@@ -725,6 +774,9 @@ features: # todo: use this list to extract features
       ids:
         - 21490852 # Invasive Mean blood pressure
         - 21492241 # Mean blood pressure by Noninvasive
+        - 21492238 # Blood pressure by Noninvasive placeholder -> to be parsed
+        - 40758413 # Blood pressure systolic and diastolic
+        - 3027598 # Mean blood pressure
       ref_value: 90
       ref_value_apache: 90
       min_max_cutoff: [0, 200]
@@ -749,7 +801,9 @@ features: # todo: use this list to extract features
         - 3040893 # Potassium [Moles/volume] in Capillary blood
         - 3031219 # Potassium [Moles/volume] in Mixed venous blood
         - 3041354 # Potassium [Moles/volume] in Venous blood
-        - 460 # Potassium [Moles/volume] in Central venous blood
+        - 2000000152 # Potassium [Moles/volume] in Central venous blood
+        - 3023103 # Potassium [Moles/volume] in Serum or Plasma
+        - 46235078 # Potassium [Moles/volume] in Serum, Plasma or Blood
       ref_value: 4
       ref_value_apache: 4
       min_max_cutoff: [0, 10]
@@ -760,13 +814,19 @@ features: # todo: use this list to extract features
       apache: True
       dtype: int
       ids:
-        - 3024171 # Respiratory rate
+        - 3024171 # Respiratory rate <- as registered by athena
+        - 3024171 # Respiratory rate non-invasive
         - 21490867 # Respiratory rate by Impedance.transthoracic
+        - 21490847 # Respiratory rate by Carbon dioxide measurement
+        - 21490846 # Respiratory rate by Airway flow measurement
+        - 36303374 # Respiratory rate by Non-airway pressure measurement
+        - 42527123 # Respiratory rate by Pulse oximetry.plethysmograph
         - 1175625 # Breath rate spontaneous
         - 3043148 # Breath rate mechanical --on ventilator
         - 3026892 # Breath rate spontaneous --on ventilator
-        - 3024171 # Respiratory rate non-invasive
         - 3007469 # Breath rate setting Ventilator
+        - 3007646 # Breath rate spontaneous and mechanical --on ventilator
+        - 43054873 # Breath rate Capillary blood
       ref_value: 15
       ref_value_apache: 15
       min_max_cutoff: [3, 45]
@@ -777,12 +837,15 @@ features: # todo: use this list to extract features
       apache: True
       dtype: float
       ids:
-        - 3019550 #Sodium [Moles/volume] in Arterial blood
-        - 3038702 # Sodium [Moles/volume] in Serum or Plasma
-        - 3031579 # Sodium [Moles/volume] in Capillary blood
-        - 3003181 # Sodium [Moles/volume] in Mixed venous blood
+        - 3043706 # Sodium [Moles/volume] in Arterial blood
+        - 3019550 # Sodium [Moles/volume] in Serum or Plasma
+        - 3038702 # Sodium [Moles/volume] in Capillary blood
+        - 3031579 # Sodium [Moles/volume] in Mixed venous blood
+        - 2000000153 # Sodium [Moles/volume] in Central Venous blood
+        - 3000285 # Sodium [Moles/volume] in Blood
+        - 46235784 # Sodium [Moles/volume] in Serum, Plasma or Blood
         - 3041473 # Sodium [Moles/volume] in Venous blood
-        - 489 # Sodium [Moles/volume] in Central Venous blood
+        # - 489 # Sodium [Moles/volume] in Central Venous blood
       ref_value: 145.5
       ref_value_apache: 145.5
       min_max_cutoff: [110, 170]
@@ -797,6 +860,7 @@ features: # todo: use this list to extract features
         - 21490850 # Invasive Blood pressure placeholder
         - 21492239 # Systolic blood pressure by Noninvasive
         - 21492238  # Blood pressure by Noninvasive placeholder
+        - 3004249 # Systolic blood pressure
       ref_value: 120
       ref_value_apache: null
       min_max_cutoff: [0, 250]
@@ -849,36 +913,36 @@ features: # todo: use this list to extract features
       min_max_cutoff: [0, 10000]
       distribution: right-skew
       processed: True
-    gcs_eye:
-      extract: True
-      apache: True
-      dtype: int
-      ids:
-        - 3016335 # Glasgow coma score eye opening
-      ref_value: 4 # max value
-      ref_value_apache: null
-      min_max_cutoff: null
-      processed: True
-    gcs_motor:
-      extract: True
-      apache: true
-      dtype: int
-      ids:
-        - 3008223 # Glasgow coma score motor
-      ref_value: 6 # max value
-      ref_value_apache: null
-      min_max_cutoff: null
-      processed: True
-    gcs_verbal:
-      extract: True
-      apache: True
-      dtype: int
-      ids:
-        - 3009094 # Glasgow coma score verbal
-      ref_value: 5
-      ref_value_apache: null
-      min_max_cutoff: null
-      processed: True
+    # gcs_eye:
+    #   extract: True
+    #   apache: True
+    #   dtype: int
+    #   ids:
+    #     - 3016335 # Glasgow coma score eye opening
+    #   ref_value: 4 # max value
+    #   ref_value_apache: null
+    #   min_max_cutoff: null
+    #   processed: True
+    # gcs_motor:
+    #   extract: True
+    #   apache: true
+    #   dtype: int
+    #   ids:
+    #     - 3008223 # Glasgow coma score motor
+    #   ref_value: 6 # max value
+    #   ref_value_apache: null
+    #   min_max_cutoff: null
+    #   processed: True
+    # gcs_verbal:
+    #   extract: True
+    #   apache: True
+    #   dtype: int
+    #   ids:
+    #     - 3009094 # Glasgow coma score verbal
+    #   ref_value: 5
+    #   ref_value_apache: null
+    #   min_max_cutoff: null
+    #   processed: True
     urea:
       extract: true
       apache: True
