@@ -112,7 +112,9 @@ def preprocess_admissions(admissions):
     admissions = admissions.drop(columns=['gender_concept_id'])
 
     # fix admission floor
-    
+    # go through all origin options and assign them to df
+    for origin_option, specific_department in config['features']['static']['admission_origin']['options'].items():
+        admissions.loc[admissions['admitted_from_source_value'].isin(specific_department), 'admission_origin'] = origin_option
 
     return admissions
 

@@ -464,7 +464,7 @@ features: # todo: use this list to extract features
           - VUMC INTENSIVE CARE VOLWASSENEN
           - ICU OLVG West
       ids: null
-      processed: false
+      processed: true
     admission_diagnosis:
       extract: false
       apache: True
