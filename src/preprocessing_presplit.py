@@ -105,12 +105,14 @@ def drop_ctc(admissions):
 
 def preprocess_admissions(admissions):
 
+    # fix gender
     admissions.loc[(admissions['gender_concept_id'] == 8507) | (admissions['gender_concept_id'] == 1), 'gender'] = 1 # male
     admissions.loc[(admissions['gender_concept_id'] == 8532) | (admissions['gender_concept_id'] == 2), 'gender'] = 0 # female
 
     admissions = admissions.drop(columns=['gender_concept_id'])
 
-    # missing ehrs: radboud_epic; umcu_metavision; 
+    # fix admission floor
+    
 
     return admissions
 

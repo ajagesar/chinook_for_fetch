@@ -124,31 +124,31 @@ def main():
                     return 'error, no method specified to tune hyperparameters'
 
             
-            if model_key == 'svm':
+            # if model_key == 'svm':
 
-                # make shortcut
-                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
+            #     # make shortcut
+            #     para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
 
-                # set parameters to search by optuna
-                params = {
-                    'C': trial.suggest_float('C', para_sc['C']['min'], para_sc['C']['max'], log=para_sc['C']['log']),
-                    'gamma': trial.suggest_float('gamma', para_sc['gamma']['min'], para_sc['gamma']['max'], log=para_sc['gamma']['log']),
-                    'kernel': trial.suggest_categorical('kernel', para_sc['kernel'])
-                }
+            #     # set parameters to search by optuna
+            #     params = {
+            #         'C': trial.suggest_float('C', para_sc['C']['min'], para_sc['C']['max'], log=para_sc['C']['log']),
+            #         'gamma': trial.suggest_float('gamma', para_sc['gamma']['min'], para_sc['gamma']['max'], log=para_sc['gamma']['log']),
+            #         'kernel': trial.suggest_categorical('kernel', para_sc['kernel'])
+            #     }
 
-                # initiate model
-                model = svm.SVC(**params, random_state=random_state, probability=True)
+            #     # initiate model
+            #     model = svm.SVC(**params, random_state=random_state, probability=True)
             
-                if config['use_cross_validation'] is True:
-                    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc', n_jobs=-1)
-                    return scores.mean()
+            #     if config['use_cross_validation'] is True:
+            #         scores = cross_val_score(model, X_train, y_train, cv=5, scoring='roc_auc', n_jobs=-1)
+            #         return scores.mean()
                     
-                elif config['use_validation_set'] is True:
-                    y_pred = model.predict_proba(X_validate)[:,1]
-                    return roc_auc_score(y_validate, y_pred)
+            #     elif config['use_validation_set'] is True:
+            #         y_pred = model.predict_proba(X_validate)[:,1]
+            #         return roc_auc_score(y_validate, y_pred)
 
-                else:
-                    return 'error, no method specified to tune hyperparameters'
+            #     else:
+            #         return 'error, no method specified to tune hyperparameters'
             
             if model_key == 'knn':
                 
