@@ -886,6 +886,7 @@ features: # todo: use this list to extract features
         - 21493955 # Temperature of Extremity
         - 21490870 # Bladder temperature via Foley
         - 21490590  # Nasopharyngeal temperature
+        - 2000000606 # Groin temperature
       ref_value: 37
       ref_value_apache: 37
       min_max_cutoff: [15, 50]
@@ -896,6 +897,13 @@ features: # todo: use this list to extract features
       dtype: int
       ids:
         - 3007461 # Platelets [#/volume] in Blood
+        - 3016682 # Platelets [#/volume] in Plasma by Automated count
+        - 3006297 # Platelets [#/volume] in Plasma
+        - 3031586 # Platelets [#/volume] in Blood by Estimate
+        - 44787107 # Platelets [#/volume] in Capillary blood by Manual count
+        - 44816673 # Platelets [#/volume] in Platelet rich plasma by Automated count
+        - 3024929 # Platelets [#/volume] in Blood by Automated count
+        - 3010834 # Platelets [#/volume] in Blood by Manual count
       ref_value: 300
       ref_value_apache: null
       min_max_cutoff: [0, 1000]
@@ -908,6 +916,8 @@ features: # todo: use this list to extract features
       ids:
         - 3019800 # Troponin T.cardiac [Mass/volume] in Serum or Plasma
         - 40769783  # Troponin T.cardiac [Mass/volume] in Serum or Plasma by High sensitivity method
+        - 3048529 # Troponin T.cardiac [Mass/volume] in Blood
+        - 3019572 # Troponin T.cardiac [Mass/volume] in Venous blood
       ref_value: 5
       ref_value_apache: null
       min_max_cutoff: [0, 10000]
@@ -965,6 +975,8 @@ features: # todo: use this list to extract features
         # - 140   # 
         - 3014315 # Urine output
         - 21491173 # Urine output measured by nephrostomy
+        - 2000000372 # fluid output - urine splint drain right
+        - 2000000373 # fluid output - urine splint drain left
       ref_value: null
       ref_value_apache: null
       min_max_cutoff: null
@@ -977,7 +989,9 @@ features: # todo: use this list to extract features
         - 3027801 # Oxygen [Partial pressure] in Arterial blood
         - 3028626 # Oxygen [Partial pressure] in Capillary blood
         - 1616654 # Oxygen [Partial pressure] in Central venous blood
-        # - 3038071  # Oxygen [Partial pressure] in Mixed venous blood
+        - 3038071 # Oxygen [Partial pressure] in Mixed venous blood
+        - 3024354 # Oxygen [Partial pressure] in Venous blood
+        - 3027315 # Oxygen [Partial pressure] in Blood
       ref_value: 100
       ref_value_apache: 100
       min_max_cutoff: null
@@ -990,7 +1004,9 @@ features: # todo: use this list to extract features
         - 3027946 # Carbon dioxide [Partial pressure] in Arterial blood
         - 3023024 # Carbon dioxide [Partial pressure] in Capillary blood
         - 1616989 # Carbon dioxide [Partial pressure] in Central venous blood
-        # - 3021513 # Carbon dioxide [Partial pressure] in Mixed venous blood
+        - 3021513 # Carbon dioxide [Partial pressure] in Mixed venous blood
+        - 3021447 # Carbon dioxide [Partial pressure] in Venous blood
+        - 3013290 # Carbon dioxide [Partial pressure] in Blood
       ref_value: 40
       ref_value_apache: null
       min_max_cutoff: [0, 100]
@@ -1007,6 +1023,7 @@ features: # todo: use this list to extract features
         - 1616438 # pH of Central venous blood
         - 3012388 # pH of Mixed venous blood
         - 3012544 # pH of Venous blood
+        - 3018418 # pH of Serum or Plasma
       ref_value: 7.4
       ref_value_apache: null
       min_max_cutoff: null
@@ -1055,6 +1072,9 @@ features: # todo: use this list to extract features
         - 21490854 # Tidal volume Ventilator --on ventilator
         - 36306099 # low pressure hold time setting ventilator
         - 3009065 # Inspiration/Expiration setting Ventilator
+        - 2000000248 # Ventilation mode Ventilator machine
+        - 2000000250 # Ventilation mode Ventilator noninvasive
+        - 3000461 # Pressure support setting Ventilator
       ref_value: null
       ref_value_apache: null
       min_max_cutoff: null
@@ -1079,6 +1099,28 @@ features: # todo: use this list to extract features
         - 2000000203 # fi02 --non-invasive
         - 2000000201 # fi02 --highflow
         - 3024882 # Oxygen/Total gas setting [Volume Fraction] Ventilator
+        - 3025408 # fi02 --ventilator
+        - 36305682 # Bias flow setting Ventilator
+        - 40760768 # Flow trigger setting Ventilator
+        - 3009065 # Inspiration/Expiration setting Ventilator
+        - 36304672 # Inspiratory time setting Ventilator
+        - 2000000220 # Inspiratory time setting Ventilator perc
+        - 36306157 # Pressure.max Respiratory system airway --on ventilator
+        - 3045410 # Minute volume setting Ventilator
+        - 3011557 # Peak inspiratory gas flow setting Ventilator
+        - 3022875 # Positive end expiratory pressure setting Ventilator
+        - 3000461 # Pressure support setting Ventilator
+        - 36305890 # Inflation trigger pressure setting Ventilator
+        - 3043148 # Breath rate mechanical --on ventilator
+        - 3026892 # Breath rate spontaneous --on ventilator
+        - 3007469 # Breath rate setting Ventilator
+        - 21490854 # Tidal volume Ventilator --on ventilator
+        - 3012410 # Tidal volume setting Ventilator
+        - 3017594 # Tidal volume.spontaneous --on ventilator
+        - 3004921 # Ventilation mode Ventilator
+        - 2000000248 # Ventilation mode Ventilator machine
+        - 2000000250 # Ventilation mode Ventilator noninvasive
+        - 2000000634 # non-invasive ventilator - leakage fraction
       ref_value: null
       ref_value_apache: null
       min_max_cutoff: [0, 100]
