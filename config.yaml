@@ -12,7 +12,7 @@ data:
   umcu: "/home/olof.sigling@mydre.org/output/umcu/metavision/duckdb/omop_db.duckdb"
   # pm to add aumcdb_v2 with gbq access
 
-drop_ctc: true
+drop_ctc: false
 stratified_split: false # todo: implement
 oversample: true
 random_state: 42
@@ -208,6 +208,8 @@ features: # todo: use this list to extract features
       apache: true
       dtype: categorical
       options:
+        ctc_floor:
+          - MCLL VERPLEEGAFDELING J CARDIOCHIRURGIE
         floor:
           - C-1 MEDIUM CARE VA
           - C1 C IC
@@ -377,6 +379,24 @@ features: # todo: use this list to extract features
           - A5 GERIATRIE
           - A5 MEDISCHE ONCOLOGIE
           - Q1 NEO POST IC/HC
+          - MCLL VERPLEEGAFDELING U
+          - MCLL VERPLEEGAFDELING B LONGGENEESKUNDE
+          - MCLL SPOED EISENDE HULP
+          - MCLL VERPLEEGAFDELING S CARDIOLOGIE CCU
+          - MCLL HARTCATHETERISATIE
+          - MCLL VERPLEEGAFDELING P CARDIOLOGIE
+          - MCLL VERPLEEGAFDELING K
+          - MCLL VERPLEEGAFDELING J
+          - MCLL VERPLEEGAFDELING M
+          - MCLL VERPLEEGAFDELING T CHIRURGIE
+          - MCLL VERPLEEGAFDELING A NEUROLOGIE
+          - Algemeen ziekenhuis
+          - MCLL ENDOSCOPIE
+          - Academisch ziekenhuis
+          - MCLL VERPLEEGAFDELING A
+          - MCLL VERPLEEGAFDELING T
+          - MCLL VERPLEEGAFDELING Z ONCOLOGIE
+          - 
         or_pacu:
           - R OK COMPLEX
           - AMC KLINISCHE OK COMPLEX
@@ -410,6 +430,7 @@ features: # todo: use this list to extract features
           - OK OLVG vanaf EH OLVG West
           - OK OLVG vanaf afdeling OLVG West
           - R1 HOLDING
+          - MCLL OK
         transfer:
           - SPOEDEISENDE HULP
           - AMC SEH
@@ -464,7 +485,7 @@ features: # todo: use this list to extract features
           - VUMC INTENSIVE CARE VOLWASSENEN
           - ICU OLVG West
       ids: null
-      processed: true
+      processed: false
     admission_diagnosis:
       extract: false
       apache: True
