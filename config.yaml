@@ -210,6 +210,7 @@ features: # todo: use this list to extract features
       options:
         ctc_floor:
           - MCLL VERPLEEGAFDELING J CARDIOCHIRURGIE
+          - AMC CARDIOTHORACALE CHIRURGIE
         floor:
           - C-1 MEDIUM CARE VA
           - C1 C IC
@@ -396,7 +397,40 @@ features: # todo: use this list to extract features
           - MCLL VERPLEEGAFDELING A
           - MCLL VERPLEEGAFDELING T
           - MCLL VERPLEEGAFDELING Z ONCOLOGIE
-          - 
+          - MCLL VERPLEEGAFDELING K DARIA LEVERZIEKTEN
+          - MCLL VERPLEEGAFDELING U CHIRURGIE
+          - MCLL VERPLEEGAFDELING K INTERNE GENEESKUNDE
+          - MCLL VERPLEEGAFDELING L INTERNE GENEESKUNDE
+          - MCLL VERPLEEGAFDELING E KRAAM
+          - MCLL VERPLEEGAFDELING C DAGHOSPITAAL
+          - Buitenlands ziekenhuis
+          - MCLL VERPLEEGAFDELING T MEDISCH PSYCHIATRIE
+          - MCLL VERPLEEGAFDELING E VERLOSKUNDE
+          - MCLL VERPLEEGAFDELING J CARDIOLOGIE
+          - MCLL VERPLEEGAFDELING R
+          - MCLL VERPLEEGAFDELING L
+          - MCLL VERPLEEGAFDELING M MKA
+          - MCLL VERPLEEGAFDELING M UROLOGIE
+          - MCLL VERPLEEGAFDELING E GYNAECOLOGIE
+          - MCLL VERPLEEGAFDELING F
+          - MCLL VERPLEEGAFDELING F ORTHOPEDIE
+          - MCLL VERPLEEGAFDELING Z NUCLEAIRE GENEESKUNDE
+          - MCLL VERPLEEGAFDELING G GERIATRIE
+          - MCLL VERPLEEGAFDELING E
+          - MCLL VERPLEEGAFDELING O INTENSIVE CARE
+          - MCLL VERPLEEGAFDELING M KNO-ONCOLOGIE
+          - MCLL VERPLEEGAFDELING M PLASTISCHE CHIRURGIE
+          - MCLL VERPLEEGAFDELING Y DAGHOSPITAAL
+          - MCLL VERPLEEGAFDELING F KEEL NEUS OORHEELKUNDE
+          - Ontslaan/opnieuw opnemen (hetzelfde ziekenhuis)
+          - MCLL VERPLEEGAFDELING Z ANESTHESIOLOGIE
+          - Overige instellingen
+          - MCLL VERPLEEGAFDELING Z REUMATOLOGIE
+          - MCLL VERPLEEGAFDELING A DERMATOLOGIE
+          - Psychiatrisch ziekenhuis
+          - Categoraal ziekenhuis
+          - MCLL VERPLEEGAFDELING F NEUROCHIRURGIE
+          - Zelfstandig behandel centrum
         or_pacu:
           - R OK COMPLEX
           - AMC KLINISCHE OK COMPLEX
@@ -431,6 +465,7 @@ features: # todo: use this list to extract features
           - OK OLVG vanaf afdeling OLVG West
           - R1 HOLDING
           - MCLL OK
+          - MCLL POK
         transfer:
           - SPOEDEISENDE HULP
           - AMC SEH
