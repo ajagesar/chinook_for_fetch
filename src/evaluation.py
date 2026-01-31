@@ -52,6 +52,9 @@ def main():
         # calculate calibration values
         prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
+        # calculate brier score loss
+        brier_score_loss = brier_score_loss(y_test, y_pred_proba)
+
         results = {
                 'fpr': fpr,
                 'tpr': tpr,
@@ -61,7 +64,8 @@ def main():
                 'recall': recall,
                 'f1_model': f1_model,
                 'prob_true': prob_true,
-                'prob_pred': prob_pred
+                'prob_pred': prob_pred,
+                'brier_score_loss': brier_score_loss
             }
 
         dict_of_results[model_algorithms[model_algorithm]['label']] = results
@@ -130,6 +134,9 @@ def evaluate_apacheiv():
     # calculate calibration values
     prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
+    # calculate brier score loss
+    brier_score_loss = brier_score_loss(y_test, y_pred_proba)
+
     results = {
         'fpr': fpr,
         'tpr': tpr,
@@ -139,7 +146,8 @@ def evaluate_apacheiv():
         'recall': recall,
         'f1_model': f1_model,
         'prob_true': prob_true,
-        'prob_pred': prob_pred
+        'prob_pred': prob_pred,
+        'brier_score_loss': brier_score_loss
     }
 
     # evaluate logodds & probability with y_test

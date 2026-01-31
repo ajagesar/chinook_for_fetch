@@ -44,7 +44,7 @@ def main():
         hyperparameter_tuning()
         print("\n✓ COMPLETED: Hyperparameter Tuning\n")
     
-    if config['pipeline']['modeling'] == True:
+    if config['pipeline']['modeling'] == True: # PM if parallel processing error when modeling, first run pipeline until preprocessing_postsplit, then second time from modeling only (adjust settings in config file)
         print("\n" + "="*50)
         print("STARTING: Model Training")
         print("="*50 + "\n")

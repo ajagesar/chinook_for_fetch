@@ -41,7 +41,7 @@ def main():
     
     random_state = config['random_state']
     
-    # Define training tasks
+    # Define training tasks PM if not running, rerun pipeline with pipeline set to true form modeling on only
     training_tasks = [
         ('XGBoost', train_xgb_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
         ('Logistic Regression', train_lr_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
