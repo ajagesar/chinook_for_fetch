@@ -116,6 +116,18 @@ def preprocess_admissions(admissions):
     for origin_option, specific_department in config['features']['static']['admission_origin']['options'].items():
         admissions.loc[admissions['admitted_from_source_value'].isin(specific_department), 'admission_origin'] = origin_option
 
+    # one-hot encode admission_origin (or_pacu / transfer / floor)
+    admissions['admission_origin_or_pacu'] = (admissions['admission_origin'] == 'or_pacu').astype(int)
+    admissions['admission_origin_transfer'] = (admissions['admission_origin'] == 'transfer').astype(int)
+    admissions['admission_origin_floor'] = (admissions['admission_origin'] == 'floor').astype(int)
+    
+    # # get ctc_floor
+    # admissions['ctc'] = 0
+    # admissions.loc[admissions['admission_origin']=='ctc_floor', 'ctc'] = 1
+
+    # drop admission_origin
+    admissions = admissions.drop(columns=['admission_origin'])
+
     return admissions
 
 

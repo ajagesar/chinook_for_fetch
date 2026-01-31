@@ -521,6 +521,10 @@ features: # todo: use this list to extract features
           - ICU OLVG West
       ids: null
       processed: false
+    ctc_floor:
+      extract: false
+      apache: true
+      processed: false
     admission_diagnosis:
       extract: false
       apache: True
@@ -1181,3 +1185,10 @@ features: # todo: use this list to extract features
       ref_value_apache: null
       min_max_cutoff: [0, 100]
       processed: True
+  dummy:
+    admission_origin_or_pacu:
+      processed: true
+    admission_origin_transfer:
+      processed: true
+    admission_origin_floor:
+      processed: true
