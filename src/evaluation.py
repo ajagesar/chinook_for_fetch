@@ -7,7 +7,7 @@ import yaml
 
 import matplotlib.pyplot as plt
 import xgboost as xgb
-from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score
+from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score, brier_score_loss
 from sklearn.calibration import calibration_curve
 from sklearn.linear_model import LogisticRegression
 import torch
@@ -53,7 +53,7 @@ def main():
         prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
         # calculate brier score loss
-        brier_score_loss = brier_score_loss(y_test, y_pred_proba)
+        brier_score_metric = brier_score_loss(y_test, y_pred_proba)
 
         results = {
                 'fpr': fpr,
@@ -65,7 +65,7 @@ def main():
                 'f1_model': f1_model,
                 'prob_true': prob_true,
                 'prob_pred': prob_pred,
-                'brier_score_loss': brier_score_loss
+                'brier_score_metric': brier_score_metric
             }
 
         dict_of_results[model_algorithms[model_algorithm]['label']] = results
@@ -135,7 +135,7 @@ def evaluate_apacheiv():
     prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
     # calculate brier score loss
-    brier_score_loss = brier_score_loss(y_test, y_pred_proba)
+    brier_score_metric = brier_score_loss(y_test, y_pred_proba)
 
     results = {
         'fpr': fpr,
@@ -147,7 +147,7 @@ def evaluate_apacheiv():
         'f1_model': f1_model,
         'prob_true': prob_true,
         'prob_pred': prob_pred,
-        'brier_score_loss': brier_score_loss
+        'brier_score_metric': brier_score_metric
     }
 
     # evaluate logodds & probability with y_test
