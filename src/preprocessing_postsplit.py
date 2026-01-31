@@ -16,12 +16,10 @@ def main():
     if config['splitting_method']['nice'] == True:
 
         X_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/X_test_noncabg.csv')
-        y_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/y_test_noncabg.csv')['in_icu_death']
 
         X_test_cabg = pd.read_csv(ROOT + 'data/intermediate/X_test_cabg.csv')
-        y_test_cabg = pd.read_csv(ROOT + 'data/intermediate/y_test_cabg.csv')['in_icu_death']
 
-        impute(X_trai=X_train, X_test=X_test, X_test_cabg=X_test_cabg, X_test_noncabg=X_test_noncabg)
+        impute(X_train=X_train, X_test=X_test, X_test_cabg=X_test_cabg, X_test_noncabg=X_test_noncabg)
 
     else:
         impute(X_train=X_train, X_test=X_test)
@@ -69,9 +67,9 @@ def impute(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):
         X_test_imputed = impute_dataframe(imputer=imputer, df=X_test)
 
         # also impute stratification on CABG model of APACHE
-        if X_test_cabg != None:
+        if X_test_cabg is not None:
             X_test_cabg = impute_dataframe(imputer=imputer, df=X_test_cabg)
-        if X_test_noncabg != None:
+        if X_test_noncabg is not None:
             X_test_noncabg = impute_dataframe(imputer=imputer, df=X_test_noncabg)
 
     elif config['imputation_method']['mice'] == True:
@@ -87,9 +85,9 @@ def impute(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):
         X_test_imputed = impute_dataframe(imputer=imputer, df=X_test)
 
         # also impute stratification on CABG model of APACHE
-        if X_test_cabg != None:
+        if X_test_cabg is not None:
             X_test_cabg = impute_dataframe(imputer=imputer, df=X_test_cabg)
-        if X_test_noncabg != None:
+        if X_test_noncabg is not None:
             X_test_noncabg = impute_dataframe(imputer=imputer, df=X_test_noncabg)
             
     else:
@@ -99,10 +97,10 @@ def impute(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):
     X_train_imputed.to_csv(ROOT + 'data/intermediate/X_train_imputed.csv', index=False)
     X_test_imputed.to_csv(ROOT + 'data/intermediate/X_test_imputed.csv', index=False)
 
-    if X_test_cabg != None:
+    if X_test_cabg is not None:
         X_test_cabg.to_csv(ROOT + 'data/intermediate/X_test_cabg.csv', index=False)
-    if X_test_noncabg != None:
-        X_test_noncabg.to_csv(ROOT + 'data/intermediate/X_test_noncabg', index=False)
+    if X_test_noncabg is not None:
+        X_test_noncabg.to_csv(ROOT + 'data/intermediate/X_test_noncabg.csv', index=False)
 
 
     return

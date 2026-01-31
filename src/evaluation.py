@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 from utils.helpers import ROOT, config
@@ -60,37 +59,12 @@ def get_metrics(X_test, y_test, eval_label):
             y_pred_proba = model.predict_proba(X_test)[:,1]
             y_pred = model.predict(X_test)
 
-        # Calculate the AUC
-        fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
-        auc_model = auc(fpr, tpr)
-
-        # calculate the F1
-        precision, recall, thresholds = precision_recall_curve(y_test, y_pred_proba)
-        f1_model = f1_score(y_test, y_pred)
-
-        # calculate calibration values
-        prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
-
-        # calculate brier score loss
-        brier_score_metric = brier_score_loss(y_test, y_pred_proba)
-
-        results = {
-                'fpr': fpr,
-                'tpr': tpr,
-                'thresholds': thresholds,
-                'auc_model': auc_model,
-                'precision': precision,
-                'recall': recall,
-                'f1_model': f1_model,
-                'prob_true': prob_true,
-                'prob_pred': prob_pred,
-                'brier_score_metric': brier_score_metric
-            }
+        results = evaluate_subset(y_test, y_pred_proba, y_pred)
 
         dict_of_results[model_algorithms[model_algorithm]['label']] = results
 
     # evaluate APACHE IV
-    dict_of_results['apacheiv'] = evaluate_apacheiv()
+    dict_of_results['apacheiv'] = evaluate_apacheiv(eval_label)
 
     # export list for results table
     ## convert to serializable format (np.floats are not serializable, native python floats are)
@@ -124,7 +98,7 @@ def get_metrics(X_test, y_test, eval_label):
     return
 
 
-def evaluate_apacheiv():
+def evaluate_apacheiv(eval_label):
 
     # get apache data and test data
     nice_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
@@ -134,29 +108,47 @@ def evaluate_apacheiv():
     nice_data['visit_start_date'] = pd.to_datetime(nice_data['visit_start_datetime']).dt.date
     test_data['visit_start_date'] = pd.to_datetime(test_data['visit_start_date']).dt.date
 
-
     test = test_data.merge(nice_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
 
-    # create y_pred, y_pred_proba and y_test
-    y_pred_proba = test['nice_ap4_prob']
-    y_pred = (test['nice_ap4_prob'] >= 0.5).astype(int)
-    y_test = test['in_icu_death']
+    # filter to the correct population based on eval_label
+    if eval_label == "vs_ap4_cabg":
+        test = test.loc[test['nice_ap4_model'] == "CABG"]
+    elif eval_label == "vs_ap4_noncabg":
+        test = test.loc[test['nice_ap4_model'] == "NON CABG"]
+    # else: eval_label == "all_populations" -> use full test set
 
-    # Calculate the AUC
+    y_test = test['in_icu_death']
+    y_pred_proba = test['nice_ap4_prob']
+
+    results = evaluate_subset(y_test, y_pred_proba)
+
+    # recalibrate
+    apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
+    # apache_recalibrated.fit()
+
+    return results
+
+
+def evaluate_subset(y_test, y_pred_proba, y_pred=None):
+    """Compute evaluation metrics for a single subset.
+    
+    y_pred is optional: if not provided, it is derived from y_pred_proba
+    using a 0.5 threshold (used for APACHE IV where no model.predict() is available).
+    """
+    if y_pred is None:
+        y_pred = (y_pred_proba >= 0.5).astype(int)
+
     fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
     auc_model = auc(fpr, tpr)
 
-    # calculate the F1
-    precision, recall, pr_thresholds = precision_recall_curve(y_test, y_pred_proba)
+    precision, recall, _ = precision_recall_curve(y_test, y_pred_proba)
     f1_model = f1_score(y_test, y_pred)
 
-    # calculate calibration values
     prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
-    # calculate brier score loss
     brier_score_metric = brier_score_loss(y_test, y_pred_proba)
 
-    results = {
+    return {
         'fpr': fpr,
         'tpr': tpr,
         'thresholds': thresholds,
@@ -166,15 +158,8 @@ def evaluate_apacheiv():
         'f1_model': f1_model,
         'prob_true': prob_true,
         'prob_pred': prob_pred,
-        'brier_score_metric': brier_score_metric
+        'brier_score_metric': brier_score_metric,
     }
-
-    # recalibrate
-    apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
-    # apache_recalibrated.fit()
-
-    return results
-
 
 
 if __name__=="__main__":
