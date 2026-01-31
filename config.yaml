@@ -39,9 +39,10 @@ pipeline:
   plotting: true
 
 splitting_method:
-  sklearn: false
-  nice: true
+  sklearn: falseS
+  nice: false
   db_origin: false
+  apacheiv_models: true
 
 model_algorithms:
   xgb:
