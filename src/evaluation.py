@@ -100,21 +100,14 @@ def get_metrics(X_test, y_test, eval_label):
 
 def evaluate_apacheiv(eval_label):
 
-    # get apache data and test data
-    nice_data = pd.read_csv(ROOT + "data/intermediate/nice/aumc.csv")
-    test_data = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
-
-    # convert nice_data and test_data to date
-    nice_data['visit_start_date'] = pd.to_datetime(nice_data['visit_start_datetime']).dt.date
-    test_data['visit_start_date'] = pd.to_datetime(test_data['visit_start_date']).dt.date
-
-    test = test_data.merge(nice_data[['person_id', 'visit_start_date', 'nice_ap4_prob', 'nice_ap4_model']], how="left", on=["person_id", "visit_start_date"])
+    test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
 
     # filter to the correct population based on eval_label
     if eval_label == "vs_ap4_cabg":
         test = test.loc[test['nice_ap4_model'] == "CABG"]
     elif eval_label == "vs_ap4_noncabg":
         test = test.loc[test['nice_ap4_model'] == "NON CABG"]
+        
     # else: eval_label == "all_populations" -> use full test set
 
     y_test = test['in_icu_death']
