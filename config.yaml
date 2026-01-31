@@ -208,7 +208,7 @@ features: # todo: use this list to extract features
       apache: true
       dtype: categorical
       options:
-        ctc_floor:
+        ctc:
           - MCLL VERPLEEGAFDELING J CARDIOCHIRURGIE
           - AMC CARDIOTHORACALE CHIRURGIE
         floor:
@@ -1191,4 +1191,6 @@ features: # todo: use this list to extract features
     admission_origin_transfer:
       processed: true
     admission_origin_floor:
+      processed: true
+    admission_origin_ctc:
       processed: true

@@ -120,7 +120,8 @@ def preprocess_admissions(admissions):
     admissions['admission_origin_or_pacu'] = (admissions['admission_origin'] == 'or_pacu').astype(int)
     admissions['admission_origin_transfer'] = (admissions['admission_origin'] == 'transfer').astype(int)
     admissions['admission_origin_floor'] = (admissions['admission_origin'] == 'floor').astype(int)
-    
+    admissions['admission_origin_ctc'] = (admissions['admission_origin'] == 'ctc').astype(int)
+
     # # get ctc_floor
     # admissions['ctc'] = 0
     # admissions.loc[admissions['admission_origin']=='ctc_floor', 'ctc'] = 1
