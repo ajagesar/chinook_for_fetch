@@ -19,6 +19,25 @@ def main():
     X_test = pd.read_csv(ROOT + 'data/intermediate/X_test_imputed.csv')
     y_test = pd.read_csv(ROOT + 'data/intermediate/y_test.csv')['in_icu_death']
 
+    get_metrics(X_test=X_test, y_test=y_test, eval_label="all_populations")
+
+    if config['splitting_method']['nice'] == True:
+
+        X_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/X_test_noncabg.csv')
+        y_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/y_test_noncabg.csv')['in_icu_death']
+
+        X_test_cabg = pd.read_csv(ROOT + 'data/intermediate/X_test_cabg.csv')
+        y_test_cabg = pd.read_csv(ROOT + 'data/intermediate/y_test_cabg.csv')['in_icu_death']
+
+        get_metrics(X_test=X_test_noncabg, y_test=y_test_noncabg, eval_label="vs_ap4_noncabg")
+        get_metrics(X_test=X_test_cabg, y_test=y_test_cabg, eval_label="vs_ap4_cabg")
+
+
+    return
+
+
+def get_metrics(X_test, y_test, eval_label):
+
     # evaluate with yaml file configs
     model_algorithms = config['model_algorithms']
 
@@ -90,7 +109,7 @@ def main():
         for key, value in dict_of_results.items()
     }
 
-    with open(ROOT + 'data/final/results.yaml', 'w') as f:
+    with open(ROOT + f'data/final/{eval_label}_results.yaml', 'w') as f:
         yaml.safe_dump(dict_of_results_serializable, f)
 
     
@@ -149,9 +168,6 @@ def evaluate_apacheiv():
         'prob_pred': prob_pred,
         'brier_score_metric': brier_score_metric
     }
-
-    # evaluate logodds & probability with y_test
-    
 
     # recalibrate
     apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
