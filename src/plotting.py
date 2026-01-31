@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 from utils.helpers import ROOT, config
@@ -12,83 +11,103 @@ from sklearn.calibration import calibration_curve
 import torch
 
 
+EVAL_LABELS = ["all_populations", "vs_ap4_cabg", "vs_ap4_noncabg"]
+
+
 def main():
 
-    # load yaml results file
-    with open (ROOT + 'data/final/results.yaml', 'r') as f:
-        eval_results = yaml.safe_load(f)
-    
-    for model in eval_results:
-        # plot ROC curve
-        plt.cla()
-        plt.figure(figsize=(8,6))
+    # Determine which result files to plot based on config
+    eval_labels = ["all_populations"]
+    if config['splitting_method']['nice'] == True:
+        eval_labels += ["vs_ap4_cabg", "vs_ap4_noncabg"]
 
-        auc_model = eval_results[model]['auc_model']
-        plt.plot(
-            eval_results[model]['fpr'],
-            eval_results[model]['tpr'],
-            color='blue',
-            label=f'ROC curve (AUC = {auc_model:.2f})'
-        )
-        
-        plt.plot([0, 1], [0, 1], color='red', linestyle='--', label='Random guess')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('Receiver Operating Characteristic (ROC) Curve')
-        plt.legend(loc="lower right")
-        plt.savefig(ROOT + f'data/final/plots/{model}_auc_plot.png') # model label
+    for eval_label in eval_labels:
 
-        # Plot precision recall curve
-        plt.cla()
-        plt.figure(figsize=(8,6))
+        # load yaml results file
+        results_path = ROOT + f'data/final/{eval_label}_results.yaml'
+        with open(results_path, 'r') as f:
+            eval_results = yaml.safe_load(f)
 
-        f1_model = eval_results[model]['f1_model']
-        plt.plot(
-            eval_results[model]['recall'], # recall
-            eval_results[model]['precision'], # precision
-            marker='o',
-            color='b',
-            label=f'Precision-Recall Curve (F1-score = {f1_model:.2f})' # f1_model
-        )
-        plt.xlabel('Recall')
-        plt.ylabel('Precision')
-        plt.title('Precision-Recall Curve')
-        plt.legend(loc="lower right")
-        plt.savefig(ROOT + f'data/final/plots/{model}_precision_recall_curve.png') # model label
-
-        # TODO plot calibration curve
-        plt.cla()
-        plt.figure(figsize=(8,6))
-        
-        plt.plot(
-            eval_results[model]['prob_pred'],
-            eval_results[model]['prob_true'],
-            "s-",
-            label="Calibration Curve"
-        )
-        plt.plot(
-            [0, 1],
-            [0, 1],
-            "k--",
-            label="Perfectly calibrated"
-        )
-        plt.xlabel("Mean Predicted Probability")
-        plt.ylabel("Fraction of Positives")
-        plt.title("Calibration Curve")
-        plt.legend()
-        plt.savefig(ROOT + f'data/final/plots/{model}_calibration_curve.png')
-
+        for model in eval_results:
+            plot_roc(eval_results[model], model, eval_label)
+            plot_precision_recall(eval_results[model], model, eval_label)
+            plot_calibration(eval_results[model], model, eval_label)
 
     return
 
 
-""" 
-list_of_models = [
-    [filename_of_model[0], model_label[1], model_load_from_pickle[2], fpr[3], tpr[4], thresholds[5], auc_model[6], precision[7], recall[8], f1_model[9]]
-]
-"""
+def _save_path(model, eval_label, plot_type):
+    return ROOT + f'data/final/plots/{eval_label}_{model}_{plot_type}.png'
 
-if __name__=="__main__":
+
+def plot_roc(model_results, model, eval_label):
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    auc_model = model_results['auc_model']
+    ax.plot(
+        model_results['fpr'],
+        model_results['tpr'],
+        color='blue',
+        label=f'ROC curve (AUC = {auc_model:.2f})'
+    )
+
+    ax.plot([0, 1], [0, 1], color='red', linestyle='--', label='Random guess')
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlabel('False Positive Rate')
+    ax.set_ylabel('True Positive Rate')
+    ax.set_title(f'ROC Curve — {eval_label}')
+    ax.legend(loc="lower right")
+
+    fig.savefig(_save_path(model, eval_label, 'auc_plot'))
+    plt.close(fig)
+
+
+def plot_precision_recall(model_results, model, eval_label):
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    f1_model = model_results['f1_model']
+    ax.plot(
+        model_results['recall'],
+        model_results['precision'],
+        marker='o',
+        color='b',
+        label=f'Precision-Recall Curve (F1 = {f1_model:.2f})'
+    )
+
+    ax.set_xlabel('Recall')
+    ax.set_ylabel('Precision')
+    ax.set_title(f'Precision-Recall Curve — {eval_label}')
+    ax.legend(loc="lower right")
+
+    fig.savefig(_save_path(model, eval_label, 'precision_recall_curve'))
+    plt.close(fig)
+
+
+def plot_calibration(model_results, model, eval_label):
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    ax.plot(
+        model_results['prob_pred'],
+        model_results['prob_true'],
+        "s-",
+        label="Calibration Curve"
+    )
+    ax.plot(
+        [0, 1],
+        [0, 1],
+        "k--",
+        label="Perfectly calibrated"
+    )
+
+    ax.set_xlabel("Mean Predicted Probability")
+    ax.set_ylabel("Fraction of Positives")
+    ax.set_title(f'Calibration Curve — {eval_label}')
+    ax.legend()
+
+    fig.savefig(_save_path(model, eval_label, 'calibration_curve'))
+    plt.close(fig)
+
+
+if __name__ == "__main__":
     main()

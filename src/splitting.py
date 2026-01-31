@@ -59,7 +59,7 @@ def main():
 
 
         # merge to keep only matching rows in the same order as nice_aumc # TODO check if all nice data rows is getting merge
-        test_data = nice_aumc[['person_id', 'visit_start_date', 'nice_ap4_model']].merge(
+        test_data = nice_aumc[['person_id', 'visit_start_date', 'nice_ap4_model', 'nice_ap4_prob']].merge(
             preprocessed_data,
             on=['person_id', 'visit_start_date'],
             how='inner'
