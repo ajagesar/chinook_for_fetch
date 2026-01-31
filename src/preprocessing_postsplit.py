@@ -13,8 +13,18 @@ def main():
     else:
         X_train, X_test = load_data()
 
+    if config['splitting_method']['nice'] == True:
 
-    impute(X_train=X_train, X_test=X_test)
+        X_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/X_test_noncabg.csv')
+        y_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/y_test_noncabg.csv')['in_icu_death']
+
+        X_test_cabg = pd.read_csv(ROOT + 'data/intermediate/X_test_cabg.csv')
+        y_test_cabg = pd.read_csv(ROOT + 'data/intermediate/y_test_cabg.csv')['in_icu_death']
+
+        impute(X_trai=X_train, X_test=X_test, X_test_cabg=X_test_cabg, X_test_noncabg=X_test_noncabg)
+
+    else:
+        impute(X_train=X_train, X_test=X_test)
 
     # TODO implement scaling if necessary
 
@@ -39,13 +49,14 @@ def load_data():
         return X_train, X_test
 
 
-def impute(X_train, X_test):
+def impute(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):
 
     # impute data
     ## imputed whole data set with normal values. Now impute train set with multivariate imputation
     if (config['imputation_method']['median'] == True) and (config['imputation_method']['mice'] == True):
         print("Cannot execute imputation method, more than one method is specified as True")
         exit()
+
     elif config['imputation_method']['median'] == True:
         # function to impute with median
 
@@ -56,6 +67,12 @@ def impute(X_train, X_test):
         ## impute train and test data
         X_train_imputed = impute_dataframe(imputer=imputer, df=X_train)
         X_test_imputed = impute_dataframe(imputer=imputer, df=X_test)
+
+        # also impute stratification on CABG model of APACHE
+        if X_test_cabg != None:
+            X_test_cabg = impute_dataframe(imputer=imputer, df=X_test_cabg)
+        if X_test_noncabg != None:
+            X_test_noncabg = impute_dataframe(imputer=imputer, df=X_test_noncabg)
 
     elif config['imputation_method']['mice'] == True:
         # function to impute with mice
@@ -69,12 +86,24 @@ def impute(X_train, X_test):
         X_train_imputed = impute_dataframe(imputer=imputer, df=X_train)
         X_test_imputed = impute_dataframe(imputer=imputer, df=X_test)
 
+        # also impute stratification on CABG model of APACHE
+        if X_test_cabg != None:
+            X_test_cabg = impute_dataframe(imputer=imputer, df=X_test_cabg)
+        if X_test_noncabg != None:
+            X_test_noncabg = impute_dataframe(imputer=imputer, df=X_test_noncabg)
+            
     else:
         X_train_imputed = X_train.copy()
         X_test_imputed = X_test.copy()
 
     X_train_imputed.to_csv(ROOT + 'data/intermediate/X_train_imputed.csv', index=False)
     X_test_imputed.to_csv(ROOT + 'data/intermediate/X_test_imputed.csv', index=False)
+
+    if X_test_cabg != None:
+        X_test_cabg.to_csv(ROOT + 'data/intermediate/X_test_cabg.csv', index=False)
+    if X_test_noncabg != None:
+        X_test_noncabg.to_csv(ROOT + 'data/intermediate/X_test_noncabg', index=False)
+
 
     return
 
