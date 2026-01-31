@@ -51,7 +51,7 @@ def main():
         # ('SVM', train_svm_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}), -> does not converge
         ('KNN', train_knn_model, {'X_train': X_train, 'y_train': y_train}),
         ('Naive Bayes', train_naivebayes_model, {'X_train': X_train, 'y_train': y_train}),
-        ('XGBoost_unimputed', train_xgb_model, {'X_train': X_train_unimputed, 'y_train': y_train, 'random_state':random_state})
+        ('XGBoost_unimputed', train_xgb_unimputed, {'X_train': X_train_unimputed, 'y_train': y_train, 'random_state':random_state})
     ]
     
     # Train models in parallel (excluding NN which needs special handling)
@@ -130,18 +130,18 @@ def train_xgb_model(X_train, y_train, random_state=42):
 
 def train_xgb_unimputed(X_train, y_train, random_state=42):
 
-    # Load best hyperparameters
-    with open(ROOT + 'data/final/optuna_best_parameters/xgb_unimputed_params.yaml', 'r') as f:
-        best_params = yaml.safe_load(f)
+    # # Load best hyperparameters
+    # with open(ROOT + 'data/final/optuna_best_parameters/xgb_unimputed_params.yaml', 'r') as f:
+    #     best_params = yaml.safe_load(f)
     
-    # Use all available cores for XGBoost
-    best_params['n_jobs'] = -1
-    best_params['tree_method'] = 'hist'  # Faster histogram-based algorithm
+    # # Use all available cores for XGBoost
+    # best_params['n_jobs'] = -1
+    # best_params['tree_method'] = 'hist'  # Faster histogram-based algorithm
     
     # Fit model
     xgb_model = xgb.XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
               colsample_bynode=1, colsample_bytree=1, enable_categorical=False,
-              gamma=0, gpu_id=-1, importance_type=None,
+              gamma=0, importance_type=None,
               interaction_constraints='', learning_rate=0.1, max_delta_step=0,
               max_depth=2, min_child_weight=15,
               monotone_constraints='()', n_estimators=100, n_jobs=16,
@@ -152,7 +152,7 @@ def train_xgb_unimputed(X_train, y_train, random_state=42):
     xgb_model.fit(X_train, y_train)
     
     # Save model
-    filename = ROOT + 'data/final/models/xgb_unimputed_model.pkl'
+    filename = ROOT + 'data/final/models/xgb_unimputed.pkl'
     with open(filename, 'wb') as file:
         pickle.dump(xgb_model, file)
     

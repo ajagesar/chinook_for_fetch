@@ -14,7 +14,7 @@ data:
 
 drop_ctc: false
 stratified_split: false # todo: implement
-oversample: true
+oversample: false
 random_state: 42
 optuna_trials: 50
 use_validation_set: false
@@ -158,7 +158,7 @@ model_algorithms:
   xgb_unimputed:
     label: 'xgb_unimputed'
     filename: xgb_unimputed.pkl
-    
+
   
 features: # todo: use this list to extract features
   static:
