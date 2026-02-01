@@ -164,7 +164,7 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
         
         ece += (bin_count / len(y_test)) * bin_error
         mce = max(mce, bin_error)
-        
+
 
     return {
         'fpr': fpr,
@@ -177,6 +177,8 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
         'prob_true': prob_true,
         'prob_pred': prob_pred,
         'brier_score_metric': brier_score_metric,
+        'ece': ece,
+        'mce': mce
     }
 
 

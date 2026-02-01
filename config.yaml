@@ -36,8 +36,9 @@ pipeline:
   hyperparameter_tuning: false
   modeling: true
   evaluation: true
-  plotting: true
   incremental_training: true
+  plotting: true
+
 
 splitting_method:
   sklearn: false
