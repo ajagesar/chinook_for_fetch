@@ -40,6 +40,7 @@ pipeline:
   plotting: true
 
 incremental_training:
+  nan_origin_label: "no source recorder"
   origin_order:
     - umcu_metavision
     - mcl_epic
@@ -47,6 +48,7 @@ incremental_training:
     - olvg_metavision
     - vumc_metavision
     - amc_metavision
+    - aumc_epic
 
 splitting_method:
   sklearn: false

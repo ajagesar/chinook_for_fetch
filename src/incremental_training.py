@@ -181,6 +181,18 @@ def load_all_data():
     X_test  = X_test.reset_index(drop=True)
     y_test  = y_test.reset_index(drop=True)
 
+    # --- treat NaN db_origin as its own origin group --- #
+    # Rows with a missing origin are still valid training data; label them
+    # so they participate in the incremental loop like every other origin.
+    nan_label = config.get('incremental_training', {}).get('nan_origin_label', 'unknown')
+    n_nan     = int(db_origin_train.isna().sum())
+    if n_nan > 0:
+        db_origin_train = db_origin_train.fillna(nan_label)
+        logger.info(
+            f"Filled {n_nan} NaN db_origin values with label '{nan_label}' "
+            f"({n_nan / len(db_origin_train) * 100:.1f}% of training set)."
+        )
+
     return X_train, y_train, X_test, y_test, db_origin_train
 
 
