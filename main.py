@@ -7,6 +7,8 @@ from src.hyperparameter_tuning import main as hyperparameter_tuning
 from src.modeling import main as modeling
 from src.evaluation import main as evaluation
 from src.plotting import main as plotting
+from src.incremental_training import main as incremental_training
+
 
 def main():
     if config['pipeline']['extraction'] == True:
@@ -64,11 +66,27 @@ def main():
         print("="*50 + "\n")
         plotting()
         print("\n✓ COMPLETED: Plotting Results\n")
+
+    # --- incremental training: retrain every model at each db_origin step --- #
+    if config['pipeline'].get('incremental_training', False) == True:
+        print("\n" + "="*50)
+        print("STARTING: Incremental Training")
+        print("="*50 + "\n")
+        incremental_training()
+        print("\n✓ COMPLETED: Incremental Training\n")
+
+    if config['pipeline']['plotting'] == True:
+        print("\n" + "="*50)
+        print("STARTING: Plotting Results")
+        print("="*50 + "\n")
+        plotting()
+        print("\n✓ COMPLETED: Plotting Results\n")
     
     print("\n" + "="*50)
     print("Pipeline has finished.")
     print("="*50 + "\n")
     return
+
 
 if __name__=="__main__":
     main()

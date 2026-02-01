@@ -86,6 +86,7 @@ def main():
         y_train.to_csv(ROOT + 'data/intermediate/y_train.csv', index=False)
         y_test.to_csv(ROOT + 'data/intermediate/y_test.csv', index=False)
         test_data.to_csv(ROOT + "data/intermediate/test_data_complete.csv", index=False)
+        train_data.to_csv(ROOT + "data/intermediate/train_data_complete.csv", index=False)
 
 
         # also keep stratifies on cabg model and non cabg model
