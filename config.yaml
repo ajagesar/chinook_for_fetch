@@ -40,7 +40,7 @@ pipeline:
   plotting: true
 
 incremental_training:
-  nan_origin_label: "no source recorder"
+  nan_origin_label: "no source recorded"
   origin_order:
     - umcu_metavision
     - mcl_epic

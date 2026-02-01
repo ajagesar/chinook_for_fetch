@@ -223,23 +223,60 @@ def get_origin_order(db_origin_series):
         return db_origin_series.value_counts().index.tolist()
 
     # --- custom order provided → validate then use --- #
+    nan_label = (
+        config
+        .get('incremental_training', {})
+        .get('nan_origin_label', 'unknown')
+    )
     specified = set(custom_order)
 
     unknown = specified - available
+    missing = available - specified
+
+    # If there are both unknown and missing entries, check whether any of
+    # them are close matches — the most common cause is a typo in origin_order
+    # or a mismatch between nan_origin_label and the origin_order entry.
+    suggestions = {}
+    if unknown and missing:
+        for u in unknown:
+            # simple character-overlap heuristic: flag pairs that share
+            # more than 60 % of their longer length in common characters
+            for m in missing:
+                longer = max(len(u), len(m))
+                common = len(set(u) & set(m))
+                if longer > 0 and common / longer > 0.6:
+                    suggestions[u] = m
+
     if unknown:
+        hint_lines = []
+        for u in sorted(unknown):
+            if u in suggestions:
+                hint_lines.append(f"  '{u}'  →  did you mean '{suggestions[u]}'?")
+            else:
+                hint_lines.append(f"  '{u}'")
+        hints = "\n".join(hint_lines)
+
         raise ValueError(
             f"incremental_training.origin_order contains origins not found "
-            f"in the training data: {sorted(unknown)}.\n"
+            f"in the training data:\n{hints}\n"
             f"Available origins: {sorted(available)}"
         )
 
-    missing = available - specified
     if missing:
+        nan_note = ""
+        if nan_label in missing:
+            nan_note = (
+                f"\n  Note: '{nan_label}' is the label assigned to rows where "
+                f"db_origin was NaN (set via incremental_training.nan_origin_label). "
+                f"Make sure origin_order uses exactly that string."
+            )
+
         raise ValueError(
             f"incremental_training.origin_order is missing origins that "
             f"exist in the training data: {sorted(missing)}.\n"
             f"Every origin must be listed, or omit origin_order entirely "
             f"to use the default (largest-first) ordering."
+            f"{nan_note}"
         )
 
     logger.info(f"Using custom origin_order from config: {custom_order}")
