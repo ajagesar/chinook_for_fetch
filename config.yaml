@@ -37,6 +37,7 @@ pipeline:
   modeling: true
   evaluation: true
   plotting: true
+  incremental_training: true
 
 splitting_method:
   sklearn: false

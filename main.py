@@ -59,13 +59,6 @@ def main():
         print("="*50 + "\n")
         evaluation()
         print("\n✓ COMPLETED: Model Evaluation\n")
-    
-    if config['pipeline']['plotting'] == True:
-        print("\n" + "="*50)
-        print("STARTING: Plotting Results")
-        print("="*50 + "\n")
-        plotting()
-        print("\n✓ COMPLETED: Plotting Results\n")
 
     # --- incremental training: retrain every model at each db_origin step --- #
     if config['pipeline'].get('incremental_training', False) == True:

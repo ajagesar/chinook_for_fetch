@@ -98,9 +98,9 @@ def plot_incremental_performance():
         Top    — AUC per model as training data grows
         Bottom — Brier score per model (lower = better)
 
-    X-axis shows which db_origins have been added and how many training
-    samples that corresponds to.  Every line is a different model trained
-    from scratch at each step.
+    X-axis is training-set size (continuous).  A vertical dashed line marks
+    each step boundary and is labelled with only the origin that was *added*
+    at that step — no text overlap regardless of how many origins there are.
     """
 
     results_path = ROOT + 'data/final/incremental_results.yaml'
@@ -127,26 +127,32 @@ def plot_incremental_performance():
 
     df = pd.DataFrame(rows).sort_values(['model', 'step_idx'])
 
-    # --- shared x-axis: one tick per step, labelled with origins + n --- #
-    # Use the first model as the reference for tick labels (all models
-    # share the same steps).
+    # --- step metadata (one row per step, shared across models) --- #
     ref_model  = df['model'].iloc[0]
-    step_info  = df[df['model'] == ref_model].drop_duplicates('step_idx').sort_values('step_idx')
+    step_info  = (df[df['model'] == ref_model]
+                  .drop_duplicates('step_idx')
+                  .sort_values('step_idx')
+                  .reset_index(drop=True))
 
-    x_positions = step_info['step_idx'].tolist()
+    # Derive "origin added at this step" by diffing the origins_included lists.
+    # Step 0 added everything in its list (the first origin); every later step
+    # added exactly one new origin.
+    added_at_step = []
+    for i, row in step_info.iterrows():
+        if i == 0:
+            # first step: the single origin that starts the sequence
+            added_at_step.append(row['origins_included'][0])
+        else:
+            prev = set(step_info.loc[i - 1, 'origins_included'])
+            curr = set(row['origins_included'])
+            new  = curr - prev
+            added_at_step.append(new.pop() if new else '?')
+    step_info['added'] = added_at_step
 
-    # Each label: origins joined, then sample count underneath
-    x_labels = []
-    for _, row in step_info.iterrows():
-        origins_str = ' + '.join(row['origins_included'])
-        x_labels.append(f"{origins_str}\n(n = {row['n_train']:,})")
-
-    # --- colour map --- #
+    # --- colour / marker maps --- #
     models     = df['model'].unique()
     cmap       = plt.cm.get_cmap('tab10', len(models))
     colors     = {m: cmap(i) for i, m in enumerate(models)}
-
-    # --- markers so lines stay distinct even in greyscale --- #
     markers    = ['o', 's', '^', 'D', 'v', 'P', 'X', '*']
     marker_map = {m: markers[i % len(markers)] for i, m in enumerate(models)}
 
@@ -155,38 +161,54 @@ def plot_incremental_performance():
     fig.suptitle('Model Performance vs. Incrementally Added Data Sources',
                  fontsize=14, fontweight='bold', y=0.98)
 
+    # ---- helper: draw vertical step lines + top labels on one axis ---- #
+    def draw_step_lines(ax, label_on_top=False):
+        for _, row in step_info.iterrows():
+            ax.axvline(row['n_train'], color='#aaaaaa', linestyle='--',
+                       linewidth=0.9, zorder=0)
+            if label_on_top:
+                # place the "added" label at the very top of the axes,
+                # rotated so it never overlaps its neighbour
+                ax.text(row['n_train'], ax.get_ylim()[1],
+                        f"+ {row['added']}",
+                        fontsize=7.5, color='#555555',
+                        ha='center', va='bottom', rotation=30)
+
     # ---- Top panel: AUC ---- #
     ax = axes[0]
     for model in models:
         sub = df[df['model'] == model].sort_values('step_idx')
-        ax.plot(sub['step_idx'], sub['auc'],
+        ax.plot(sub['n_train'], sub['auc'],
                 marker=marker_map[model], color=colors[model],
-                label=model, linewidth=2, markersize=7)
+                label=model, linewidth=2, markersize=7, zorder=1)
 
     ax.axhline(0.5, color='grey', linestyle=':', linewidth=1, label='Random (0.5)')
     ax.set_ylabel('AUC', fontsize=12)
     ax.set_ylim(bottom=0.4)
-    ax.legend(loc='best', fontsize=9, framealpha=0.9)
+    ax.legend(loc='lower right', fontsize=9, framealpha=0.9)
     ax.grid(axis='y', linestyle=':', alpha=0.4)
     ax.set_title('AUC (higher = better)', fontsize=11, pad=8)
+
+    # draw lines first, then nudge ylim up slightly so the rotated labels
+    # have breathing room above the plot area
+    draw_step_lines(ax, label_on_top=True)
+    ylo, yhi = ax.get_ylim()
+    ax.set_ylim(ylo, yhi + (yhi - ylo) * 0.12)   # 12 % extra headroom for labels
 
     # ---- Bottom panel: Brier score ---- #
     ax = axes[1]
     for model in models:
         sub = df[df['model'] == model].sort_values('step_idx')
-        ax.plot(sub['step_idx'], sub['brier_score'],
+        ax.plot(sub['n_train'], sub['brier_score'],
                 marker=marker_map[model], color=colors[model],
-                label=model, linewidth=2, markersize=7)
+                label=model, linewidth=2, markersize=7, zorder=1)
 
     ax.set_ylabel('Brier Score', fontsize=12)
-    ax.set_xlabel('Cumulative Data Sources', fontsize=12)
+    ax.set_xlabel('Training set size', fontsize=12)
     ax.legend(loc='best', fontsize=9, framealpha=0.9)
     ax.grid(axis='y', linestyle=':', alpha=0.4)
     ax.set_title('Brier Score (lower = better)', fontsize=11, pad=8)
-
-    # shared x ticks
-    ax.set_xticks(x_positions)
-    ax.set_xticklabels(x_labels, fontsize=8, ha='center')
+    draw_step_lines(ax, label_on_top=False)   # lines only, no labels here
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     out = ROOT + 'data/final/plots/incremental_performance.png'
