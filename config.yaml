@@ -39,6 +39,14 @@ pipeline:
   incremental_training: true
   plotting: true
 
+incremental_training:
+  origin_order:
+    - umcu_metavision
+    - mcl_epic
+    - radboud_epic
+    - olvg_metavision
+    - vumc_metavision
+    - amc_metavision
 
 splitting_method:
   sklearn: false

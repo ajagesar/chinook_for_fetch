@@ -185,8 +185,53 @@ def load_all_data():
 
 
 def get_origin_order(db_origin_series):
-    """Return origins sorted by number of training samples, largest first."""
-    return db_origin_series.value_counts().index.tolist()
+    """Return the order in which origins are added to the training set.
+
+    Checks config['incremental_training']['origin_order'] first.
+      - If it is a list, that list is used directly after validation.
+      - If it is missing or None, falls back to largest-origin-first.
+
+    Validation rules (applied only when a custom order is provided):
+      - Every origin in the custom list must actually exist in the data.
+        A typo here would silently skip an entire data source otherwise.
+      - Every origin that exists in the data must appear in the custom list.
+        Omitting one would silently drop training data with no warning.
+    """
+    available = set(db_origin_series.unique())
+
+    custom_order = (
+        config
+        .get('incremental_training', {})
+        .get('origin_order', None)
+    )
+
+    # --- no custom order → default: largest first --- #
+    if custom_order is None:
+        logger.info("No custom origin_order in config — using largest-first.")
+        return db_origin_series.value_counts().index.tolist()
+
+    # --- custom order provided → validate then use --- #
+    specified = set(custom_order)
+
+    unknown = specified - available
+    if unknown:
+        raise ValueError(
+            f"incremental_training.origin_order contains origins not found "
+            f"in the training data: {sorted(unknown)}.\n"
+            f"Available origins: {sorted(available)}"
+        )
+
+    missing = available - specified
+    if missing:
+        raise ValueError(
+            f"incremental_training.origin_order is missing origins that "
+            f"exist in the training data: {sorted(missing)}.\n"
+            f"Every origin must be listed, or omit origin_order entirely "
+            f"to use the default (largest-first) ordering."
+        )
+
+    logger.info(f"Using custom origin_order from config: {custom_order}")
+    return list(custom_order)
 
 
 def load_all_hyperparams():
