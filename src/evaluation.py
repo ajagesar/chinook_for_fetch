@@ -107,7 +107,7 @@ def evaluate_apacheiv(eval_label):
         test = test.loc[test['nice_ap4_model'] == "CABG"]
     elif eval_label == "vs_ap4_noncabg":
         test = test.loc[test['nice_ap4_model'] == "NON CABG"]
-        
+
     # else: eval_label == "all_populations" -> use full test set
 
     y_test = test['in_icu_death']
@@ -140,6 +140,31 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
     prob_true, prob_pred = calibration_curve(y_test, y_pred_proba, n_bins=10)
 
     brier_score_metric = brier_score_loss(y_test, y_pred_proba)
+
+    # ECE and MCE computed from raw predictions to match calibration_curve's 10 bins,
+    # but using bin counts for proper weighting (calibration_curve doesn't expose these).
+    n_bins = 10
+    bin_boundaries = np.linspace(0, 1, n_bins + 1)
+    ece = 0.0
+    mce = 0.0
+    for i in range(n_bins):
+        if i == n_bins - 1:
+            # Last bin is closed on both sides: [0.9, 1.0]
+            mask = (y_pred_proba >= bin_boundaries[i]) & (y_pred_proba <= bin_boundaries[i + 1])
+        else:
+            mask = (y_pred_proba >= bin_boundaries[i]) & (y_pred_proba < bin_boundaries[i + 1])
+        
+        bin_count = mask.sum()
+        if bin_count == 0:
+            continue
+        
+        bin_accuracy = y_test[mask].mean()
+        bin_confidence = y_pred_proba[mask].mean()
+        bin_error = abs(bin_accuracy - bin_confidence)
+        
+        ece += (bin_count / len(y_test)) * bin_error
+        mce = max(mce, bin_error)
+        
 
     return {
         'fpr': fpr,
