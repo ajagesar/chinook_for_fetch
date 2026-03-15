@@ -307,6 +307,8 @@ def load_all_hyperparams():
 # Imputation
 # ===========================================================================
 
+# TODO check if I want NaNs that can't be imputed to be imputed with fallback -1
+
 def impute_step(X_train_step, X_test_raw):
     method = config.get('imputation_method', {})
 
@@ -323,7 +325,12 @@ def impute_step(X_train_step, X_test_raw):
     elif method.get('median'):
         imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     else:
-        return X_train_step.copy(), X_test_raw.reindex(columns=X_train_step.columns).copy()
+        X_train_out = X_train_step.copy()
+        X_test_out = X_test_raw.reindex(columns=X_train_step.columns).copy()
+        for col in all_nan_cols:
+            X_train_out[col] = -1
+            X_test_out[col] = -1
+        return X_train_out, X_test_out
 
     imputer.fit(X_train_dropped)
 
@@ -338,10 +345,10 @@ def impute_step(X_train_step, X_test_raw):
         index=X_test_raw.index,
     )
 
-    # Restore all-NaN columns so downstream shape is consistent
+    # Fill all-NaN columns with -1
     for col in all_nan_cols:
-        X_train_imp[col] = np.nan
-        X_test_imp[col] = np.nan
+        X_train_imp[col] = -1
+        X_test_imp[col] = -1
 
     # Restore original column order
     X_train_imp = X_train_imp[X_train_step.columns]
