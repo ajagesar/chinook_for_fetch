@@ -49,6 +49,7 @@ incremental_training:
     - vumc_metavision
     - amc_metavision
     - aumc_epic
+    - no source recorded
 
 splitting_method:
   sklearn: false

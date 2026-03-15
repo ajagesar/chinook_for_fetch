@@ -308,35 +308,45 @@ def load_all_hyperparams():
 # ===========================================================================
 
 def impute_step(X_train_step, X_test_raw):
-    """Fit the configured imputer on X_train_step, transform both sets.
-
-    Returns numpy-backed DataFrames so sklearn models accept them directly.
-    """
     method = config.get('imputation_method', {})
 
     if method.get('median') and method.get('mice'):
         raise ValueError("Both median and MICE are enabled — pick one.")
+
+    # Identify and drop all-NaN columns (fitted on train only)
+    all_nan_cols = X_train_step.columns[X_train_step.isna().all()].tolist()
+    X_train_dropped = X_train_step.drop(columns=all_nan_cols)
+    X_test_aligned = X_test_raw.reindex(columns=X_train_dropped.columns)
 
     if method.get('mice'):
         imputer = IterativeImputer(max_iter=1000)
     elif method.get('median'):
         imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     else:
-        # No imputation configured — just copy
-        return X_train_step.copy(), X_test_raw.copy()
+        return X_train_step.copy(), X_test_raw.reindex(columns=X_train_step.columns).copy()
 
-    imputer.fit(X_train_step)
+    imputer.fit(X_train_dropped)
 
     X_train_imp = pd.DataFrame(
-        imputer.transform(X_train_step),
-        columns=X_train_step.columns,
+        imputer.transform(X_train_dropped),
+        columns=X_train_dropped.columns,
         index=X_train_step.index,
     )
     X_test_imp = pd.DataFrame(
-        imputer.transform(X_test_raw),
-        columns=X_test_raw.columns,
+        imputer.transform(X_test_aligned),
+        columns=X_train_dropped.columns,
         index=X_test_raw.index,
     )
+
+    # Restore all-NaN columns so downstream shape is consistent
+    for col in all_nan_cols:
+        X_train_imp[col] = np.nan
+        X_test_imp[col] = np.nan
+
+    # Restore original column order
+    X_train_imp = X_train_imp[X_train_step.columns]
+    X_test_imp = X_test_imp[X_train_step.columns]
+
     return X_train_imp, X_test_imp
 
 
