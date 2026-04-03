@@ -9,7 +9,7 @@ from pyspark.sql.functions import col, xxhash64
 
 def main():
 
-    conn = database_connect(path_to_duck_db=config['data']['icudata_external'])
+    conn = database_connect(path_to_duck_db=config['data']['icudata_0_1_0'])
 
     features = config['features']
     extraction_window = config['window_in_hours']
