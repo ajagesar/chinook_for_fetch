@@ -29,7 +29,7 @@ optuna_jobs: -1
 optuna_load_study: true
 
 pipeline:
-  save_schema: false
+  save_schema: true
   extraction: true
   preprocessing_presplit: true
   splitting: true

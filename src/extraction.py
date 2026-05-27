@@ -6,6 +6,9 @@ import re
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, xxhash64
+import xxhash
+
+# TODO: remove filename for ICUdata version 0.1.0
 
 def main():
 
@@ -19,7 +22,7 @@ def main():
 
     mortality = get_mortality(conn, features)
     admissions = get_admissions(conn, features)
-    # measurements = get_measurements(conn, features, extraction_window) 
+    measurements = get_measurements(conn, features, extraction_window)
     weight = get_weight(conn, features)
     height = get_height(conn, features)
     ventilated = get_ventilated(conn, features, extraction_window)
@@ -507,22 +510,27 @@ def get_nice_aumc():
     # get only columns required for modeling
     aumc_df = aumc_df[["person_id", "visit_occurrence_id", 'visit_start_datetime', "nice_ap4_score", "nice_ap4_prob", "nice_ap4_model"]].copy()
 
-    # hash person_id and visit_occurrence_id for merging with icudata using PySpark
-    spark = SparkSession.builder.appName("hash_ids").getOrCreate()
+    # # hash person_id and visit_occurrence_id for merging with icudata using PySpark
+    # spark = SparkSession.builder.appName("hash_ids").getOrCreate()
     
-    # Convert pandas DataFrame to Spark DataFrame
-    spark_df = spark.createDataFrame(aumc_df)
+    # # Convert pandas DataFrame to Spark DataFrame
+    # spark_df = spark.createDataFrame(aumc_df)
     
-    # Apply xxhash64 to person_id and visit_occurrence_id
-    spark_df = spark_df.withColumn("person_id", xxhash64(col("person_id").cast("string")))
-    spark_df = spark_df.withColumn("visit_occurrence_id", xxhash64(col("visit_occurrence_id").cast("string")))
+    # # Apply xxhash64 to person_id and visit_occurrence_id
+    # spark_df = spark_df.withColumn("person_id", xxhash64(col("person_id").cast("string")))
+    # spark_df = spark_df.withColumn("visit_occurrence_id", xxhash64(col("visit_occurrence_id").cast("string")))
     
-    # Convert back to pandas
-    aumc_df = spark_df.toPandas()
+    # # Convert back to pandas
+    # aumc_df = spark_df.toPandas()
     
-    # Stop Spark session
-    spark.stop()
+    # # Stop Spark session
+    # spark.stop()
 
+    def xxhash64(val):
+        return xxhash.xxh64(str(val)).intdigest()
+
+    aumc_df["person_id"] = aumc_df["person_id"].apply(xxhash64)
+    aumc_df["visit_occurrence_id"] = aumc_df["visit_occurrence_id"].apply(xxhash64)
 
     aumc_df.to_csv(ROOT + "data/intermediate/nice/aumc.csv")
 
