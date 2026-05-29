@@ -132,7 +132,7 @@ def get_admissions(conn, features):
         visit_occurrence.admitted_from_source_value,
         visit_occurrence.care_site_id,
         care_site.care_site_name,
-        visit_occurrence.filename
+        -- visit_occurrence.filename
     FROM omop.person AS person
     LEFT JOIN omop.visit_occurrence AS visit_occurrence
         ON person.person_id = visit_occurrence.person_id
@@ -150,7 +150,7 @@ def get_admissions(conn, features):
         visit_occurrence.visit_end_datetime,
         visit_occurrence.admitted_from_source_value,
         visit_occurrence.care_site_id,
-        visit_occurrence.filename
+        -- visit_occurrence.filename
     FROM omop.person AS person
     LEFT JOIN omop.visit_occurrence AS visit_occurrence
         ON person.person_id = visit_occurrence.person_id
@@ -527,7 +527,10 @@ def get_nice_aumc():
     # spark.stop()
 
     def xxhash64(val):
-        return xxhash.xxh64(str(val)).intdigest()
+        unsigned = xxhash.xxh64(str(val), seed=42).intdigest()
+    
+        # Convert to signed 64-bit to match PySpark output
+        return unsigned - 2**64 if unsigned >= 2**63 else unsigned
 
     aumc_df["person_id"] = aumc_df["person_id"].apply(xxhash64)
     aumc_df["visit_occurrence_id"] = aumc_df["visit_occurrence_id"].apply(xxhash64)

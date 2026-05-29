@@ -409,8 +409,8 @@ def get_missing_statistics(df):
     # Calculate missing statistics stratified by db origin
     stratified_missing = {}
     
-    for db in df['db origin'].unique():
-        db_subset = df[df['db origin'] == db]
+    for db in df['care site name'].unique():
+        db_subset = df[df['care site name'] == db]
         percent_missing_db = db_subset.isnull().sum() * 100 / len(db_subset)
         stratified_missing[db] = percent_missing_db.to_dict()
     
