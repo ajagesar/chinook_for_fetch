@@ -179,49 +179,49 @@ def get_admissions(conn, features):
         # remove gender column from dataframe if configured in yaml file
         admissions = admissions.drop(columns=['gender_concept_id'])
 
-    # convert filename to hospital_ehr
-    # Define the hospital and EHR names to look for
-    hospitals = ['amc', 'vumc', 'aumc', 'rumc', 'mcl', 'olvg', 'umcu', 'cze', 'radboud']
-    ehrs = ['epic', 'metavision', 'hix']
+    # # convert filename to hospital_ehr
+    # # Define the hospital and EHR names to look for
+    # hospitals = ['amc', 'vumc', 'aumc', 'rumc', 'mcl', 'olvg', 'umcu', 'cze', 'radboud']
+    # ehrs = ['epic', 'metavision', 'hix']
 
-    def extract_db_origin(filename):
-        """Extract hospital and EHR from filename to create db_origin"""
-        if pd.isna(filename):
-            return None
+    # def extract_db_origin(filename):
+    #     """Extract hospital and EHR from filename to create db_origin"""
+    #     if pd.isna(filename):
+    #         return None
         
-        # Convert to lowercase for case-insensitive matching
-        filename_lower = str(filename).lower()
+    #     # Convert to lowercase for case-insensitive matching
+    #     filename_lower = str(filename).lower()
         
-        # Find hospital name
-        hospital = None
-        for h in hospitals:
-            if h in filename_lower:
-                hospital = h
-                break
+    #     # Find hospital name
+    #     hospital = None
+    #     for h in hospitals:
+    #         if h in filename_lower:
+    #             hospital = h
+    #             break
         
-        # Find EHR name
-        ehr = None
-        for e in ehrs:
-            if e in filename_lower:
-                ehr = e
-                break
+    #     # Find EHR name
+    #     ehr = None
+    #     for e in ehrs:
+    #         if e in filename_lower:
+    #             ehr = e
+    #             break
         
-        # Combine if both found
-        if hospital and ehr:
-            return f"{hospital}_{ehr}"
-        elif hospital:
-            return hospital
-        elif ehr:
-            return ehr
-        else:
-            return None
+    #     # Combine if both found
+    #     if hospital and ehr:
+    #         return f"{hospital}_{ehr}"
+    #     elif hospital:
+    #         return hospital
+    #     elif ehr:
+    #         return ehr
+    #     else:
+    #         return None
 
-    # Apply the function to create the new column
-    admissions['db_origin'] = admissions['filename'].apply(extract_db_origin)
+    # # Apply the function to create the new column
+    # admissions['db_origin'] = admissions['filename'].apply(extract_db_origin)
 
-    # Show the results
-    print(admissions[['filename', 'db_origin']].head(20))
-    print(f"\nUnique db_origin values:\n{admissions['db_origin'].value_counts()}")
+    # # Show the results
+    # print(admissions[['filename', 'db_origin']].head(20))
+    # print(f"\nUnique db_origin values:\n{admissions['db_origin'].value_counts()}")
 
     admissions.to_csv(ROOT + '/data/raw/admissions.csv')
     print("")
