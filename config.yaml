@@ -30,7 +30,7 @@ optuna_load_study: true
 
 pipeline:
   save_schema: true
-  extraction: true
+  extraction: false
   preprocessing_presplit: true
   splitting: true
   preprocessing_postsplit: true
@@ -43,14 +43,19 @@ pipeline:
 incremental_training:
   nan_origin_label: "no source recorded"
   origin_order:
-    - umcu_metavision
-    - mcl_epic
-    - radboud_epic
-    - olvg_metavision
-    - vumc_metavision
-    - amc_metavision
-    - aumc_epic
-    - no source recorded
+  - UMC Utrecht
+  - OLVG
+  - Vrije Universiteit Medisch Centrum
+  - Amsterdams Medisch Centrum
+  - Amsterdam UMC
+  - no source recorded
+    # - umcu_metavision
+    # - mcl_epic
+    # - radboud_epic
+    # - olvg_metavision
+    # - vumc_metavision
+    # - amc_metavision
+    # - aumc_epic
 
 splitting_method:
   sklearn: false

@@ -164,15 +164,15 @@ def load_all_data():
     #   • X_train.csv itself (if splitting.py kept it)
     #   • a separate metadata file saved alongside the split
     # We try X_train first; fall back to a metadata file.
-    if 'db_origin' in X_train.columns:
-        db_origin_train = X_train['db_origin']
-    elif 'db origin' in X_train.columns:
-        db_origin_train = X_train['db origin']
+    if 'care_site_name' in X_train.columns:
+        db_origin_train = X_train['care_site_name']
+    elif 'care site name' in X_train.columns:
+        db_origin_train = X_train['care_site_name']
     else:
         # Fall back: load from the complete training snapshot
         train_meta = pd.read_csv(ROOT + 'data/intermediate/train_data_complete.csv')
         # pick whichever column name exists
-        col = 'db_origin' if 'db_origin' in train_meta.columns else 'db origin'
+        col = 'care_site_name' if 'care_site_name' in train_meta.columns else 'care_site_name'
         db_origin_train = train_meta[col].reset_index(drop=True)
 
     db_origin_train = db_origin_train.reset_index(drop=True)

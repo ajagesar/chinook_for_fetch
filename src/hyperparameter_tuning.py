@@ -291,18 +291,21 @@ def main():
             print(f"Study for {model_key} already completed {n_trials} trials. Skipping optimization.")
 
         # Export best parameters
-        best_params = study.best_params
-        with open(ROOT + f'data/final/optuna_best_parameters/{model_key}_params.yaml', 'w') as f:
-            yaml.dump(best_params, f, default_flow_style=False)
+        try:
+            best_params = study.best_params
+            with open(ROOT + f'data/final/optuna_best_parameters/{model_key}_params.yaml', 'w') as f:
+                yaml.dump(best_params, f, default_flow_style=False)
 
-        # Export all trials to CSV for analysis
-        study_df = study.trials_dataframe()
-        study_df.to_csv(ROOT + f'data/final/optuna_studies/{model_key}_all_trials.csv', index=False)
+            # Export all trials to CSV for analysis
+            study_df = study.trials_dataframe()
+            study_df.to_csv(ROOT + f'data/final/optuna_studies/{model_key}_all_trials.csv', index=False)
 
-        # Print best hyperparameters and score
-        print(f"\nBest hyperparameters for {model_key}: {study.best_params}")
-        print(f"Best score: {study.best_value:.4f}")
-        print(f"Total completed trials: {len(study.trials)}\n")
+            # Print best hyperparameters and score
+            print(f"\nBest hyperparameters for {model_key}: {study.best_params}")
+            print(f"Best score: {study.best_value:.4f}")
+            print(f"Total completed trials: {len(study.trials)}\n")
+        except:
+            print("No Optuna studies running")
 
 
 if __name__=="__main__":
