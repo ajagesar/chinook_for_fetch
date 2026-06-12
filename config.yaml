@@ -44,6 +44,7 @@ incremental_training:
   nan_origin_label: "no source recorded"
   origin_order:
   - UMC Utrecht
+  - Catharina Ziekenhuis Eindhoven
   - OLVG
   - Vrije Universiteit Medisch Centrum
   - Amsterdams Medisch Centrum
