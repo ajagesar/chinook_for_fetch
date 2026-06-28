@@ -65,6 +65,7 @@ def get_metrics(X_test, y_test, eval_label):
 
     # evaluate APACHE IV
     dict_of_results['apacheiv'] = evaluate_apacheiv(eval_label)
+    dict_of_results['apacheiv_recal'] = evaluate_apacheiv_recalibrated(eval_label)
 
     # export list for results table
     ## convert to serializable format (np.floats are not serializable, native python floats are)
@@ -118,6 +119,31 @@ def evaluate_apacheiv(eval_label):
     # recalibrate
     apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)
     # apache_recalibrated.fit()
+
+    return results
+
+
+def evaluate_apacheiv_recalibrated(eval_label):
+
+    test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
+
+    # filter to the correct population based on eval_label
+    if eval_label == "vs_ap4_cabg":
+        test = test.loc[test['nice_ap4_model'] == "CABG"]
+    elif eval_label == "vs_ap4_noncabg":
+        test = test.loc[test['nice_ap4_model'] == "NON CABG"]
+
+    y_test = test['in_icu_death']
+    y_pred_proba = test['nice_ap4_prob']
+
+    # --- "recalibrated" on test set (intentionally leaky) ---
+    logit_test = np.log(y_pred_proba / (1 - y_pred_proba)).values.reshape(-1, 1)
+
+    apache_recalibrated = LogisticRegression(penalty=None, max_iter=10000)
+    apache_recalibrated.fit(logit_test, y_test)  # fit and evaluate on same set
+
+    y_pred_proba_recal = apache_recalibrated.predict_proba(logit_test)[:, 1]
+    results = evaluate_subset(y_test, y_pred_proba_recal)
 
     return results
 

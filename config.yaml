@@ -31,9 +31,9 @@ optuna_load_study: true
 pipeline:
   save_schema: true
   extraction: false
-  preprocessing_presplit: true
-  splitting: true
-  preprocessing_postsplit: true
+  preprocessing_presplit: false
+  splitting: false
+  preprocessing_postsplit: false
   hyperparameter_tuning: false
   modeling: true
   evaluation: true
