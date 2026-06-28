@@ -12,6 +12,8 @@ from sklearn.calibration import calibration_curve
 from sklearn.linear_model import LogisticRegression
 import torch
 
+random_state = 42
+
 
 def main():
 
@@ -66,7 +68,10 @@ def get_metrics(X_test, y_test, eval_label):
 
     # evaluate APACHE IV
     dict_of_results['apacheiv'] = evaluate_apacheiv(eval_label)
+    
+    # evaluate recalibrated models
     dict_of_results['apacheiv_recal'] = evaluate_apacheiv_recalibrated(eval_label)
+    dict_of_results['xgb_recal'] = evaluate_xgb_recalibrated(eval_label)
 
     # export list for results table
     ## convert to serializable format (np.floats are not serializable, native python floats are)
@@ -141,7 +146,7 @@ def evaluate_apacheiv_recalibrated(eval_label):
     logit = np.log(y_pred_proba / (1 - y_pred_proba)).values.reshape(-1, 1)
 
     logit_cal, logit_eval, y_cal, y_eval = train_test_split(
-        logit, y, test_size=0.3, random_state=42, stratify=y
+        logit, y, test_size=0.3, random_state=random_state
     )
 
     # --- fit recalibration model on calibration split only ---
@@ -152,6 +157,45 @@ def evaluate_apacheiv_recalibrated(eval_label):
     y_pred_proba_recal = apache_recalibrated.predict_proba(logit_eval)[:, 1]
     results = evaluate_subset(y_eval, y_pred_proba_recal)
 
+    return results
+
+
+def evaluate_xgb_recalibrated(eval_label):
+
+    # load X_test and y_test
+    X_test = pd.read_csv(ROOT + 'data/intermediate/X_test_imputed.csv')
+    y_test = pd.read_csv(ROOT + 'data/intermediate/y_test.csv')['in_icu_death']
+    test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
+
+    # filter to the correct population based on eval_label
+    if eval_label == "vs_ap4_cabg":
+        test = test.loc[test['nice_ap4_model'] == "CABG"]
+    elif eval_label == "vs_ap4_noncabg":
+        test = test.loc[test['nice_ap4_model'] == "NON CABG"]
+
+    # load model
+    filename = config['model_algorithms']['xgb']['filename']
+    with open(ROOT + f'data/final/models/{filename}', 'rb') as file:
+        model = pickle.load(file)
+
+    # --- get raw XGB predicted probabilities ---
+    y_pred_proba = model.predict_proba(X_test)[:, 1]
+
+    # --- split into calibration-train and calibration-eval ---
+    logit = np.log(y_pred_proba / (1 - y_pred_proba)).reshape(-1, 1)
+
+    logit_cal, logit_eval, y_cal, y_eval = train_test_split(
+        logit, y_test, test_size=0.3, random_state=random_state
+    )
+
+    # --- fit recalibration model on calibration split only ---
+    xgb_recalibrated = LogisticRegression(penalty=None, max_iter=10000)
+    xgb_recalibrated.fit(logit_cal, y_cal)
+
+    # --- evaluate on held-out eval split ---
+    y_pred_proba_recal = xgb_recalibrated.predict_proba(logit_eval)[:, 1]
+    results = evaluate_subset(y_eval, y_pred_proba_recal)
+    
     return results
 
 
