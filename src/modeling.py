@@ -338,7 +338,7 @@ def train_apiv_recal_model(X_train, y_train):
     logger.info("APACHE IV recalibration training starts now.")
     
     # get apache scores and recalibrate them using a logistic regression model
-
+    
 
     # get model object and fit (NICE method)
     apache_recalibrated = LogisticRegression(penalty='none', max_iter=10000)

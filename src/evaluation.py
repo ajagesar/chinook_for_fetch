@@ -6,6 +6,7 @@ import yaml
 
 import matplotlib.pyplot as plt
 import xgboost as xgb
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score, brier_score_loss
 from sklearn.calibration import calibration_curve
 from sklearn.linear_model import LogisticRegression
@@ -133,17 +134,23 @@ def evaluate_apacheiv_recalibrated(eval_label):
     elif eval_label == "vs_ap4_noncabg":
         test = test.loc[test['nice_ap4_model'] == "NON CABG"]
 
-    y_test = test['in_icu_death']
+    y = test['in_icu_death']
     y_pred_proba = test['nice_ap4_prob']
 
-    # --- "recalibrated" on test set (intentionally leaky) ---
-    logit_test = np.log(y_pred_proba / (1 - y_pred_proba)).values.reshape(-1, 1)
+    # --- split into calibration-train and calibration-eval ---
+    logit = np.log(y_pred_proba / (1 - y_pred_proba)).values.reshape(-1, 1)
 
+    logit_cal, logit_eval, y_cal, y_eval = train_test_split(
+        logit, y, test_size=0.3, random_state=42, stratify=y
+    )
+
+    # --- fit recalibration model on calibration split only ---
     apache_recalibrated = LogisticRegression(penalty=None, max_iter=10000)
-    apache_recalibrated.fit(logit_test, y_test)  # fit and evaluate on same set
+    apache_recalibrated.fit(logit_cal, y_cal)
 
-    y_pred_proba_recal = apache_recalibrated.predict_proba(logit_test)[:, 1]
-    results = evaluate_subset(y_test, y_pred_proba_recal)
+    # --- evaluate on held-out eval split ---
+    y_pred_proba_recal = apache_recalibrated.predict_proba(logit_eval)[:, 1]
+    results = evaluate_subset(y_eval, y_pred_proba_recal)
 
     return results
 
