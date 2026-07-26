@@ -11,6 +11,7 @@ from sklearn.metrics import roc_curve, precision_recall_curve, auc, f1_score, br
 from sklearn.calibration import calibration_curve
 from sklearn.linear_model import LogisticRegression
 import torch
+from tableone import TableOne
 
 random_state = 42
 
@@ -36,6 +37,83 @@ def main():
 
 
     return
+
+
+def get_table_1():
+
+    train = pd.read_csv(ROOT + "data/intermediate/train_data_complete.csv")
+    test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
+    
+    train['split'] = 'Train'
+    test['split'] = 'Test'
+    combined = pd.concat([train, test], ignore_index=True)
+
+    columns = [
+        'admitted_from_source_value', 
+        'care_site_name', 
+        'gender',
+        'admission_origin_or_pacu',
+        'admission_origin_transfer',
+        'admission_origin_floor',
+        'admission_origin_ctc',
+        'in_icu_death',
+        'height',
+        'weight',
+        'albumin',
+        'base_excess',
+        'bicarbonate',
+        'bilirubin',
+        'chloride',
+        'creatinine',
+        'crp',
+        'diastolic_pressure',
+        'fio2',
+        'glucose',
+        'heart_rate',
+        'hematocrit',
+        'hemoglobin',
+        'ionized_calcium',
+        'lactate',
+        'map',
+        'paco2',
+        'pao2',
+        'ph',
+        'potassium',
+        'respiratory_rate',
+        'sodium',
+        'systolic_pressure',
+        'temperature',
+        'thrombocytes',
+        'troponin',
+        'urea',
+        'urine_output',
+        'ventilated',
+        'wbc',
+        'aado2'
+    ]
+    
+    categorical = [
+        'admitted_from_source_value', 
+        'care_site_name', 
+        'gender',
+        'admission_origin_or_pacu',
+        'admission_origin_transfer',
+        'admission_origin_floor',
+        'admission_origin_ctc',
+        'in_icu_death',
+        'ventilated'
+    ]
+
+    groupby = 'split'
+    # nonnormal = ['bmi']  # Renders as Median [IQR]
+
+    mytable = TableOne(combined, columns=columns, categorical=categorical, 
+                       groupby=groupby, pval=True)
+    
+    print(mytable.tabulate(tablefmt="github"))
+    mytable.to_csv(ROOT + "data/final/tables/table_1.csv")
+    
+    return mytable
 
 
 def get_metrics(X_test, y_test, eval_label):
@@ -174,7 +252,7 @@ def evaluate_xgb_recalibrated(eval_label):
         test = test.loc[test['nice_ap4_model'] == "NON CABG"]
 
     # load model
-    filename = config['model_algorithms']['xgb']['filename']
+    filename = config['model_algorithms']['xgb_unimputed']['filename']
     with open(ROOT + f'data/final/models/{filename}', 'rb') as file:
         model = pickle.load(file)
 
