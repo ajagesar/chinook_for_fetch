@@ -22,6 +22,8 @@ def main():
     X_test = pd.read_csv(ROOT + 'data/intermediate/X_test_imputed.csv')
     y_test = pd.read_csv(ROOT + 'data/intermediate/y_test.csv')['in_icu_death']
 
+    get_table_1()
+
     get_metrics(X_test=X_test, y_test=y_test, eval_label="all_populations")
 
     if config['splitting_method']['nice'] == True:
@@ -45,7 +47,7 @@ def get_table_1():
     test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
     
     train['split'] = 'Train'
-    test['split'] = 'Test'
+    test['split'] = 'Evaluation'
     combined = pd.concat([train, test], ignore_index=True)
 
     columns = [
@@ -112,6 +114,8 @@ def get_table_1():
     
     print(mytable.tabulate(tablefmt="github"))
     mytable.to_csv(ROOT + "data/final/tables/table_1.csv")
+    mytable.to_html(ROOT + "data/final/tables/table_1.html")
+    mytable.to_excel(ROOT + "data/final/tables/table_1.xlsx")
     
     return mytable
 
