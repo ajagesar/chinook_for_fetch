@@ -51,13 +51,13 @@ def get_table_1():
     combined = pd.concat([train, test], ignore_index=True)
 
     columns = [
-        'admitted_from_source_value', 
+        # 'admitted_from_source_value', 
         'care_site_name', 
         'gender',
-        'admission_origin_or_pacu',
-        'admission_origin_transfer',
-        'admission_origin_floor',
-        'admission_origin_ctc',
+        # 'admission_origin_or_pacu',
+        # 'admission_origin_transfer',
+        # 'admission_origin_floor',
+        # 'admission_origin_ctc',
         'in_icu_death',
         'height',
         'weight',
@@ -95,13 +95,13 @@ def get_table_1():
     ]
     
     categorical = [
-        'admitted_from_source_value', 
+        # 'admitted_from_source_value', 
         'care_site_name', 
         'gender',
-        'admission_origin_or_pacu',
-        'admission_origin_transfer',
-        'admission_origin_floor',
-        'admission_origin_ctc',
+        # 'admission_origin_or_pacu',
+        # 'admission_origin_transfer',
+        # 'admission_origin_floor',
+        # 'admission_origin_ctc',
         'in_icu_death',
         'ventilated'
     ]

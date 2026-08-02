@@ -71,7 +71,9 @@ def main():
             nice_aumc.set_index(['person_id', 'visit_start_date']).index
         )
         train_data = preprocessed_data[~test_mask]
-        
+
+        # remove 'Amsterdam UMC' from train set
+        train_data = train_data.loc[train_data['care_site_name'] != "Amsterdam UMC"]
 
         # separate features and target
         X_train = train_data[features]
