@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import yaml
 
+from debug import check_measurements_presplit
+
 def main():
 
     ### --- general preprocessing --- ###
@@ -21,6 +23,11 @@ def main():
     measurements = cleanup_measurements(measurements, variable_name='variable_name', value='value_as_number')
     measurements = get_most_deviating_values_apache(measurements)
     measurements = get_most_deviating_values_non_apache(measurements)
+
+    ### debug script start ###
+    check_measurements_presplit(measurements=measurements)
+    ### debug script end ###
+
     measurements = pivot_measurements(measurements)
     weight = preprocess_weight(weight)
     height = preprocess_height(height)

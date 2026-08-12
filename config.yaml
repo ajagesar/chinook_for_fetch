@@ -48,7 +48,7 @@ incremental_training:
   - OLVG
   - Vrije Universiteit Medisch Centrum
   - Amsterdams Medisch Centrum
-  - Amsterdam UMC
+  # - Amsterdam UMC
   - no source recorded
     # - umcu_metavision
     # - mcl_epic
@@ -833,7 +833,7 @@ features: # todo: use this list to extract features
         - 3020410 # Lactate [Moles/volume] in Arterial plasma
         - 3005491 # Lactate [Moles/volume] in Plasma venous
       ref_value: 0
-      ref_value_apache: 
+      ref_value_apache: null
       min_max_cutoff: [0, 50]
       distribution: right-skew
       processed: True
