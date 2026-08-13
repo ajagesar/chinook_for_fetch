@@ -8,11 +8,17 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, xxhash64
 import xxhash
 
+from debug import check_raw_tables
+
 # TODO: remove filename for ICUdata version 0.1.0
 
 def main():
 
     conn = database_connect(path_to_duck_db=config['data']['icudata_0_1_0'])
+
+    ### debug start ###
+    check_raw_tables(conn)
+    ### debug end ###
 
     features = config['features']
     extraction_window = config['window_in_hours']

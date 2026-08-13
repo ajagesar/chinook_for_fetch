@@ -25,9 +25,9 @@ def main():
     measurements = get_most_deviating_values_non_apache(measurements)
     measurements = pivot_measurements(measurements)
 
-    ### debug script start ###
-    check_measurements_presplit(measurements=measurements)
-    ### debug script end ###
+    # ### debug script start ###
+    # check_measurements_presplit(measurements=measurements)
+    # ### debug script end ###
 
     weight = preprocess_weight(weight)
     height = preprocess_height(height)
