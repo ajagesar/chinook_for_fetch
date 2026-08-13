@@ -23,12 +23,12 @@ def main():
     measurements = cleanup_measurements(measurements, variable_name='variable_name', value='value_as_number')
     measurements = get_most_deviating_values_apache(measurements)
     measurements = get_most_deviating_values_non_apache(measurements)
+    measurements = pivot_measurements(measurements)
 
     ### debug script start ###
     check_measurements_presplit(measurements=measurements)
     ### debug script end ###
 
-    measurements = pivot_measurements(measurements)
     weight = preprocess_weight(weight)
     height = preprocess_height(height)
     measurements = preprocess_ventilated(measurements)
