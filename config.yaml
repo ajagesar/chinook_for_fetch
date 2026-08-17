@@ -11,6 +11,7 @@ data:
   rumc: "/home/olof.sigling@mydre.org/output/radboud/epic/duckdb/omop_db.duckdb"
   umcu: "/home/olof.sigling@mydre.org/output/umcu/metavision/duckdb/omop_db.duckdb"
   icudata_0_1_0: "/home/ICUdata/ICUdata_0_1_0.duckdb"
+  icudata_0_2_0: "/home/ICUdata/ICUdata_0_2_0.duckdb"
   # pm to add aumcdb_v2 with gbq access
 
 drop_ctc: false
@@ -30,7 +31,7 @@ optuna_load_study: true
 
 pipeline:
   save_schema: true
-  extraction: true
+  extraction: false
   preprocessing_presplit: true
   splitting: true
   preprocessing_postsplit: true
@@ -45,6 +46,8 @@ incremental_training:
   origin_order:
   - UMC Utrecht
   - Catharina Ziekenhuis Eindhoven
+  - Radboudumc
+  - Franciscus Gasthuis
   - OLVG
   - Vrije Universiteit Medisch Centrum
   - Amsterdams Medisch Centrum

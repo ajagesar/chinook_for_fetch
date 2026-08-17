@@ -175,6 +175,17 @@ def get_metrics(X_test, y_test, eval_label):
     with open(ROOT + f'data/final/{eval_label}_results.yaml', 'w') as f:
         yaml.safe_dump(dict_of_results_serializable, f)
 
+    # --- SAVE YAML WITHOUT FPR, TPR, PRECISION, AND RECALL ---
+    excluded_keys = {'fpr', 'tpr', 'precision', 'recall'}
+
+    dict_of_results_summary = {
+        key: {k: convert_to_serializable(v) for k, v in value.items() if k not in excluded_keys}
+        for key, value in dict_of_results.items()
+    }
+
+    with open(ROOT + f'data/final/{eval_label}_results_summary.yaml', 'w') as f:
+        yaml.safe_dump(dict_of_results_summary, f)
+
     
     """ 
     list documentation:

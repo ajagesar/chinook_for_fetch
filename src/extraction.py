@@ -14,10 +14,10 @@ from debug import check_raw_tables
 
 def main():
 
-    conn = database_connect(path_to_duck_db=config['data']['icudata_0_1_0'])
+    conn = database_connect(path_to_duck_db=config['data']['icudata_0_2_0'])
 
     ### debug start ###
-    check_raw_tables(conn)
+    # check_raw_tables(conn)
     ### debug end ###
 
     features = config['features']
