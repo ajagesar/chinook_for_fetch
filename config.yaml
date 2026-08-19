@@ -1113,7 +1113,7 @@ features: # todo: use this list to extract features
         - 3018418 # pH of Serum or Plasma
       ref_value: 7.4
       ref_value_apache: null
-      min_max_cutoff: null
+      min_max_cutoff: [5.0, 10]
       processed: True
     ventilated:
       extract: True
