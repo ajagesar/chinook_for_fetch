@@ -22,7 +22,7 @@ def main():
     X_test = pd.read_csv(ROOT + 'data/intermediate/X_test_imputed.csv')
     y_test = pd.read_csv(ROOT + 'data/intermediate/y_test.csv')['in_icu_death']
 
-    get_table_1()
+    # get_table_1() --> moved to postsplit preprocessing, before imputation
 
     get_metrics(X_test=X_test, y_test=y_test, eval_label="all_populations")
 

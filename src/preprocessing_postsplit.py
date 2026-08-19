@@ -5,6 +5,8 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer, IterativeImputer
 from imblearn.over_sampling import SMOTE
 
+from tableone import TableOne
+
 def main():
 
     if config['use_validation_set'] == True:
@@ -18,6 +20,8 @@ def main():
         X_test_noncabg = pd.read_csv(ROOT + 'data/intermediate/X_test_noncabg.csv')
 
         X_test_cabg = pd.read_csv(ROOT + 'data/intermediate/X_test_cabg.csv')
+
+        get_table_1()
 
         impute(X_train=X_train, X_test=X_test, X_test_cabg=X_test_cabg, X_test_noncabg=X_test_noncabg)
 
@@ -45,6 +49,105 @@ def load_data():
 
     else:
         return X_train, X_test
+    
+
+def get_table_1():
+
+    train = pd.read_csv(ROOT + "data/intermediate/train_data_complete.csv")
+    test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
+    
+    train['split'] = 'Train'
+    test['split'] = 'Evaluation'
+    combined = pd.concat([train, test], ignore_index=True)
+
+    columns = [
+        # 'admitted_from_source_value', 
+        'care_site_name', 
+        'gender',
+        # 'admission_origin_or_pacu',
+        # 'admission_origin_transfer',
+        # 'admission_origin_floor',
+        # 'admission_origin_ctc',
+        'in_icu_death',
+        'height',
+        'weight',
+        'albumin',
+        'base_excess',
+        'bicarbonate',
+        'bilirubin',
+        'chloride',
+        'creatinine',
+        'crp',
+        'diastolic_pressure',
+        'fio2',
+        'glucose',
+        'heart_rate',
+        'hematocrit',
+        'hemoglobin',
+        'ionized_calcium',
+        'lactate',
+        'map',
+        'paco2',
+        'pao2',
+        'ph',
+        'potassium',
+        'respiratory_rate',
+        'sodium',
+        'systolic_pressure',
+        'temperature',
+        'thrombocytes',
+        'troponin',
+        'urea',
+        'urine_output',
+        'ventilated',
+        'wbc',
+        'aado2'
+    ]
+    
+    categorical = [
+        # 'admitted_from_source_value', 
+        'care_site_name', 
+        'gender',
+        # 'admission_origin_or_pacu',
+        # 'admission_origin_transfer',
+        # 'admission_origin_floor',
+        # 'admission_origin_ctc',
+        'in_icu_death',
+        'ventilated'
+    ]
+
+    groupby = 'split'
+    # nonnormal = ['bmi']  # Renders as Median [IQR]
+
+    mytable = TableOne(combined, columns=columns, categorical=categorical, 
+                       groupby=groupby, pval=True)
+    
+    print(mytable.tabulate(tablefmt="github"))
+    mytable.to_csv(ROOT + "data/final/tables/table_1.csv")
+    mytable.to_html(ROOT + "data/final/tables/table_1.html")
+    mytable.to_excel(ROOT + "data/final/tables/table_1.xlsx")
+
+    ### alternative version of table 1 with median and IQR ###
+    # List the continuous variables you want summarized with median/IQR
+    nonnormal = [col for col in columns if col not in categorical]  
+    # or explicitly list them, e.g. nonnormal = ['age', 'bmi', 'los']
+
+    mytable = TableOne(
+        combined,
+        columns=columns,
+        categorical=categorical,
+        groupby=groupby,
+        nonnormal=nonnormal,   # <-- forces median [IQR] for these vars
+        pval=True,
+        pval_test_name=True    # optional: shows which test was used (e.g. Kruskal-Wallis for nonnormal)
+    )
+
+    print(mytable.tabulate(tablefmt="github"))
+    mytable.to_csv(ROOT + "data/final/tables/table_1_median.csv")
+    mytable.to_html(ROOT + "data/final/tables/table_1_median.html")
+    mytable.to_excel(ROOT + "data/final/tables/table_1_median.xlsx")
+
+    return
 
 
 def impute(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):

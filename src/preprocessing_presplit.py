@@ -36,7 +36,7 @@ def main():
     table = merge_all(admissions, mortality, height, weight, measurements)
     # TODO add one-hot encoding
     get_missing_statistics(table)
-    get_patient_characteristics(table)
+
     table = impute_with_normal_values(table)
     table = calculate_derivations(table)
 
@@ -445,14 +445,6 @@ def get_missing_statistics(df):
         yaml.dump(stratified_missing, f, default_flow_style=False, sort_keys=False)
 
     return
-
-
-
-def get_patient_characteristics(df):
-
-    # TODO get table 1 / patient characteristics here
-
-    pass
 
 
 def impute_with_normal_values(df):
