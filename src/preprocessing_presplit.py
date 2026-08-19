@@ -343,7 +343,6 @@ def preprocess_height(height):
 
     # convert all m to cm
     height.loc[height['value_as_number'] < 3, 'value_as_number'] = height.loc[height['value_as_number'] < 3, 'value_as_number'] * 100
-    
     height = height.sort_values(by=['person_id', 'visit_start_datetime', 'timediff']).drop_duplicates(subset=['person_id', 'visit_start_datetime'])
 
     return height

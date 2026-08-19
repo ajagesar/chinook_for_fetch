@@ -116,8 +116,28 @@ def get_table_1():
     mytable.to_csv(ROOT + "data/final/tables/table_1.csv")
     mytable.to_html(ROOT + "data/final/tables/table_1.html")
     mytable.to_excel(ROOT + "data/final/tables/table_1.xlsx")
+
+    ### alternative version of table 1 with median and IQR ###
+    # List the continuous variables you want summarized with median/IQR
+    nonnormal = [col for col in columns if col not in categorical]  
+    # or explicitly list them, e.g. nonnormal = ['age', 'bmi', 'los']
+
+    mytable = TableOne(
+        combined,
+        columns=columns,
+        categorical=categorical,
+        groupby=groupby,
+        nonnormal=nonnormal,   # <-- forces median [IQR] for these vars
+        pval=True,
+        pval_test_name=True    # optional: shows which test was used (e.g. Kruskal-Wallis for nonnormal)
+    )
+
+    print(mytable.tabulate(tablefmt="github"))
+    mytable.to_csv(ROOT + "data/final/tables/table_1_median.csv")
+    mytable.to_html(ROOT + "data/final/tables/table_1_median.html")
+    mytable.to_excel(ROOT + "data/final/tables/table_1_median.xlsx")
     
-    return mytable
+    return
 
 
 def get_metrics(X_test, y_test, eval_label):
