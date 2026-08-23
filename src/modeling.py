@@ -184,13 +184,13 @@ def train_lr_model(X_train, y_train, random_state):
 
 
 def train_svm_model(X_train, y_train, random_state):
-    with open(ROOT + 'data/final/optuna_best_parameters/svm_params.yaml', 'r') as f:
-        best_params = yaml.safe_load(f)
+    # with open(ROOT + 'data/final/optuna_best_parameters/svm_params.yaml', 'r') as f:
+    #     best_params = yaml.safe_load(f)
     
     # SVM doesn't have n_jobs for fit, but setting cache_size can help
-    best_params['cache_size'] = 2000  # Increase cache for your 128GB RAM
+    # best_params['cache_size'] = 2000  # Increase cache for your 128GB RAM
     
-    svm_model = svm.SVC(**best_params, probability=True, random_state=random_state)
+    svm_model = svm.SVC(probability=True, random_state=random_state)
     svm_model.fit(X_train, y_train)
     
     # Save model
