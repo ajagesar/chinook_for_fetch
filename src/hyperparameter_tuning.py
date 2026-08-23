@@ -30,9 +30,15 @@ def main():
     if config['oversample'] is True:
         X_train = pd.read_csv(ROOT + 'data/intermediate/X_train_smote.csv')
         y_train = pd.read_csv(ROOT + 'data/intermediate/y_train_smote.csv')['in_icu_death']
+        
+        # also load unimputed data for xgb_unimputed tuning
+        X_train_unimputed = pd.read_csv(ROOT + 'data/intermediate/X_train.csv')
     else:
         X_train = pd.read_csv(ROOT + 'data/intermediate/X_train_imputed.csv')
         y_train = pd.read_csv(ROOT + 'data/intermediate/y_train.csv')['in_icu_death']
+
+        # also load unimputed data for xgb_unimputed tuning
+        X_train_unimputed = pd.read_csv(ROOT + 'data/intermediate/X_train.csv')
 
     # load validation set if to be used
     if config['use_validation_set'] is True:
@@ -90,6 +96,43 @@ def main():
                 # scores = xgb.cv(params, dtrain, nfold=5, stratified=True, early_stopping_rounds=40, num_boost_round=10000, seed=random_state, metrics='auc')
                 
                 # return  scores.values[-1][2] # order or results: train-auc-mean, train-auc-std, test-auc-mean, test-auc-std -> get test-auc-mean[2] from latest iteration[-1]
+            
+            if model_key == 'xgb_unimputed':
+
+                # make shortcut 
+                para_sc = config['model_algorithms'][model_key]['hyperparameter_range']
+
+                # set parameters # TODO add all hyperparameters
+                params = {
+                    para_sc['max_depth']['label']: trial.suggest_int(para_sc['max_depth']['label'], para_sc['max_depth']['min'],para_sc['max_depth']['max']), 
+                    para_sc['min_child_weight']['label']: trial.suggest_int(para_sc['min_child_weight']['label'], para_sc['min_child_weight']['min'], para_sc['min_child_weight']['max']),
+                    para_sc['subsample']['label']: trial.suggest_float(para_sc['subsample']['label'], para_sc['subsample']['min'], para_sc['subsample']['max']),
+                    para_sc['colsample_bytree']['label']: trial.suggest_float(para_sc['colsample_bytree']['label'], para_sc['colsample_bytree']['min'], para_sc['colsample_bytree']['max']),
+                    para_sc['reg_lambda']['label']: trial.suggest_float(para_sc['reg_lambda']['label'], para_sc['reg_lambda']['min'], para_sc['reg_lambda']['max'], log=para_sc['reg_lambda']['log']),
+                    para_sc['learning_rate']['label']: trial.suggest_float(para_sc['learning_rate']['label'], para_sc['learning_rate']['min'], para_sc['learning_rate']['max'])
+                }
+
+                # initiate model
+                model = xgb.XGBClassifier(**params, objective="binary:logistic", enable_categorical=True, random_state=random_state, tree_method='hist')
+
+                # TODO make XGBoost work with sklearn's cross_val_score API
+                # # apply 5-fold crossvalidation -> does not work with sklearn API
+                # scores = cross_val_score(model, X_train_imputed, y_train, cv=5, scoring='f1')
+
+                dtrain = xgb.DMatrix(X_train_unimputed, label=y_train)
+                # dvalidate = xgb.DMatric(X_validate, label=y_validate)
+
+                if config['use_cross_validation'] is True:
+                    scores = xgb.cv(params, dtrain, nfold=5, stratified=True, early_stopping_rounds=40, num_boost_round=10000, seed=random_state, metrics='auc')
+                    return scores.values[-1][2]
+                    
+                elif config['use_validation_set'] is True:
+                    model.fit(X_train, y_train)
+                    y_pred = model.predict_proba(X_validate)[:,1]
+                    return roc_auc_score(y_validate, y_pred)
+
+                else:
+                    return 'error, no method specified to tune hyperparameters'
             
             if model_key == 'logreg':
 

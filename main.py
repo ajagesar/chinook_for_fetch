@@ -8,6 +8,7 @@ from src.modeling import main as modeling
 from src.evaluation import main as evaluation
 from src.plotting import main as plotting
 from src.incremental_training import main as incremental_training
+from src.funnel import main as funnel
 
 
 def main():
@@ -74,6 +75,13 @@ def main():
         print("="*50 + "\n")
         plotting()
         print("\n✓ COMPLETED: Plotting Results\n")
+
+    if config['pipeline']['funnel'] == True:
+        print("\n" + "="*50)
+        print("STARTING: Assessing practical functionality with funnel plots")
+        print("="*50 + "\n")
+        funnel()
+        print("\n✓ COMPLETED: Funnel plots\n")
     
     print("\n" + "="*50)
     print("Pipeline has finished.")

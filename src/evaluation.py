@@ -37,7 +37,6 @@ def main():
         get_metrics(X_test=X_test_noncabg, y_test=y_test_noncabg, eval_label="vs_ap4_noncabg")
         get_metrics(X_test=X_test_cabg, y_test=y_test_cabg, eval_label="vs_ap4_cabg")
 
-
     return
 
 

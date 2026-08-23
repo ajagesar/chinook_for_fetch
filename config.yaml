@@ -40,6 +40,7 @@ pipeline:
   evaluation: true
   incremental_training: true
   plotting: true
+  funnel: true
 
 incremental_training:
   nan_origin_label: "no source recorded"
@@ -70,6 +71,36 @@ model_algorithms:
   xgb:
     label: 'xgb'
     filename: 'xgb_model.pkl'
+    hyperparameter_range:
+      max_depth:
+        label: 'max_depth'
+        min: 2
+        max: 32
+      min_child_weight:
+        label: 'min_child_weight'
+        min: 1
+        max: 250
+      subsample:
+        label: 'subsample'
+        min: 0.5
+        max: 1
+      colsample_bytree:
+        label: colsample_bytree
+        min: 0.5
+        max: 1
+      reg_lambda:
+        label: 'reg_lambda'
+        min: 0.001
+        max: 25
+        log: True
+      learning_rate:
+        label: 'learning_rate'
+        min: 0.001
+        max: 0.99
+        log: True
+  xgb_unimputed:
+    label: 'xgb_unimputed'
+    filename: 'xgb_unimputed.pkl'
     hyperparameter_range:
       max_depth:
         label: 'max_depth'
@@ -178,10 +209,6 @@ model_algorithms:
         - 16
         - 32
         - 64
-  xgb_unimputed:
-    label: 'xgb_unimputed'
-    filename: xgb_unimputed.pkl
-
   
 features: # todo: use this list to extract features
   static:
