@@ -32,13 +32,13 @@ optuna_load_study: true
 pipeline:
   save_schema: true
   extraction: false
-  preprocessing_presplit: true
-  splitting: true
-  preprocessing_postsplit: true
-  hyperparameter_tuning: false
+  preprocessing_presplit: false
+  splitting: false
+  preprocessing_postsplit: false
+  hyperparameter_tuning: true
   modeling: true
   evaluation: true
-  incremental_training: true
+  incremental_training: false
   plotting: true
   funnel: true
 
@@ -150,22 +150,22 @@ model_algorithms:
       max_iter:
         min: 100
         max: 5000
-  # svm:
-  #   label: 'svm'
-  #   filename: svm_model.pkl
-  #   hyperparameter_range:
-  #     C:
-  #       min: 0.1
-  #       max: 1000
-  #       log: true
-  #     gamma:
-  #       min: 0.0001
-  #       max: 1
-  #       log: true
-  #     kernel:
-  #       - rbf
-  #       - sigmoid
-  #       # - linear
+  svm:
+    label: 'svm'
+    filename: svm_model.pkl
+    hyperparameter_range:
+      C:
+        min: 0.1
+        max: 1000
+        log: true
+      gamma:
+        min: 0.0001
+        max: 1
+        log: true
+      kernel:
+        - rbf
+        - sigmoid
+        # - linear
   knn:
     label: 'knn'
     filename: knn_model.pkl
