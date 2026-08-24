@@ -12,6 +12,10 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.kernel_approximation import Nystroem
+from sklearn.linear_model import SGDClassifier
+from sklearn.pipeline import make_pipeline
+
 from skorch import NeuralNetBinaryClassifier
 from skorch.callbacks import Callback
 import torch
@@ -48,7 +52,7 @@ def main():
     training_tasks = [
         ('XGBoost', train_xgb_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
         ('Logistic Regression', train_lr_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),
-        # ('SVM', train_svm_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}), -> does not converge
+        ('SVM', train_svm_model, {'X_train': X_train, 'y_train': y_train, 'random_state': random_state}),# -> does not converge
         ('KNN', train_knn_model, {'X_train': X_train, 'y_train': y_train}),
         ('Naive Bayes', train_naivebayes_model, {'X_train': X_train, 'y_train': y_train}),
         ('XGBoost_unimputed', train_xgb_unimputed, {'X_train': X_train_unimputed, 'y_train': y_train, 'random_state':random_state})
@@ -190,7 +194,13 @@ def train_svm_model(X_train, y_train, random_state):
     # SVM doesn't have n_jobs for fit, but setting cache_size can help
     # best_params['cache_size'] = 2000  # Increase cache for your 128GB RAM
     
-    svm_model = svm.SVC(probability=True, random_state=random_state)
+    # svm_model = svm.SVC(kernel='linear', probability=True, random_state=random_state)
+    # svm_model.fit(X_train, y_train)
+
+    svm_model = make_pipeline(
+        Nystroem(kernel='rbf', n_components=300, random_state=random_state),
+        SGDClassifier(loss='hinge', random_state=random_state)  # hinge loss = linear SVM
+    )
     svm_model.fit(X_train, y_train)
     
     # Save model
