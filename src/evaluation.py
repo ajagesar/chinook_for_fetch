@@ -176,15 +176,29 @@ def get_metrics(X_test, y_test, eval_label):
 
     # export list for results table
     ## convert to serializable format (np.floats are not serializable, native python floats are)
+    # def convert_to_serializable(obj):
+    #     if isinstance(obj, np.ndarray):
+    #         return obj.tolist()  # Convert numpy array to list
+    #     elif isinstance(obj, np.float64) or isinstance(obj, np.float32):
+    #         return float(obj)  # Convert numpy float to Python float
+    #     elif isinstance(obj, np.int64) or isinstance(obj, np.int32):
+    #         return int(obj)  # Convert numpy int to Python int
+    #     else:
+    #         return obj  # Return the object as-is if no conversion is needed
+        
     def convert_to_serializable(obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()  # Convert numpy array to list
-        elif isinstance(obj, np.float64) or isinstance(obj, np.float32):
-            return float(obj)  # Convert numpy float to Python float
-        elif isinstance(obj, np.int64) or isinstance(obj, np.int32):
-            return int(obj)  # Convert numpy int to Python int
+        if isinstance(obj, dict):
+            return {k: convert_to_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, (list, tuple)):
+            return [convert_to_serializable(v) for v in obj]
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, (np.float64, np.float32)):
+            return float(obj)
+        elif isinstance(obj, (np.int64, np.int32)):
+            return int(obj)
         else:
-            return obj  # Return the object as-is if no conversion is needed
+            return obj
         
     dict_of_results_serializable = {
         key: {k: convert_to_serializable(v) for k, v in value.items()}
