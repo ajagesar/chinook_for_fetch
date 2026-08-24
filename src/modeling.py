@@ -199,7 +199,7 @@ def train_svm_model(X_train, y_train, random_state):
 
     svm_model = make_pipeline(
         Nystroem(kernel='rbf', n_components=300, random_state=random_state),
-        SGDClassifier(loss='hinge', random_state=random_state)  # hinge loss = linear SVM
+        SGDClassifier(loss='log_loss', random_state=random_state)  # hinge loss = linear SVM
     )
     svm_model.fit(X_train, y_train)
     

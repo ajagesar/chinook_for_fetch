@@ -195,7 +195,7 @@ def get_metrics(X_test, y_test, eval_label):
         yaml.safe_dump(dict_of_results_serializable, f)
 
     # --- SAVE YAML WITHOUT FPR, TPR, PRECISION, AND RECALL ---
-    excluded_keys = {'fpr', 'tpr', 'precision', 'recall', 'prob_pred', 'prob_true', 'thresholds'}
+    excluded_keys = {'fpr', 'tpr', 'precision', 'recall', 'prob_pred', 'prob_true', 'thresholds', 'mce_bin_idx', 'mce_bin_count', 'mce_bin_count_frac', 'bin_details'}
 
     dict_of_results_summary = {
         key: {k: convert_to_serializable(v) for k, v in value.items() if k not in excluded_keys}
@@ -336,6 +336,11 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
     bin_boundaries = np.linspace(0, 1, n_bins + 1)
     ece = 0.0
     mce = 0.0
+    mce_bin_idx = None
+    bin_details = []  # per-bin diagnostics for reliability assessment
+
+    n_total = len(y_test)
+
     for i in range(n_bins):
         if i == n_bins - 1:
             # Last bin is closed on both sides: [0.9, 1.0]
@@ -343,17 +348,55 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
         else:
             mask = (y_pred_proba >= bin_boundaries[i]) & (y_pred_proba < bin_boundaries[i + 1])
         
-        bin_count = mask.sum()
+        bin_count = int(mask.sum())
         if bin_count == 0:
+            bin_details.append({
+                'bin_range': (bin_boundaries[i], bin_boundaries[i + 1]),
+                'count': 0,
+                'accuracy': np.nan,
+                'confidence': np.nan,
+                'error': np.nan,
+                'error_se': np.nan,
+            })
             continue
-        
+
         bin_accuracy = y_test[mask].mean()
         bin_confidence = y_pred_proba[mask].mean()
         bin_error = abs(bin_accuracy - bin_confidence)
-        
-        ece += (bin_count / len(y_test)) * bin_error
-        mce = max(mce, bin_error)
 
+        
+        # Standard error of the observed accuracy within this bin, treating
+        # bin_accuracy as a binomial proportion estimate (p ~ bin_accuracy, n = bin_count).
+        # This tells you how much bin_error could plausibly be due to sampling noise alone.
+        bin_error_se = np.sqrt(bin_accuracy * (1 - bin_accuracy) / bin_count) if bin_count > 0 else np.nan
+
+        ece += (bin_count / n_total) * bin_error
+
+        if bin_error > mce:
+            mce = bin_error
+            mce_bin_idx = i
+
+        bin_details.append({
+            'bin_range': (bin_boundaries[i], bin_boundaries[i + 1]),
+            'count': bin_count,
+            'accuracy': bin_accuracy,
+            'confidence': bin_confidence,
+            'error': bin_error,
+            'error_se': bin_error_se,
+        })
+
+    # Reliability summary for the MCE specifically
+    if mce_bin_idx is not None:
+        mce_bin = bin_details[mce_bin_idx]
+        mce_bin_count = mce_bin['count']
+        mce_bin_se = mce_bin['error_se']
+        # "z-score"-like ratio: how many standard errors is the error above 0?
+        # Low count -> large SE -> low ratio -> MCE likely noise, not real miscalibration.
+        mce_reliability_ratio = mce / mce_bin_se if mce_bin_se and mce_bin_se > 0 else np.nan
+    else:
+        mce_bin_count = 0
+        mce_bin_se = np.nan
+        mce_reliability_ratio = np.nan
 
     return {
         'fpr': fpr,
@@ -367,7 +410,12 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
         'prob_pred': prob_pred,
         'brier_score_metric': brier_score_metric,
         'ece': ece,
-        'mce': mce
+        'mce': mce,
+        'mce_bin_idx': mce_bin_idx,
+        'mce_bin_count': mce_bin_count,          # <-- sample size behind the MCE
+        'mce_bin_count_frac': mce_bin_count / n_total if n_total else np.nan,
+        'mce_reliability_ratio': mce_reliability_ratio,  # <-- higher = more trustworthy
+        'bin_details': bin_details, 
     }
 
 
