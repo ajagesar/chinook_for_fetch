@@ -209,7 +209,7 @@ def get_metrics(X_test, y_test, eval_label):
         yaml.safe_dump(dict_of_results_serializable, f)
 
     # --- SAVE YAML WITHOUT FPR, TPR, PRECISION, AND RECALL ---
-    excluded_keys = {'fpr', 'tpr', 'precision', 'recall', 'prob_pred', 'prob_true', 'thresholds', 'mce_bin_idx', 'mce_bin_count', 'mce_bin_count_frac', 'bin_details'}
+    excluded_keys = {'fpr', 'tpr', 'precision', 'recall', 'prob_pred', 'prob_true', 'thresholds', 'mce_bin_idx', 'mce_bin_count', 'bin_details'}
 
     dict_of_results_summary = {
         key: {k: convert_to_serializable(v) for k, v in value.items() if k not in excluded_keys}
@@ -300,7 +300,7 @@ def evaluate_xgb_recalibrated(eval_label):
         test = test.loc[test['nice_ap4_model'] == "NON CABG"]
 
     # load model
-    filename = config['model_algorithms']['xgb_unimputed']['filename']
+    filename = config['model_algorithms']['xgb']['filename']
     with open(ROOT + f'data/final/models/{filename}', 'rb') as file:
         model = pickle.load(file)
 

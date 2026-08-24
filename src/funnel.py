@@ -9,7 +9,6 @@ import xgboost as xgb
 def main():
 
 
-
     # train CHINOOK on each separate dataset
 
     # get overdispersion
@@ -23,7 +22,7 @@ def main():
 def train_xgb_unimputed(X_train, y_train, random_state=42):
 
     # Load best hyperparameters
-    with open(ROOT + 'data/final/optuna_best_parameters/xgb_unimputed_params.yaml', 'r') as f:
+    with open(ROOT + 'data/final/optuna_best_parameters/xgb_params.yaml', 'r') as f:
         best_params = yaml.safe_load(f)
     
     # # Use all available cores for XGBoost
@@ -41,10 +40,10 @@ def train_xgb_unimputed(X_train, y_train, random_state=42):
     
     xgb_model.fit(X_train, y_train)
     
-    # Save model
-    filename = ROOT + 'data/final/models/xgb_unimputed.pkl'
-    with open(filename, 'wb') as file:
-        pickle.dump(xgb_model, file)
+    # # Save model
+    # filename = ROOT + 'data/final/models/xgb_cv.pkl'
+    # with open(filename, 'wb') as file:
+    #     pickle.dump(xgb_model, file)
     
     return xgb_model
 
