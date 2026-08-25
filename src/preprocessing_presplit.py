@@ -137,11 +137,23 @@ def preprocess_admissions(admissions):
     admissions = admissions.drop(columns=['admission_origin'])
 
     # get years of admission and export
-    start_year = admissions['visit_start_datetime'].dt.year.min()
-    end_year = admissions['visit_end_datetime'].dt.year.max()
+    def get_years():
+        admissions['visit_start_datetime'] = pd.to_datetime(admissions['visit_start_datetime'], format='%Y-%m-%d %H:%M:%S')
+        admissions['visit_end_datetime'] = pd.to_datetime(admissions['visit_end_datetime'], format='%Y-%m-%d %H:%M:%S')
 
-    with open(ROOT + 'data/final/admission_years.yaml', 'w') as f:
-        yaml.dump({'start_year': start_year, 'end_year': end_year}, f)
+        valid_start_years =  admissions['visit_start_datetime'].year
+        valid_end_years = admissions['visit_end_datetime'].year
+
+        valid_start_mask = valid_start_years.between(1990, 2027)
+        valid_end_mask = valid_end_years.between(1990, 2027)
+
+        start_year = int(valid_start_years[valid_start_mask].min())
+        end_year = int(valid_end_years[valid_end_mask].max())
+
+        with open(ROOT + 'data/final/admission_years.yaml', 'w') as f:
+            yaml.dump({'start_year': start_year, 'end_year': end_year}, f)
+    
+    get_years()
 
     return admissions
 
