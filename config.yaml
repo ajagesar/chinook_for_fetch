@@ -67,6 +67,9 @@ splitting_method:
   nice: true
   db_origin: false
 
+scaling_method:
+  robust: true
+
 model_algorithms:
   xgb:
     label: 'xgb'

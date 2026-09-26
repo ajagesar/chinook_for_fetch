@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer, IterativeImputer
 from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import RobustScaler
 
 from tableone import TableOne
 
@@ -23,12 +24,22 @@ def main():
 
         get_table_1()
 
+        if config['scaling_method']['robust'] == True:
+            X_train, X_test, X_test_cabg, X_test_noncabg = scale(
+                X_train=X_train, 
+                X_test=X_test,
+                X_test_cabg=X_test_cabg, 
+                X_test_noncabg=X_test_noncabg
+            )
+
         impute(X_train=X_train, X_test=X_test, X_test_cabg=X_test_cabg, X_test_noncabg=X_test_noncabg)
 
     else:
-        impute(X_train=X_train, X_test=X_test)
 
-    # TODO implement scaling if necessary
+        if config['scaling_method']['robust'] == True:
+            X_train, X_test, _, _ = scale(X_train=X_train, X_test=X_test)
+        
+        impute(X_train=X_train, X_test=X_test)
 
     if config['oversample'] == True:
         oversample()
@@ -209,10 +220,41 @@ def impute(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):
     return
 
 
-def scale():
+def scale(X_train, X_test, X_test_cabg=None, X_test_noncabg=None):
 
+    # RobustScaler: centers on the median and scales by the IQR, so it isn't
+    # thrown off by skewed labs (CRP, troponin, lactate, bilirubin, etc.) or
+    # by outliers. Ignores NaNs when computing statistics, so it's safe to
+    # run before imputation.
+    scaler = RobustScaler()
+    scaler.fit(X_train)
 
-    return
+    X_train_scaled = pd.DataFrame(
+        scaler.transform(X_train), columns=X_train.columns, index=X_train.index
+    )
+    X_test_scaled = pd.DataFrame(
+        scaler.transform(X_test), columns=X_test.columns, index=X_test.index
+    )
+
+    X_train_scaled.to_csv(ROOT + 'data/intermediate/X_train.csv', index=False)
+    X_test_scaled.to_csv(ROOT + 'data/intermediate/X_test.csv', index=False)
+
+    X_test_cabg_scaled = None
+    if X_test_cabg is not None:
+        X_test_cabg_scaled = pd.DataFrame(
+            scaler.transform(X_test_cabg), columns=X_test_cabg.columns, index=X_test_cabg.index
+        )
+        X_test_cabg_scaled.to_csv(ROOT + 'data/intermediate/X_test_cabg.csv', index=False)
+
+    X_test_noncabg_scaled = None
+    if X_test_noncabg is not None:
+        X_test_noncabg_scaled = pd.DataFrame(
+            scaler.transform(X_test_noncabg), columns=X_test_noncabg.columns, index=X_test_noncabg.index
+        )
+        X_test_noncabg_scaled.to_csv(ROOT + 'data/intermediate/X_test_noncabg.csv', index=False)
+
+    return X_train_scaled, X_test_scaled, X_test_cabg_scaled, X_test_noncabg_scaled
+
 
 def oversample():
 
