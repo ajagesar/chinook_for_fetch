@@ -12,6 +12,7 @@ data:
   umcu: "/home/olof.sigling@mydre.org/output/umcu/metavision/duckdb/omop_db.duckdb"
   icudata_0_1_0: "/home/ICUdata/ICUdata_0_1_0.duckdb"
   icudata_0_2_0: "/home/ICUdata/ICUdata_0_2_0.duckdb"
+  # icudata_0_3_0: "/home/ICUdata/ICUdata_0_3_0.duckdb"
   # pm to add aumcdb_v2 with gbq access
 
 drop_ctc: false
@@ -152,7 +153,7 @@ model_algorithms:
         log: true
       max_iter:
         min: 100
-        max: 5000
+        max: 10000
   svm:
     label: 'svm'
     filename: svm_model.pkl

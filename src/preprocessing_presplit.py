@@ -394,22 +394,34 @@ def preprocess_mortality(admissions, mortality):
 
 
 def merge_all(admissions, mortality, height, weight, measurements):
+    
+    key = ['person_id', 'visit_start_datetime']
 
-    height = height.rename(columns={'value_as_number':'height'})
-    weight = weight.rename(columns={'value_as_number':'weight'})
+    height = height.rename(columns={'value_as_number': 'height'})
+    weight = weight.rename(columns={'value_as_number': 'weight'})
 
-    merged = pd.merge(left=admissions, right=mortality[['person_id', 'visit_start_datetime', 'in_icu_death']], how='left', on=['person_id', 'visit_start_datetime'])
-    merged = pd.merge(left=merged, right=height[['person_id', 'visit_start_datetime', 'height']], how='left', on=['person_id', 'visit_start_datetime'])
-    merged = pd.merge(left=merged, right=weight[['person_id', 'visit_start_datetime', 'weight']], how='left', on=['person_id', 'visit_start_datetime'])
-    #merged = pd.merge(left=merged, right=ventilated[['person_id', 'visit_start_datetime', 'ventilated']], how='left', on=['person_id', 'visit_start_datetime'])
-    merged = pd.merge(left=merged, right=measurements, how='left', on=['person_id', 'visit_start_datetime'])
+    # Make the datetime key consistent across all frames (copy to avoid mutating inputs)
+    frames = {}
+    for name, df in dict(admissions=admissions, mortality=mortality,
+                         height=height, weight=weight,
+                         measurements=measurements).items():
+        df = df.copy()
+        df['visit_start_datetime'] = pd.to_datetime(df['visit_start_datetime'], errors='coerce')
+        frames[name] = df
+
+    merged = frames['admissions'].merge(
+        frames['mortality'][key + ['in_icu_death']], how='left', on=key)
+    merged = merged.merge(
+        frames['height'][key + ['height']], how='left', on=key)
+    merged = merged.merge(
+        frames['weight'][key + ['weight']], how='left', on=key)
+    merged = merged.merge(
+        frames['measurements'], how='left', on=key)
+
     merged = merged.drop(columns=['birth_datetime'])
 
-    # columns_to_keep = merged.drop(columns=['person_id', 'visit_start_datetime']).columns
-    # merged = merged.groupby(['person_id', 'visit_start_datetime'])[columns_to_keep].mean().reset_index()
-
-    # when ventilated not registered, set as false
-    merged.loc[merged['ventilated'].isna(), 'ventilated'] = False
+    # when ventilated not registered, set as False
+    merged['ventilated'] = merged['ventilated'].fillna(False)
 
     return merged
 
