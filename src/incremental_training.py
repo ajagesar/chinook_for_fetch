@@ -372,6 +372,11 @@ def apply_smote(X_train_imp, y_train):
 # Training + evaluation for one step
 # ===========================================================================
 
+def _model_enabled(name):
+    """True unless config['incremental_training']['models'][name] is explicitly false."""
+    models_cfg = config.get('incremental_training', {}).get('models', {}) or {}
+    return bool(models_cfg.get(name, True))
+
 def train_and_evaluate_all(X_train_imp, X_train_raw_step, y_train,
                            X_test_imp, y_test, hyperparams):
     """Train every model, predict on X_test_imp, return {label: metrics}."""
@@ -386,18 +391,19 @@ def train_and_evaluate_all(X_train_imp, X_train_raw_step, y_train,
         results['xgboost'] = _evaluate(model, X_test_imp, y_test)
 
     # ---- XGBoost (unimputed — native missing support) ---- #
-    logger.info("    Training XGBoost (unimputed) …")
-    model = _train_xgb_unimputed(X_train_raw_step, y_train, random_state)
-    results['xgboost_unimputed'] = _evaluate(model, X_test_imp if 'xgb' not in hyperparams
-                                             else _drop_if_present(
-                                                 pd.read_csv(ROOT + 'data/intermediate/X_test.csv').reset_index(drop=True),
-                                                 'db_origin').pipe(_drop_if_present, 'db origin'),
-                                             y_test, use_raw_test=True,
-                                             X_test_raw=_drop_if_present(
-                                                 _drop_if_present(
-                                                     pd.read_csv(ROOT + 'data/intermediate/X_test.csv').reset_index(drop=True),
-                                                     'db_origin'),
-                                                 'db origin'))
+    if _model_enabled('xgb_unimputed'):
+        logger.info("    Training XGBoost (unimputed) …")
+        model = _train_xgb_unimputed(X_train_raw_step, y_train, random_state)
+        results['xgboost_unimputed'] = _evaluate(model, X_test_imp if 'xgb' not in hyperparams
+                                                else _drop_if_present(
+                                                    pd.read_csv(ROOT + 'data/intermediate/X_test.csv').reset_index(drop=True),
+                                                    'db_origin').pipe(_drop_if_present, 'db origin'),
+                                                y_test, use_raw_test=True,
+                                                X_test_raw=_drop_if_present(
+                                                    _drop_if_present(
+                                                        pd.read_csv(ROOT + 'data/intermediate/X_test.csv').reset_index(drop=True),
+                                                        'db_origin'),
+                                                    'db origin'))
 
     # ---- Logistic Regression ---- #
     if 'logreg' in hyperparams:

@@ -44,6 +44,8 @@ pipeline:
   funnel: true
 
 incremental_training:
+  models:
+    xgb_unimputed: false
   nan_origin_label: "no source recorded"
   origin_order:
   - UMC Utrecht
