@@ -9,11 +9,20 @@ def main():
 
     return
 
+
 def check_nice_data():
 
-    nice = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv")
+    check_data()
 
-    
+
+    return
+
+
+def check_data():
+
+    train = pd.read_csv(ROOT + "data/intermediate/train_data_complete.csv")
+    test = pd.read_csv(ROOT + "data/intermediate/test_data_complete.csv")
+    all = pd.concat([train, test], ignore_index=True)
 
     return
 

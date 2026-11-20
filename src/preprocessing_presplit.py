@@ -362,12 +362,26 @@ def preprocess_weight(weight):
 
     return weight
 
-
 def preprocess_height(height):
 
+    height = height.copy()  # avoid modifying the caller's DataFrame
+
     # convert all m to cm
-    height.loc[height['value_as_number'] < 3, 'value_as_number'] = height.loc[height['value_as_number'] < 3, 'value_as_number'] * 100
-    height = height.sort_values(by=['person_id', 'visit_start_datetime', 'timediff']).drop_duplicates(subset=['person_id', 'visit_start_datetime'])
+    is_meters = height['value_as_number'] < 3
+    height.loc[is_meters, 'value_as_number'] = height.loc[is_meters, 'value_as_number'] * 100
+
+    # remove all impossible values above 250cm
+    height = height[height['value_as_number'] <= 250]
+
+    # remove all impossible values <100cm
+    height = height[height['value_as_number'] >= 100]
+
+    # keep one measurement per person per visit (the one with the smallest timediff)
+    height = (
+        height
+        .sort_values(by=['person_id', 'visit_start_datetime', 'timediff'])
+        .drop_duplicates(subset=['person_id', 'visit_start_datetime'])
+    )
 
     return height
 
