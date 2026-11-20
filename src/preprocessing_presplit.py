@@ -175,33 +175,46 @@ def convert_to_mmhg(measurements, variable_name, value):
     return measurements
 
 
-def clean_urine_output(measurements, variable_name='urine_output', value='value_as_number'):
+def clean_urine_output(measurements, variable_name='urine_output',
+                       value='value_as_number', output_name='urine_output'):
     grp = ["person_id", "visit_start_datetime"]
 
-    df = measurements.loc[measurements["variable_name"] == variable_name].copy()
+    mask = measurements["variable_name"] == variable_name
+    others = measurements.loc[~mask]                 # everything else, unchanged
+    df = measurements.loc[mask].copy()               # urine rows (index preserved)
 
-    # Convert to datetime before sorting / diffing
+    # Convert for calculation only
     df["measurement_datetime"] = pd.to_datetime(df["measurement_datetime"], errors="coerce")
     df["visit_start_datetime"] = pd.to_datetime(df["visit_start_datetime"], errors="coerce")
+    df[value] = pd.to_numeric(df[value], errors="coerce")
     df = df.dropna(subset=["measurement_datetime", "visit_start_datetime"])
-
     df = df.sort_values(grp + ["measurement_datetime"])
 
+    # Hours since previous measurement within the visit
     df["interval_h"] = (
         df.groupby(grp)["measurement_datetime"].diff().dt.total_seconds() / 3600
     )
 
-    valid = df.dropna(subset=["interval_h"])
-    valid = valid[valid["interval_h"] > 0]
-
-    result = (
+    # Average = total volume / total time over valid intervals
+    valid = df[df["interval_h"] > 0]
+    avg = (
         valid.groupby(grp)
-        .agg(total_volume=(value, "sum"),
-             total_hours=("interval_h", "sum"))
-        .assign(avg_ml_per_hour=lambda x: x["total_volume"] / x["total_hours"])
-        .reset_index()
+        .agg(total_volume=(value, "sum"), total_hours=("interval_h", "sum"))
+        .assign(avg_ml_per_hour=lambda x: x["total_volume"] / x["total_hours"])["avg_ml_per_hour"]
     )
-    return result
+
+    # One representative row per group: the last measurement of the visit
+    last = df.groupby(grp).tail(1)
+    last = last.assign(
+        _avg=avg.reindex(pd.MultiIndex.from_frame(last[grp])).to_numpy()
+    ).dropna(subset=["_avg"])
+
+    # Take the original (unconverted) row so dtypes/format match the input
+    new_rows = measurements.loc[last.index].copy()
+    new_rows[value] = last["_avg"]
+    new_rows["variable_name"] = output_name
+
+    return pd.concat([others, new_rows]).sort_index()
 
 
 def cleanup_measurements(measurements, variable_name='variable_name', value='value_as_number'): 
