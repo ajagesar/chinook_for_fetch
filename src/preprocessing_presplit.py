@@ -178,16 +178,19 @@ def convert_to_mmhg(measurements, variable_name, value):
 def clean_urine_output(measurements, variable_name='urine_output', value='value_as_number'):
     grp = ["person_id", "visit_start_datetime"]
 
-    # Work on a filtered copy so the caller's dataframe isn't modified
     df = measurements.loc[measurements["variable_name"] == variable_name].copy()
+
+    # Convert to datetime before sorting / diffing
+    df["measurement_datetime"] = pd.to_datetime(df["measurement_datetime"], errors="coerce")
+    df["visit_start_datetime"] = pd.to_datetime(df["visit_start_datetime"], errors="coerce")
+    df = df.dropna(subset=["measurement_datetime", "visit_start_datetime"])
+
     df = df.sort_values(grp + ["measurement_datetime"])
 
-    # Interval length in hours since the previous measurement within the visit
     df["interval_h"] = (
         df.groupby(grp)["measurement_datetime"].diff().dt.total_seconds() / 3600
     )
 
-    # First measurement per group has no known interval start -> exclude it
     valid = df.dropna(subset=["interval_h"])
     valid = valid[valid["interval_h"] > 0]
 
@@ -198,7 +201,6 @@ def clean_urine_output(measurements, variable_name='urine_output', value='value_
         .assign(avg_ml_per_hour=lambda x: x["total_volume"] / x["total_hours"])
         .reset_index()
     )
-
     return result
 
 
