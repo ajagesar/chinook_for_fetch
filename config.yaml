@@ -1099,7 +1099,7 @@ features: # todo: use this list to extract features
         - 2000000373 # fluid output - urine splint drain left
       ref_value: null
       ref_value_apache: null
-      min_max_cutoff: null
+      min_max_cutoff: [0, 1000]
       processed: True
     pao2:
       extract: True
@@ -1114,7 +1114,7 @@ features: # todo: use this list to extract features
         - 3027315 # Oxygen [Partial pressure] in Blood
       ref_value: 100
       ref_value_apache: 100
-      min_max_cutoff: null
+      min_max_cutoff: [50, 300]
       processed: True
     paco2:
       extract: True

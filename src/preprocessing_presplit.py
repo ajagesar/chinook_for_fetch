@@ -268,6 +268,18 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
     )
     measurements.loc[mask, value] = (measurements.loc[mask, value] - 32) * 5 / 9
 
+    ## pao2: convert kpa to mmHg
+    min_o2, max_o2 = features['dynamic']['pao2']['min_max_cutoff']
+    lower_cutoff_o2_kpa = min_o2 * 7.50062
+    upper_cutoff_o2_kpa = max_o2 * 7.50062
+
+    mask = (
+        var == "pao2"
+        & (measurements[value] > lower_cutoff_o2_kpa)
+        & (measurements[value < upper_cutoff_o2_kpa])
+    )
+    measurements.loc[mask, value] = measurements.loc[mask, value] * 7.50062
+
     ## TODO split blood pressure to diastolic and systolic when combined in one variable
     
 
