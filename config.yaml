@@ -36,12 +36,12 @@ pipeline:
   preprocessing_presplit: false
   splitting: false
   preprocessing_postsplit: false
-  hyperparameter_tuning: true
-  modeling: true
-  evaluation: true
+  hyperparameter_tuning: false
+  modeling: false
+  evaluation: false
   incremental_training: false
-  plotting: true
-  funnel: true
+  plotting: false
+  funnel: false
 
 incremental_training:
   models:
@@ -884,7 +884,7 @@ features: # todo: use this list to extract features
         - 3000905 # Leukocytes [#/volume] in Blood by Automated count
       ref_value: 11.5
       ref_value_apache: 11.5
-      min_max_cutoff: [0, 70]
+      min_max_cutoff: [0, 200]
       distribution: right-skew
       processed: True
     map:
@@ -926,7 +926,7 @@ features: # todo: use this list to extract features
         - 46235078 # Potassium [Moles/volume] in Serum, Plasma or Blood
       ref_value: 4
       ref_value_apache: 4
-      min_max_cutoff: [0, 10]
+      min_max_cutoff: [1, 12]
       distribution: normal
       processed: True
     respiratory_rate:
@@ -1243,7 +1243,7 @@ features: # todo: use this list to extract features
         - 2000000634 # non-invasive ventilator - leakage fraction
       ref_value: null
       ref_value_apache: null
-      min_max_cutoff: [0, 100]
+      min_max_cutoff: [21, 100]
       processed: True
   dummy:
     admission_origin_or_pacu:

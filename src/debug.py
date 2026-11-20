@@ -9,6 +9,14 @@ def main():
 
     return
 
+def check_nice_data():
+
+    nice = pd.read_csv(ROOT + "data/raw/nice/nice_icu_data_aumc_hashed_clean.csv")
+
+    
+
+    return
+
 
 def check_measurements_presplit(measurements):
 
