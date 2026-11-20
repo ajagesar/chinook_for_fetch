@@ -20,6 +20,7 @@ def main():
 
     admissions = preprocess_admissions(admissions)
     measurements = convert_to_mmhg(measurements, variable_name='variable_name', value='value_as_number')
+    measurements = clean_urine_output(measurements, variable_name='urine_output', value='value_as_number')
     measurements = cleanup_measurements(measurements, variable_name='variable_name', value='value_as_number')
     measurements = get_most_deviating_values_apache(measurements)
     measurements = get_most_deviating_values_non_apache(measurements)
@@ -174,6 +175,33 @@ def convert_to_mmhg(measurements, variable_name, value):
     return measurements
 
 
+def clean_urine_output(measurements, variable_name='urine_output', value='value_as_number'):
+    grp = ["person_id", "visit_start_datetime"]
+
+    # Work on a filtered copy so the caller's dataframe isn't modified
+    df = measurements.loc[measurements["variable_name"] == variable_name].copy()
+    df = df.sort_values(grp + ["measurement_datetime"])
+
+    # Interval length in hours since the previous measurement within the visit
+    df["interval_h"] = (
+        df.groupby(grp)["measurement_datetime"].diff().dt.total_seconds() / 3600
+    )
+
+    # First measurement per group has no known interval start -> exclude it
+    valid = df.dropna(subset=["interval_h"])
+    valid = valid[valid["interval_h"] > 0]
+
+    result = (
+        valid.groupby(grp)
+        .agg(total_volume=(value, "sum"),
+             total_hours=("interval_h", "sum"))
+        .assign(avg_ml_per_hour=lambda x: x["total_volume"] / x["total_hours"])
+        .reset_index()
+    )
+
+    return result
+
+
 def cleanup_measurements(measurements, variable_name='variable_name', value='value_as_number'): 
     
     # load features config info
@@ -196,11 +224,34 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
                 plt.cla()
 
     # apply specific preprocessing for certain variables
-    ## hematocrit: convert all values below 1 (which are assumed to be fractions) to percentages by multiplying with 100
-    measurements.loc[(measurements[variable_name] == 'hematocrit') & (measurements[value] < 1), value] = measurements.loc[(measurements[variable_name] == 'hematocrit') & (measurements[value] < 1)][value] * 100
+    var = measurements[variable_name]
 
-    ## white blood cell count: assume all values above 70 are a typo (if entered by hand if feasible to check for that) and divide by 10 to get a more logical value for wbc
-    measurements.loc[(measurements[variable_name] == 'wbc') & (measurements[value] > 70), value] = measurements.loc[(measurements[variable_name] == 'wbc') * (measurements[value] > 70)][value] / 10
+    ## hematocrit: values below 1 are assumed to be fractions -> convert to percentages
+    mask = (var == 'hematocrit') & (measurements[value] < 1)
+    measurements.loc[mask, value] = measurements.loc[mask, value] * 100
+
+    ## white blood cell count: values above 70 are assumed to be typos -> divide by 10
+    mask = (var == 'wbc') & (measurements[value] > 70)
+    measurements.loc[mask, value] = measurements.loc[mask, value] / 10
+
+    ## fio2: convert fractions to percentages, then fix values above 100
+    mask = (var == 'fio2') & (measurements[value] <= 1)
+    measurements.loc[mask, value] = measurements.loc[mask, value] * 100
+
+    mask = (var == 'fio2') & (measurements[value] > 100)
+    measurements.loc[mask, value] = measurements.loc[mask, value] / 10
+
+    ## temperature: convert Fahrenheit to Celsius when the value falls between the cutoffs expressed in Fahrenheit
+    min_c, max_c = features['dynamic']['temperature']['min_max_cutoff']
+    lower_cutoff_temp_f = min_c * 1.8 + 32
+    upper_cutoff_temp_f = max_c * 1.8 + 32
+
+    mask = (
+        (var == 'temperature')
+        & (measurements[value] > lower_cutoff_temp_f)
+        & (measurements[value] < upper_cutoff_temp_f)
+    )
+    measurements.loc[mask, value] = (measurements.loc[mask, value] - 32) * 5 / 9
 
     ## TODO split blood pressure to diastolic and systolic when combined in one variable
     
@@ -356,11 +407,19 @@ def pivot_measurements(measurements):
     return measurements_merged
 
 
-def preprocess_weight(weight):
-    
-    weight = weight.sort_values(by=['person_id', 'visit_start_datetime', 'timediff']).drop_duplicates(subset=['person_id', 'visit_start_datetime'])
+def preprocess_weight(weight, value_col='value_as_number', min_kg=20, max_kg=250):
+
+    # Drop implausible weights (keeps NaN out too, since NaN fails the comparison)
+    weight = weight[weight[value_col].between(min_kg, max_kg)]
+
+    weight = (
+        weight
+        .sort_values(by=['person_id', 'visit_start_datetime', 'timediff'])
+        .drop_duplicates(subset=['person_id', 'visit_start_datetime'])
+    )
 
     return weight
+
 
 def preprocess_height(height):
 

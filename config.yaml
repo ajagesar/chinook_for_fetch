@@ -1241,7 +1241,7 @@ features: # todo: use this list to extract features
         - 2000000248 # Ventilation mode Ventilator machine
         - 2000000250 # Ventilation mode Ventilator noninvasive
         - 2000000634 # non-invasive ventilator - leakage fraction
-      ref_value: null
+      ref_value: 21
       ref_value_apache: null
       min_max_cutoff: [21, 100]
       processed: True
