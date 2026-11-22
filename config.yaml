@@ -29,6 +29,8 @@ imputation_method: # set one of two as true, cannot be neither or both. Will be 
   mice: false
 optuna_jobs: -1
 optuna_load_study: true
+bootstrapping_n: 1000
+ci_level: 0.95
 
 pipeline:
   save_schema: true
@@ -708,7 +710,7 @@ features: # todo: use this list to extract features
       ref_value_apache: null
       min_max_cutoff: [0, 500]
       distribution: right-skew
-      processed: True
+      processed: False
     chloride:
       extract: True
       apache: false

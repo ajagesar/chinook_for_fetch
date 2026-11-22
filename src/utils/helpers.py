@@ -1,5 +1,8 @@
 import yaml
 import pandas as pd
+import numpy as np
+from sklearn.metrics import (roc_curve, precision_recall_curve, auc, f1_score,
+                             brier_score_loss, roc_auc_score, average_precision_score)
 
 # ROOT = "C:/Users/Ameet/Documents/research/repositories/chinook_for_fetch/" # local
 ROOT = "/home/ameet.jagesar@mydre.org/repositories/chinook_for_fetch/" # mydre
@@ -63,3 +66,30 @@ def impute_dataframe(imputer, df):
     df_imputed = df_imputed[df.columns]
     
     return df_imputed
+
+def _ece_mce(y_true, y_prob, n_bins=10):
+    """Vectorised ECE/MCE, same binning as your loop ([0.9, 1.0] closed on the right)."""
+    bin_idx = np.minimum((y_prob * n_bins).astype(int), n_bins - 1)
+    n_total = len(y_true)
+    ece, mce = 0.0, 0.0
+    for b in range(n_bins):
+        mask = bin_idx == b
+        count = mask.sum()
+        if count == 0:
+            continue
+        err = abs(y_true[mask].mean() - y_prob[mask].mean())
+        ece += (count / n_total) * err
+        mce = max(mce, err)
+    return ece, mce
+
+
+def _scalar_metrics(y_true, y_prob, y_pred):
+    ece, mce = _ece_mce(y_true, y_prob)
+    return {
+        'auc_model': roc_auc_score(y_true, y_prob),
+        'auprc': average_precision_score(y_true, y_prob),
+        'f1_model': f1_score(y_true, y_pred),
+        'brier_score_metric': brier_score_loss(y_true, y_prob),
+        'ece': ece,
+        'mce': mce,
+    }

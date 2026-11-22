@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from utils.helpers import ROOT, config
+from utils.helpers import ROOT, config, _scalar_metrics
 import pickle
 import yaml
 
@@ -430,8 +430,33 @@ def evaluate_subset(y_test, y_pred_proba, y_pred=None):
         'mce_bin_count_frac': mce_bin_count / n_total if n_total else np.nan,
         'mce_reliability_ratio': mce_reliability_ratio,  # <-- higher = more trustworthy
         'bin_details': bin_details, 
+        'ci': bootstrap_ci(y_test, y_pred_proba, y_pred)
     }
 
+def bootstrap_ci(y_true, y_prob, y_pred, n_boot=config['bootstrapping_n'], ci_level=config['ci_level'], seed=random_state):
+    """Percentile bootstrap CIs over test-set rows (resampling patients with replacement)."""
+    y_true = np.asarray(y_true)
+    y_prob = np.asarray(y_prob)
+    y_pred = np.asarray(y_pred)
+
+    rng = np.random.default_rng(seed)
+    n = len(y_true)
+    samples = {k: [] for k in _scalar_metrics(y_true, y_prob, y_pred)}
+
+    n_skipped = 0
+    for _ in range(n_boot):
+        idx = rng.integers(0, n, n)
+        if len(np.unique(y_true[idx])) < 2:   # AUC undefined with one class
+            n_skipped += 1
+            continue
+        for k, v in _scalar_metrics(y_true[idx], y_prob[idx], y_pred[idx]).items():
+            samples[k].append(v)
+
+    alpha = (1 - ci_level) / 2
+    ci = {k: [float(np.quantile(v, alpha)), float(np.quantile(v, 1 - alpha))]
+          for k, v in samples.items()}
+    ci['n_boot_used'] = n_boot - n_skipped
+    return ci
 
 if __name__=="__main__":
     main()

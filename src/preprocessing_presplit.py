@@ -274,9 +274,9 @@ def cleanup_measurements(measurements, variable_name='variable_name', value='val
     upper_cutoff_o2_kpa = max_o2 * 7.50062
 
     mask = (
-        var == "pao2"
+        (var == "pao2")
         & (measurements[value] > lower_cutoff_o2_kpa)
-        & (measurements[value < upper_cutoff_o2_kpa])
+        & (measurements[value] < upper_cutoff_o2_kpa)
     )
     measurements.loc[mask, value] = measurements.loc[mask, value] * 7.50062
 
